@@ -1,0 +1,100 @@
+import { NextRequest, NextResponse } from "next/server";
+import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
+import { db } from "@/lib/db";
+import { transactions, categories, banks } from "@/lib/db/schema";
+import { and, eq, gte, lte, isNull, sum, desc } from "drizzle-orm";
+import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
+
+export async function GET(req: NextRequest) {
+  try {
+    const auth = await requireAuth(req);
+    const { searchParams } = new URL(req.url);
+    const groupId = searchParams.get("groupId");
+    const month = parseInt(searchParams.get("month") ?? String(new Date().getMonth() + 1));
+    const year = parseInt(searchParams.get("year") ?? String(new Date().getFullYear()));
+
+    const refDate = new Date(year, month - 1, 1);
+    const start = format(startOfMonth(refDate), "yyyy-MM-dd");
+    const end = format(endOfMonth(refDate), "yyyy-MM-dd");
+
+    const scopeCondition = groupId
+      ? eq(transactions.groupId, groupId)
+      : eq(transactions.userId, auth.sub);
+
+    const baseConditions = [
+      scopeCondition,
+      isNull(transactions.deletedAt),
+      gte(transactions.date, start),
+      lte(transactions.date, end),
+    ];
+
+    const allTxns = await db
+      .select()
+      .from(transactions)
+      .where(and(...baseConditions))
+      .orderBy(desc(transactions.date));
+
+    const totalIncome = allTxns
+      .filter((t) => t.type === "income")
+      .reduce((acc, t) => acc + parseFloat(t.value), 0);
+
+    const totalExpenses = allTxns
+      .filter((t) => t.type === "expense")
+      .reduce((acc, t) => acc + parseFloat(t.value), 0);
+
+    // Group expenses by category
+    const expensesByCategory: Record<string, { categoryId: string | null; name: string; total: number; color: string }> = {};
+    for (const t of allTxns.filter((t) => t.type === "expense")) {
+      const key = t.categoryId ?? "other";
+      if (!expensesByCategory[key]) {
+        expensesByCategory[key] = { categoryId: t.categoryId, name: "Outros", total: 0, color: "#94a3b8" };
+      }
+      expensesByCategory[key].total += parseFloat(t.value);
+    }
+
+    // Fetch category names
+    const catIds = Object.keys(expensesByCategory).filter((k) => k !== "other");
+    if (catIds.length > 0) {
+      const cats = await db.select().from(categories).where(
+        and(isNull(categories.deletedAt))
+      );
+      for (const cat of cats) {
+        if (expensesByCategory[cat.id]) {
+          expensesByCategory[cat.id].name = cat.name;
+          expensesByCategory[cat.id].color = cat.color ?? "#94a3b8";
+        }
+      }
+    }
+
+    // Monthly trend (last 6 months)
+    const monthlyTrend = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = subMonths(refDate, i);
+      const ms = format(startOfMonth(d), "yyyy-MM-dd");
+      const me = format(endOfMonth(d), "yyyy-MM-dd");
+      const monthTxns = await db
+        .select()
+        .from(transactions)
+        .where(and(scopeCondition, isNull(transactions.deletedAt), gte(transactions.date, ms), lte(transactions.date, me)));
+
+      monthlyTrend.push({
+        month: format(d, "MMM/yy"),
+        income: monthTxns.filter((t) => t.type === "income").reduce((acc, t) => acc + parseFloat(t.value), 0),
+        expenses: monthTxns.filter((t) => t.type === "expense").reduce((acc, t) => acc + parseFloat(t.value), 0),
+      });
+    }
+
+    return NextResponse.json({
+      totalIncome,
+      totalExpenses,
+      balance: totalIncome - totalExpenses,
+      expensesByCategory: Object.values(expensesByCategory).sort((a, b) => b.total - a.total),
+      monthlyTrend,
+      recentTransactions: allTxns.slice(0, 10),
+    });
+  } catch (e) {
+    if (e instanceof AuthError) return authErrorResponse();
+    console.error(e);
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+  }
+}

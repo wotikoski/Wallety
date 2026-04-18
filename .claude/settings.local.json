@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack)",
+      "Read(//c//**)",
+      "Bash(ls /mnt/)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/nodejs:/c/Users/Leonardo/AppData/Roaming/npm\")",
+      "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/\\(dashboard\\)/lancamentos/[id]\")",
+      "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/\\(dashboard\\)/grupos/[id]\")",
+      "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/api/groups/[id]/members\")",
+      "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/api/transactions/[id]\")",
+      "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/api/categories/[id]\")"
+    ]
+  }
+}

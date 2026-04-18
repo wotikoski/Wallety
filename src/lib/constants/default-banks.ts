@@ -1,0 +1,18 @@
+export const DEFAULT_BANKS = [
+  { name: "Nubank", code: "260", color: "#8a05be" },
+  { name: "Itaú", code: "341", color: "#ec7000" },
+  { name: "Bradesco", code: "237", color: "#cc0000" },
+  { name: "Banco do Brasil", code: "001", color: "#f9c900" },
+  { name: "Santander", code: "033", color: "#ec0000" },
+  { name: "Caixa Econômica Federal", code: "104", color: "#005ca9" },
+  { name: "BTG Pactual", code: "208", color: "#002d5a" },
+  { name: "Inter", code: "077", color: "#ff8c00" },
+  { name: "C6 Bank", code: "336", color: "#000000" },
+  { name: "PicPay", code: "380", color: "#21c25e" },
+  { name: "Mercado Pago", code: "323", color: "#009ee3" },
+  { name: "PagSeguro", code: "290", color: "#00b140" },
+  { name: "Sicoob", code: "756", color: "#007236" },
+  { name: "Sicredi", code: "748", color: "#339900" },
+  { name: "XP Investimentos", code: "102", color: "#0c0c0c" },
+  { name: "Outro", code: null, color: "#94a3b8" },
+];
