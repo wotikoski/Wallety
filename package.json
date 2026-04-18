@@ -14,9 +14,6 @@
     "pages:build": "npx @cloudflare/next-on-pages",
     "pages:deploy": "npx wrangler pages deploy .vercel/output/static --project-name=wallety"
   },
-  "vercel": {
-    "installCommand": "npm install --legacy-peer-deps"
-  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@neondatabase/serverless": "^0.10.4",
@@ -68,5 +65,6 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "wrangler": "^3.89.0"
+    "vercel": "lastest"
   }
 }
