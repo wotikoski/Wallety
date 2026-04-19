@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Acesse sua conta",
@@ -10,9 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
-              <img src="/logo.png" alt="Wallety" className="w-full h-full object-cover" />
-            </div>
+            <Image src="/logo.png" alt="Wallety" width={40} height={40} className="rounded-xl" />
             <span className="text-2xl font-bold text-white tracking-tight">Wallety</span>
           </div>
           <p className="text-brand-200 text-sm">Sua vida financeira, simplificada.</p>
