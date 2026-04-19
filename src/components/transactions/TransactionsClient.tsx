@@ -88,45 +88,47 @@ export function TransactionsClient() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-wrap gap-3 items-end">
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">Tipo</label>
-          <select
-            value={type}
-            onChange={(e) => { setType(e.target.value); setPage(1); }}
-            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
-          >
-            <option value="">Todos</option>
-            <option value="income">Receitas</option>
-            <option value="expense">Despesas</option>
-          </select>
+      <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
+        <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 items-end">
+          <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1">Tipo</label>
+            <select
+              value={type}
+              onChange={(e) => { setType(e.target.value); setPage(1); }}
+              className="w-full h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            >
+              <option value="">Todos</option>
+              <option value="income">Receitas</option>
+              <option value="expense">Despesas</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1">Data inicial</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+              className="w-full h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1">Data final</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+              className="w-full h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            />
+          </div>
+          {(type || startDate || endDate) && (
+            <button
+              onClick={() => { setType(""); setStartDate(""); setEndDate(""); setPage(1); }}
+              className="h-[38px] text-sm text-slate-500 hover:text-slate-700 px-3 rounded-lg hover:bg-slate-50 transition"
+            >
+              Limpar filtros
+            </button>
+          )}
         </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">Data inicial</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">Data final</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
-          />
-        </div>
-        {(type || startDate || endDate) && (
-          <button
-            onClick={() => { setType(""); setStartDate(""); setEndDate(""); setPage(1); }}
-            className="h-[38px] text-sm text-slate-500 hover:text-slate-700 px-3 rounded-lg hover:bg-slate-50 transition"
-          >
-            Limpar filtros
-          </button>
-        )}
       </div>
 
       {/* Summary mini */}
