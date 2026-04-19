@@ -16,6 +16,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import Image from "next/image";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -46,9 +47,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-slate-800">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center">
-            <img src="/logo.png" alt="Wallety" className="w-full h-full object-cover" />
-          </div>
+          <Image src="/logo.png" alt="Wallety" width={36} height={36} className="rounded-xl" />
           <div>
             <div className="text-white font-bold text-lg leading-none">Wallety</div>
             <div className="text-slate-400 text-xs mt-0.5">Finanças simplificadas</div>
