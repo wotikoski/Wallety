@@ -15,7 +15,12 @@ export async function GET(req: NextRequest) {
     const conditions = [isNull(categories.deletedAt)];
 
     if (groupId) {
-      conditions.push(or(eq(categories.groupId, groupId), isNull(categories.groupId))!);
+      conditions.push(
+        or(
+          eq(categories.groupId, groupId),
+          and(eq(categories.userId, auth.sub), isNull(categories.groupId)),
+        )!,
+      );
     } else {
       conditions.push(eq(categories.userId, auth.sub));
     }
