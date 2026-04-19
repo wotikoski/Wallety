@@ -16,9 +16,7 @@ export async function GET(req: NextRequest) {
     if (groupId) {
       conditions.push(or(eq(banks.groupId, groupId), isNull(banks.groupId))!);
     } else {
-      conditions.push(
-        or(eq(banks.userId, auth.sub), eq(banks.isDefault, true))!,
-      );
+      conditions.push(eq(banks.userId, auth.sub));
     }
 
     const rows = await db.select().from(banks).where(and(...conditions)).orderBy(banks.name);
