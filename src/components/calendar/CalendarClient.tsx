@@ -75,7 +75,7 @@ export function CalendarClient() {
           >
             <ChevronLeft size={18} />
           </button>
-          <span className="text-sm font-semibold text-slate-800 min-w-[140px] text-center capitalize">
+          <span className="text-sm font-semibold text-slate-800 min-w-[140px] text-center">
             {format(currentDate, "MMMM 'de' yyyy", { locale: ptBR })}
           </span>
           <button
