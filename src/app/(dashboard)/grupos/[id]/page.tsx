@@ -3,6 +3,7 @@ import { GroupDetailClient } from "@/components/groups/GroupDetailClient";
 
 export const metadata: Metadata = { title: "Detalhes do Grupo" };
 
-export default function GroupDetailPage({ params }: { params: { id: string } }) {
-  return <GroupDetailClient id={params.id} />;
+export default async function GroupDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <GroupDetailClient id={id} />;
 }
