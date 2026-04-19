@@ -17,12 +17,7 @@ export async function GET(req: NextRequest) {
     if (groupId) {
       conditions.push(or(eq(categories.groupId, groupId), isNull(categories.groupId))!);
     } else {
-      conditions.push(
-        or(
-          eq(categories.userId, auth.sub),
-          eq(categories.isDefault, true),
-        )!,
-      );
+      conditions.push(eq(categories.userId, auth.sub));
     }
 
     if (type && type !== "both") {
