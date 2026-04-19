@@ -7,13 +7,14 @@ import { and, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { addDays } from "date-fns";
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     const { searchParams } = new URL(req.url);
     const memberId = searchParams.get("userId");
 
-    const [group] = await db.select().from(groups).where(eq(groups.id, params.id)).limit(1);
+    const [group] = await db.select().from(groups).where(eq(groups.id, id)).limit(1);
     if (!group) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
 
     if (group.ownerId !== auth.sub && memberId !== auth.sub) {
@@ -22,7 +23,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
     await db
       .delete(groupMembers)
-      .where(and(eq(groupMembers.groupId, params.id), eq(groupMembers.userId, memberId ?? auth.sub)));
+      .where(and(eq(groupMembers.groupId, id), eq(groupMembers.userId, memberId ?? auth.sub)));
 
     return NextResponse.json({ success: true });
   } catch (e) {
@@ -31,18 +32,19 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   }
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     const body = await req.json();
     const input = inviteSchema.parse(body);
 
-    const [group] = await db.select().from(groups).where(eq(groups.id, params.id)).limit(1);
+    const [group] = await db.select().from(groups).where(eq(groups.id, id)).limit(1);
     if (!group) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
 
     const token = uuidv4();
     await db.insert(groupInvites).values({
-      groupId: params.id,
+      groupId: id,
       email: input.email,
       token,
       invitedBy: auth.sub,

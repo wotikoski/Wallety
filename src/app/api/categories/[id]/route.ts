@@ -5,8 +5,9 @@ import { categories } from "@/lib/db/schema";
 import { categorySchema } from "@/lib/validations/category";
 import { and, eq, isNull } from "drizzle-orm";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     const body = await req.json();
     const input = categorySchema.parse(body);
@@ -14,7 +15,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const [row] = await db
       .update(categories)
       .set(input)
-      .where(and(eq(categories.id, params.id), eq(categories.userId, auth.sub)))
+      .where(and(eq(categories.id, id), eq(categories.userId, auth.sub)))
       .returning();
 
     if (!row) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
@@ -25,13 +26,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     await db
       .update(categories)
       .set({ deletedAt: new Date() })
-      .where(and(eq(categories.id, params.id), eq(categories.userId, auth.sub)));
+      .where(and(eq(categories.id, id), eq(categories.userId, auth.sub)));
 
     return NextResponse.json({ success: true });
   } catch (e) {

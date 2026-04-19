@@ -5,8 +5,9 @@ import { banks } from "@/lib/db/schema";
 import { bankSchema } from "@/lib/validations/bank";
 import { and, eq } from "drizzle-orm";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     const body = await req.json();
     const input = bankSchema.parse(body);
@@ -14,7 +15,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const [row] = await db
       .update(banks)
       .set(input)
-      .where(and(eq(banks.id, params.id), eq(banks.userId, auth.sub)))
+      .where(and(eq(banks.id, id), eq(banks.userId, auth.sub)))
       .returning();
 
     if (!row) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
@@ -25,13 +26,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     await db
       .update(banks)
       .set({ deletedAt: new Date() })
-      .where(and(eq(banks.id, params.id), eq(banks.userId, auth.sub)));
+      .where(and(eq(banks.id, id), eq(banks.userId, auth.sub)));
 
     return NextResponse.json({ success: true });
   } catch (e) {
