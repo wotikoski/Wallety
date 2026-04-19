@@ -5,26 +5,27 @@ import { groups, groupMembers, users } from "@/lib/db/schema";
 import { groupSchema } from "@/lib/validations/group";
 import { and, eq } from "drizzle-orm";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
 
     const membership = await db
       .select()
       .from(groupMembers)
-      .where(and(eq(groupMembers.groupId, params.id), eq(groupMembers.userId, auth.sub)))
+      .where(and(eq(groupMembers.groupId, id), eq(groupMembers.userId, auth.sub)))
       .limit(1);
 
     if (!membership.length) return NextResponse.json({ error: "Sem acesso" }, { status: 403 });
 
-    const [group] = await db.select().from(groups).where(eq(groups.id, params.id)).limit(1);
+    const [group] = await db.select().from(groups).where(eq(groups.id, id)).limit(1);
     if (!group) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
 
     const members = await db
       .select({ user: { id: users.id, name: users.name, email: users.email, avatarUrl: users.avatarUrl }, role: groupMembers.role, joinedAt: groupMembers.joinedAt })
       .from(groupMembers)
       .innerJoin(users, eq(groupMembers.userId, users.id))
-      .where(eq(groupMembers.groupId, params.id));
+      .where(eq(groupMembers.groupId, id));
 
     return NextResponse.json({ group, members });
   } catch (e) {
@@ -33,13 +34,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     const body = await req.json();
     const input = groupSchema.parse(body);
 
-    const [group] = await db.select().from(groups).where(eq(groups.id, params.id)).limit(1);
+    const [group] = await db.select().from(groups).where(eq(groups.id, id)).limit(1);
     if (!group || group.ownerId !== auth.sub) {
       return NextResponse.json({ error: "Sem permissão" }, { status: 403 });
     }
@@ -47,7 +49,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const [updated] = await db
       .update(groups)
       .set({ ...input, updatedAt: new Date() })
-      .where(eq(groups.id, params.id))
+      .where(eq(groups.id, id))
       .returning();
 
     return NextResponse.json({ group: updated });
@@ -57,16 +59,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
-    const [group] = await db.select().from(groups).where(eq(groups.id, params.id)).limit(1);
+    const [group] = await db.select().from(groups).where(eq(groups.id, id)).limit(1);
 
     if (!group || group.ownerId !== auth.sub) {
       return NextResponse.json({ error: "Sem permissão" }, { status: 403 });
     }
 
-    await db.update(groups).set({ deletedAt: new Date() }).where(eq(groups.id, params.id));
+    await db.update(groups).set({ deletedAt: new Date() }).where(eq(groups.id, id));
     return NextResponse.json({ success: true });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();

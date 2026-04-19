@@ -4,13 +4,14 @@ import { db } from "@/lib/db";
 import { transactions } from "@/lib/db/schema";
 import { eq, and, isNull, gte } from "drizzle-orm";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     const [row] = await db
       .select()
       .from(transactions)
-      .where(and(eq(transactions.id, params.id), isNull(transactions.deletedAt)))
+      .where(and(eq(transactions.id, id), isNull(transactions.deletedAt)))
       .limit(1);
 
     if (!row) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
@@ -23,8 +24,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     const body = await req.json();
     const { scope = "single", ...data } = body;
@@ -32,7 +34,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const [existing] = await db
       .select()
       .from(transactions)
-      .where(and(eq(transactions.id, params.id), isNull(transactions.deletedAt)))
+      .where(and(eq(transactions.id, id), isNull(transactions.deletedAt)))
       .limit(1);
 
     if (!existing) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
@@ -47,7 +49,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       const [updated] = await db
         .update(transactions)
         .set(updateData)
-        .where(eq(transactions.id, params.id))
+        .where(eq(transactions.id, id))
         .returning();
       return NextResponse.json({ transaction: updated });
     }
@@ -76,15 +78,16 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     const body = await req.json();
 
     const [existing] = await db
       .select()
       .from(transactions)
-      .where(and(eq(transactions.id, params.id), isNull(transactions.deletedAt)))
+      .where(and(eq(transactions.id, id), isNull(transactions.deletedAt)))
       .limit(1);
 
     if (!existing) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
@@ -93,7 +96,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const [updated] = await db
       .update(transactions)
       .set({ ...body, updatedAt: new Date() })
-      .where(eq(transactions.id, params.id))
+      .where(eq(transactions.id, id))
       .returning();
 
     return NextResponse.json({ transaction: updated });
@@ -103,8 +106,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const auth = await requireAuth(req);
     const { searchParams } = new URL(req.url);
     const scope = searchParams.get("scope") ?? "single";
@@ -112,7 +116,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     const [existing] = await db
       .select()
       .from(transactions)
-      .where(and(eq(transactions.id, params.id), isNull(transactions.deletedAt)))
+      .where(and(eq(transactions.id, id), isNull(transactions.deletedAt)))
       .limit(1);
 
     if (!existing) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
@@ -121,7 +125,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     const now = new Date();
 
     if (scope === "single" || !existing.installmentGroupId) {
-      await db.update(transactions).set({ deletedAt: now }).where(eq(transactions.id, params.id));
+      await db.update(transactions).set({ deletedAt: now }).where(eq(transactions.id, id));
     } else if (scope === "all") {
       await db
         .update(transactions)
