@@ -16,8 +16,15 @@ export const metadata: Metadata = {
     template: "Wallety | %s",
   },
   description: "Gerencie suas finanças pessoais e em grupo com facilidade e clareza.",
+  manifest: "/manifest.json",
   icons: {
     icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Wallety",
   },
 };
 
