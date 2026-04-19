@@ -1,0 +1,27 @@
+{
+  "name": "Wallety",
+  "short_name": "Wallety",
+  "description": "Sua vida financeira, simplificada.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "938x938",
+      "type": "image/png"
+    }
+  ]
+}
