@@ -94,7 +94,7 @@ export function TransactionsClient() {
           <select
             value={type}
             onChange={(e) => { setType(e.target.value); setPage(1); }}
-            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           >
             <option value="">Todos</option>
             <option value="income">Receitas</option>
@@ -107,7 +107,7 @@ export function TransactionsClient() {
             type="date"
             value={startDate}
             onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           />
         </div>
         <div>
@@ -116,13 +116,13 @@ export function TransactionsClient() {
             type="date"
             value={endDate}
             onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           />
         </div>
         {(type || startDate || endDate) && (
           <button
             onClick={() => { setType(""); setStartDate(""); setEndDate(""); setPage(1); }}
-            className="text-sm text-slate-500 hover:text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition"
+            className="h-[38px] text-sm text-slate-500 hover:text-slate-700 px-3 rounded-lg hover:bg-slate-50 transition"
           >
             Limpar filtros
           </button>
