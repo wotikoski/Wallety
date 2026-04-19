@@ -11,8 +11,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "pages:build": "npx @cloudflare/next-on-pages",
-    "pages:deploy": "npx wrangler pages deploy .vercel/output/static --project-name=wallety"
+    "pages:build": "next build",
+    "pages:deploy": "next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -51,7 +51,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -63,8 +62,6 @@
     "eslint-config-next": "15.0.3",
     "postcss": "^8.5.10",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5",
-    "wrangler": "^3.89.0",
-    "vercel": "latest"
+    "typescript": "^5"
   }
 }
