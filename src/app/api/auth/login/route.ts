@@ -37,12 +37,14 @@ export async function POST(req: NextRequest) {
       user: { id: user.id, name: user.name, email: user.email, avatarUrl: user.avatarUrl },
     });
 
+    const cookieDomain = process.env.COOKIE_DOMAIN;
     response.cookies.set("access_token", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60,
       path: "/",
+      ...(cookieDomain && { domain: cookieDomain }),
     });
     response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
@@ -50,6 +52,7 @@ export async function POST(req: NextRequest) {
       sameSite: "lax",
       maxAge: 90 * 24 * 60 * 60,
       path: "/",
+      ...(cookieDomain && { domain: cookieDomain }),
     });
 
     return response;

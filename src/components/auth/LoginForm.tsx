@@ -4,12 +4,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginInput } from "@/lib/validations/auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Se já estiver autenticado, redireciona para o dashboard
+  useEffect(() => {
+    fetch("/api/auth/me", { cache: "no-store" }).then((res) => {
+      if (res.ok) router.replace("/dashboard");
+    });
+  }, [router]);
 
   const {
     register,
