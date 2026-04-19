@@ -35,18 +35,18 @@ export const metadata: Metadata = {
     title: "Wallety",
   },
   openGraph: {
-    title: "Wallety — Controle suas finanças com facilidade",
+    title: "Wallety — Controle suas finanças pessoais e em grupo",
     description: "Gerencie receitas, despesas e finanças em grupo com facilidade e clareza. Visualize tudo em dashboards intuitivos e relatórios detalhados.",
     url: "https://wallety.qzz.io",
     siteName: "Wallety",
-    images: [{ url: "https://wallety.qzz.io/opengraph-image", width: 1200, height: 630 }],
+    images: [{ url: "https://wallety.qzz.io/og-image.svg", width: 1200, height: 630 }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Wallety — Controle suas finanças com facilidade",
+    title: "Wallety — Controle suas finanças pessoais e em grupo",
     description: "Gerencie receitas, despesas e finanças em grupo com facilidade e clareza. Visualize tudo em dashboards intuitivos e relatórios detalhados.",
-    images: ["https://wallety.qzz.io/opengraph-image"],
+    images: ["https://wallety.qzz.io/og-image.svg"],
   },
 };
 
