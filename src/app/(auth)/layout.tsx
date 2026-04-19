@@ -1,10 +1,39 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { verifyAccessToken, verifyRefreshToken } from "@/lib/auth/jwt";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Acesse sua conta",
 };
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default async function AuthLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+  const refreshToken = cookieStore.get("refresh_token")?.value;
+
+  if (accessToken) {
+    try {
+      await verifyAccessToken(accessToken);
+      redirect("/dashboard");
+    } catch {
+      // expired, try refresh
+    }
+  }
+
+  if (refreshToken) {
+    try {
+      const payload = await verifyRefreshToken(refreshToken);
+      if (payload.sub) {
+        redirect("/dashboard");
+      }
+    } catch {
+      // invalid
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-950 via-brand-900 to-brand-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">

@@ -74,12 +74,14 @@ export async function POST(req: NextRequest) {
     const refreshToken = await signRefreshToken(user.id, user.email, user.name);
 
     const response = NextResponse.json({ user }, { status: 201 });
+    const cookieDomain = process.env.COOKIE_DOMAIN;
     response.cookies.set("access_token", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60,
       path: "/",
+      ...(cookieDomain && { domain: cookieDomain }),
     });
     response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
@@ -87,6 +89,7 @@ export async function POST(req: NextRequest) {
       sameSite: "lax",
       maxAge: 90 * 24 * 60 * 60,
       path: "/",
+      ...(cookieDomain && { domain: cookieDomain }),
     });
 
     return response;

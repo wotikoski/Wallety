@@ -2,67 +2,97 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken, verifyRefreshToken, signAccessToken } from "@/lib/auth/jwt";
 
 const PUBLIC_PATHS = [
-  "/login",
-  "/register",
   "/api/auth/login",
   "/api/auth/register",
   "/api/auth/refresh",
   "/opengraph-image",
 ];
 
+const AUTH_PATHS = ["/login", "/register"];
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Always allow static/public API routes
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-  }
-
   const accessToken = req.cookies.get("access_token")?.value;
+  const refreshToken = req.cookies.get("refresh_token")?.value;
 
-  // Try access token
+  // --- Determine auth state ---
+  let isAuthenticated = false;
+  let pendingRefresh: { sub: string; email: string; name: string } | null = null;
+
+  // 1. Try access token
   if (accessToken) {
     try {
       await verifyAccessToken(accessToken);
-      return NextResponse.next();
+      isAuthenticated = true;
     } catch {
-      // Expired — try refresh token below
+      // Expired — try refresh below
     }
   }
 
-  // Try refresh token
-  const refreshToken = req.cookies.get("refresh_token")?.value;
-  if (refreshToken) {
+  // 2. Try refresh token
+  if (!isAuthenticated && refreshToken) {
     try {
       const payload = await verifyRefreshToken(refreshToken);
-      if (payload.email && payload.name) {
-        const newAccessToken = await signAccessToken({
+      if (payload.sub && payload.email && payload.name) {
+        isAuthenticated = true;
+        pendingRefresh = {
           sub: payload.sub,
           email: payload.email,
           name: payload.name,
-        });
-        const response = NextResponse.next();
-        response.cookies.set("access_token", newAccessToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          maxAge: 7 * 24 * 60 * 60,
-          path: "/",
-        });
-        return response;
+        };
       }
     } catch {
       // Refresh token invalid or expired
     }
   }
 
-  // Both tokens failed — redirect to login
+  // --- Routing decisions ---
+
+  // Authenticated user visiting login/register → send to dashboard
+  if (isAuthenticated && AUTH_PATHS.some((p) => pathname.startsWith(p))) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  // Unauthenticated user visiting login/register → allow
+  if (AUTH_PATHS.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
+
+  // Root → dashboard
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  // Authenticated → proceed (and renew access token if needed)
+  if (isAuthenticated) {
+    if (pendingRefresh) {
+      const newAccessToken = await signAccessToken(pendingRefresh);
+      const response = NextResponse.next();
+      const cookieDomain = process.env.COOKIE_DOMAIN;
+      response.cookies.set("access_token", newAccessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60,
+        path: "/",
+        ...(cookieDomain && { domain: cookieDomain }),
+      });
+      return response;
+    }
+    return NextResponse.next();
+  }
+
+  // Not authenticated → redirect to login
   if (pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
   }
+
   const response = NextResponse.redirect(new URL("/login", req.url));
   response.cookies.delete("access_token");
   response.cookies.delete("refresh_token");

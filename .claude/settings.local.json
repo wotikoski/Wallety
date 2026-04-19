@@ -11,7 +11,10 @@
       "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/\\(dashboard\\)/grupos/[id]\")",
       "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/api/groups/[id]/members\")",
       "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/api/transactions/[id]\")",
-      "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/api/categories/[id]\")"
+      "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/api/categories/[id]\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
