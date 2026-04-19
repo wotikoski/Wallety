@@ -102,7 +102,7 @@ export function ReportsClient() {
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-[130px] h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           />
         </div>
         <div>
@@ -111,7 +111,7 @@ export function ReportsClient() {
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-[130px] h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           />
         </div>
         <div>
@@ -119,7 +119,7 @@ export function ReportsClient() {
           <select
             value={groupBy}
             onChange={(e) => setGroupBy(e.target.value as "category" | "bank" | "user")}
-            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-[130px] h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           >
             <option value="category">Categoria</option>
             <option value="bank">Banco</option>
