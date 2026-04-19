@@ -13,7 +13,6 @@ import {
   Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import Image from "next/image";
 
 const drawerItems = [
   { href: "/limite-diario", label: "Limite Diário", icon: Target },
@@ -43,7 +42,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
       <div className="fixed bottom-0 left-0 right-0 bg-slate-950 rounded-t-2xl z-50 md:hidden pb-safe">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Wallety" width={32} height={32} className="rounded-xl" unoptimized />
+            <img src="/logo.svg" alt="Wallety" className="w-8 h-8 rounded-xl block shrink-0" />
             <span className="text-white font-bold">Wallety</span>
           </div>
           <button onClick={onClose} className="text-slate-400 p-1">
