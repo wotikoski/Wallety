@@ -63,14 +63,14 @@ export function ReportsClient() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between no-print">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 no-print">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Relatórios</h1>
           <p className="text-slate-500 text-sm mt-0.5">Analise suas finanças por período</p>
         </div>
         <button
           onClick={handlePrint}
-          className="flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-lg text-sm font-medium transition"
+          className="self-start sm:self-auto flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-lg text-sm font-medium transition"
         >
           <Printer size={16} />
           Imprimir
@@ -153,7 +153,7 @@ export function ReportsClient() {
             </div>
 
             {/* Chart */}
-            <div className="bg-white rounded-xl border border-slate-100 p-6 shadow-sm">
+            <div className="bg-white rounded-xl border border-slate-100 p-4 md:p-6 shadow-sm">
               <h2 className="text-base font-semibold text-slate-800 mb-4">
                 {reportType === "income" ? "Receitas" : "Despesas"} por {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : "Usuário"}
               </h2>
@@ -173,8 +173,8 @@ export function ReportsClient() {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-              <table className="w-full">
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-x-auto">
+              <table className="w-full min-w-[500px]">
                 <thead className="bg-slate-50 border-b border-slate-100">
                   <tr>
                     <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase">

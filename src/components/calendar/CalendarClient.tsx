@@ -63,7 +63,7 @@ export function CalendarClient() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Calendário</h1>
           <p className="text-slate-500 text-sm mt-0.5">Visualize seus lançamentos por data</p>
@@ -75,7 +75,7 @@ export function CalendarClient() {
           >
             <ChevronLeft size={18} />
           </button>
-          <span className="text-base font-semibold text-slate-800 min-w-[160px] text-center capitalize">
+          <span className="text-sm font-semibold text-slate-800 min-w-[140px] text-center capitalize">
             {format(currentDate, "MMMM 'de' yyyy", { locale: ptBR })}
           </span>
           <button
@@ -102,7 +102,7 @@ export function CalendarClient() {
           {/* Day grid */}
           <div className="grid grid-cols-7">
             {Array.from({ length: firstDayOffset }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-24 border-b border-r border-slate-50" />
+              <div key={`empty-${i}`} className="h-14 md:h-24 border-b border-r border-slate-50" />
             ))}
             {days.map((day) => {
               const dayTxns = getTxnsForDay(day);
@@ -115,12 +115,12 @@ export function CalendarClient() {
                 <button
                   key={day.toISOString()}
                   onClick={() => setSelectedDay(isSelected ? null : day)}
-                  className={`h-24 border-b border-r border-slate-50 p-2 text-left transition hover:bg-slate-50 ${isSelected ? "bg-brand-50 ring-1 ring-inset ring-brand-300" : ""}`}
+                  className={`h-14 md:h-24 border-b border-r border-slate-50 p-1 md:p-2 text-left transition hover:bg-slate-50 ${isSelected ? "bg-brand-50 ring-1 ring-inset ring-brand-300" : ""}`}
                 >
                   <span className={`inline-flex w-6 h-6 items-center justify-center rounded-full text-xs font-medium mb-1 ${today ? "bg-brand-600 text-white" : "text-slate-600"}`}>
                     {format(day, "d")}
                   </span>
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 hidden md:block">
                     {incomes.length > 0 && (
                       <div className="text-xs text-income truncate">
                         +{formatCurrency(incomes.reduce((a, t) => a + parseFloat(t.value), 0))}
@@ -131,6 +131,10 @@ export function CalendarClient() {
                         -{formatCurrency(expenses.reduce((a, t) => a + parseFloat(t.value), 0))}
                       </div>
                     )}
+                  </div>
+                  <div className="flex gap-0.5 md:hidden">
+                    {incomes.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-income" />}
+                    {expenses.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-expense" />}
                   </div>
                 </button>
               );
