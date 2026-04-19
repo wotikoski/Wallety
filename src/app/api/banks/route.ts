@@ -14,7 +14,12 @@ export async function GET(req: NextRequest) {
     const conditions = [isNull(banks.deletedAt)];
 
     if (groupId) {
-      conditions.push(or(eq(banks.groupId, groupId), isNull(banks.groupId))!);
+      conditions.push(
+        or(
+          eq(banks.groupId, groupId),
+          and(eq(banks.userId, auth.sub), isNull(banks.groupId)),
+        )!,
+      );
     } else {
       conditions.push(eq(banks.userId, auth.sub));
     }
