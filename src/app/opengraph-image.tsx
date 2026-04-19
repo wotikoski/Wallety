@@ -50,15 +50,41 @@ export default function Image() {
           Wallety
         </div>
 
+        {/* Headline */}
+        <div
+          style={{
+            fontSize: 32,
+            color: "rgba(255,255,255,0.9)",
+            marginBottom: 12,
+            fontWeight: 600,
+          }}
+        >
+          Controle suas finanças com facilidade
+        </div>
+
         {/* Tagline */}
         <div
           style={{
-            fontSize: 28,
-            color: "rgba(255,255,255,0.75)",
-            letterSpacing: "0px",
+            fontSize: 22,
+            color: "rgba(255,255,255,0.65)",
+            marginBottom: 40,
           }}
         >
-          Sua vida financeira, simplificada.
+          Receitas, despesas e grupos — tudo em um só lugar.
+        </div>
+
+        {/* CTA */}
+        <div
+          style={{
+            background: "white",
+            color: "#3730a3",
+            fontSize: 22,
+            fontWeight: 700,
+            padding: "14px 36px",
+            borderRadius: 12,
+          }}
+        >
+          Acesse gratuitamente →
         </div>
       </div>
     ),
