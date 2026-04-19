@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { LoginForm } from "@/components/auth/LoginForm";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: "Entrar" };
+export const metadata: Metadata = { title: { absolute: "Wallety" } };
 
 export default function LoginPage() {
   return (
