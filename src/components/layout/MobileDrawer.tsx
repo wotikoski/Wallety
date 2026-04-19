@@ -42,8 +42,8 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
       <div className="fixed bottom-0 left-0 right-0 bg-slate-950 rounded-t-2xl z-50 md:hidden pb-safe">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-lg">
-              💰
+            <div className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center">
+              <img src="/logo.png" alt="Wallety" className="w-full h-full object-cover" />
             </div>
             <span className="text-white font-bold">Wallety</span>
           </div>
