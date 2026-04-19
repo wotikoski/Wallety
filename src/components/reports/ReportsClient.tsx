@@ -81,7 +81,7 @@ export function ReportsClient() {
       <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-wrap gap-4 items-end no-print">
         <div>
           <label className="block text-xs font-medium text-slate-500 mb-1">Tipo de relatório</label>
-          <div className="flex rounded-lg border border-slate-200 overflow-hidden h-[34px]">
+          <div className="flex rounded-lg border border-slate-200 overflow-hidden h-[38px]">
             <button
               onClick={() => setReportType("income")}
               className={`flex items-center gap-1.5 px-3 text-sm font-medium transition ${reportType === "income" ? "bg-income text-white" : "text-slate-500 hover:bg-slate-50"}`}
@@ -102,7 +102,7 @@ export function ReportsClient() {
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="h-[34px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
@@ -111,7 +111,7 @@ export function ReportsClient() {
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="h-[34px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
@@ -119,7 +119,7 @@ export function ReportsClient() {
           <select
             value={groupBy}
             onChange={(e) => setGroupBy(e.target.value as "category" | "bank" | "user")}
-            className="h-[34px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <option value="category">Categoria</option>
             <option value="bank">Banco</option>
