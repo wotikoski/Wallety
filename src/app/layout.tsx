@@ -34,6 +34,20 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Wallety",
   },
+  openGraph: {
+    title: "Wallety — Sua vida financeira, simplificada.",
+    description: "Gerencie suas finanças pessoais e em grupo com facilidade e clareza.",
+    url: "https://wallety.qzz.io",
+    siteName: "Wallety",
+    images: [{ url: "/opengraph-image.png", width: 1200, height: 630 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Wallety — Sua vida financeira, simplificada.",
+    description: "Gerencie suas finanças pessoais e em grupo com facilidade e clareza.",
+    images: ["/opengraph-image.png"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
