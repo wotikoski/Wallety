@@ -46,7 +46,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-slate-800">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Wallety" className="w-9 h-9 rounded-xl block shrink-0" />
+          <img src="/logo.png" alt="Wallety" className="w-9 h-9 rounded-xl block shrink-0" />
           <div>
             <div className="text-white font-bold text-lg leading-none">Wallety</div>
             <div className="text-slate-400 text-xs mt-0.5">Finanças simplificadas</div>
