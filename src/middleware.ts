@@ -7,6 +7,7 @@ const PUBLIC_PATHS = [
   "/api/auth/login",
   "/api/auth/register",
   "/api/auth/refresh",
+  "/opengraph-image",
 ];
 
 export async function middleware(req: NextRequest) {
