@@ -55,7 +55,7 @@ export function ReportsClient() {
   });
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current,
+    contentRef: printRef,
     documentTitle: `Wallety - Relatório ${reportType === "income" ? "Receitas" : "Despesas"}`,
   });
 
