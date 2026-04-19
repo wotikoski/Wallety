@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <Image src="/logo.png" alt="Wallety" width={40} height={40} className="rounded-xl" />
+            <Image src="/logo.png" alt="Wallety" width={40} height={40} className="rounded-xl" unoptimized />
             <span className="text-2xl font-bold text-white tracking-tight">Wallety</span>
           </div>
           <p className="text-brand-200 text-sm">Sua vida financeira, simplificada.</p>

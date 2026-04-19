@@ -13,7 +13,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: {
     default: "Wallety — Sua vida financeira, simplificada.",
-    template: "%s | Wallety",
+    template: "Wallety | %s",
   },
   description: "Gerencie suas finanças pessoais e em grupo com facilidade e clareza.",
   icons: {
