@@ -76,7 +76,7 @@ export function CalendarClient() {
             <ChevronLeft size={18} />
           </button>
           <span className="text-sm font-semibold text-slate-800 min-w-[140px] text-center">
-            {format(currentDate, "MMMM 'de' yyyy", { locale: ptBR })}
+            {format(currentDate, "MMMM 'de' yyyy", { locale: ptBR }).replace(/^\w/, c => c.toUpperCase())}
           </span>
           <button
             onClick={() => setCurrentDate(addMonths(currentDate, 1))}
