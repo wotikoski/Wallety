@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyAccessToken } from "@/lib/auth/jwt";
+import { verifyAccessToken, verifyRefreshToken, signAccessToken } from "@/lib/auth/jwt";
 
 const PUBLIC_PATHS = [
   "/login",
@@ -20,26 +20,52 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  const token = req.cookies.get("access_token")?.value;
+  const accessToken = req.cookies.get("access_token")?.value;
 
-  if (!token) {
-    if (pathname.startsWith("/api/")) {
-      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+  // Try access token
+  if (accessToken) {
+    try {
+      await verifyAccessToken(accessToken);
+      return NextResponse.next();
+    } catch {
+      // Expired — try refresh token below
     }
-    return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  try {
-    await verifyAccessToken(token);
-    return NextResponse.next();
-  } catch {
-    if (pathname.startsWith("/api/")) {
-      return NextResponse.json({ error: "Token inválido ou expirado" }, { status: 401 });
+  // Try refresh token
+  const refreshToken = req.cookies.get("refresh_token")?.value;
+  if (refreshToken) {
+    try {
+      const payload = await verifyRefreshToken(refreshToken);
+      if (payload.email && payload.name) {
+        const newAccessToken = await signAccessToken({
+          sub: payload.sub,
+          email: payload.email,
+          name: payload.name,
+        });
+        const response = NextResponse.next();
+        response.cookies.set("access_token", newAccessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 7 * 24 * 60 * 60,
+          path: "/",
+        });
+        return response;
+      }
+    } catch {
+      // Refresh token invalid or expired
     }
-    const response = NextResponse.redirect(new URL("/login", req.url));
-    response.cookies.delete("access_token");
-    return response;
   }
+
+  // Both tokens failed — redirect to login
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+  }
+  const response = NextResponse.redirect(new URL("/login", req.url));
+  response.cookies.delete("access_token");
+  response.cookies.delete("refresh_token");
+  return response;
 }
 
 export const config = {

@@ -15,15 +15,15 @@ export async function signAccessToken(payload: Omit<JWTPayload, "iat" | "exp">):
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime(process.env.JWT_EXPIRES_IN ?? "15m")
+    .setExpirationTime(process.env.JWT_EXPIRES_IN ?? "7d")
     .sign(ACCESS_SECRET);
 }
 
-export async function signRefreshToken(userId: string): Promise<string> {
-  return new SignJWT({ sub: userId })
+export async function signRefreshToken(userId: string, email: string, name: string): Promise<string> {
+  return new SignJWT({ sub: userId, email, name })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime(process.env.REFRESH_TOKEN_EXPIRES_IN ?? "30d")
+    .setExpirationTime(process.env.REFRESH_TOKEN_EXPIRES_IN ?? "90d")
     .sign(REFRESH_SECRET);
 }
 
@@ -32,7 +32,7 @@ export async function verifyAccessToken(token: string): Promise<JWTPayload> {
   return payload as unknown as JWTPayload;
 }
 
-export async function verifyRefreshToken(token: string): Promise<{ sub: string }> {
+export async function verifyRefreshToken(token: string): Promise<{ sub: string; email?: string; name?: string }> {
   const { payload } = await jwtVerify(token, REFRESH_SECRET);
-  return payload as { sub: string };
+  return payload as { sub: string; email?: string; name?: string };
 }
