@@ -71,21 +71,21 @@ export async function POST(req: NextRequest) {
       email: user.email,
       name: user.name,
     });
-    const refreshToken = await signRefreshToken(user.id);
+    const refreshToken = await signRefreshToken(user.id, user.email, user.name);
 
     const response = NextResponse.json({ user }, { status: 201 });
     response.cookies.set("access_token", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 15 * 60,
+      maxAge: 7 * 24 * 60 * 60,
       path: "/",
     });
     response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60,
+      maxAge: 90 * 24 * 60 * 60,
       path: "/",
     });
 
