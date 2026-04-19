@@ -73,7 +73,7 @@ export function DashboardClient() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
           <p className="text-slate-500 text-sm mt-0.5">Visão geral das suas finanças</p>
@@ -82,7 +82,7 @@ export function DashboardClient() {
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="flex-1 sm:flex-none text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             {MONTHS.map((m, i) => (
               <option key={i} value={i + 1}>{m}</option>

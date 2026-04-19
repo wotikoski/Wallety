@@ -162,75 +162,119 @@ export function TransactionsClient() {
             </Link>
           </div>
         ) : (
-          <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-100">
-              <tr>
-                <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Data</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Descrição</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Parcela</th>
-                <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Valor</th>
-                <th className="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Pago</th>
-                <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
+          <>
+            {/* Mobile card view */}
+            <div className="md:hidden divide-y divide-slate-50">
               {txns.map((t) => (
-                <tr key={t.id} className="hover:bg-slate-50/50 transition">
-                  <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">{formatDate(t.date)}</td>
-                  <td className="px-6 py-3.5">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
-                        {t.type === "income"
-                          ? <ArrowUpRight size={12} className="text-income" />
-                          : <ArrowDownRight size={12} className="text-expense" />
-                        }
-                      </div>
-                      <span className="text-sm font-medium text-slate-800">{t.description}</span>
+                <div key={t.id} className="px-4 py-3.5 flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                    {t.type === "income"
+                      ? <ArrowUpRight size={14} className="text-income" />
+                      : <ArrowDownRight size={14} className="text-expense" />
+                    }
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-800 truncate">{t.description}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <p className="text-xs text-slate-400">{formatDate(t.date)}</p>
+                      {t.installmentTotal && t.installmentTotal > 1 && (
+                        <span className="text-xs text-slate-400 flex items-center gap-0.5">
+                          <Layers size={10} />{t.installmentCurrent}/{t.installmentTotal}
+                        </span>
+                      )}
                     </div>
-                  </td>
-                  <td className="px-6 py-3.5 text-sm text-slate-400">
-                    {t.installmentTotal && t.installmentTotal > 1 ? (
-                      <span className="flex items-center gap-1">
-                        <Layers size={12} />
-                        {t.installmentCurrent}/{t.installmentTotal}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="text-right">
+                      <p className={`text-sm font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                        {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
+                      </p>
+                      <span className={`text-xs ${t.isPaid ? "text-income" : "text-slate-400"}`}>
+                        {t.isPaid ? "Pago" : "Pendente"}
                       </span>
-                    ) : null}
-                  </td>
-                  <td className="px-6 py-3.5 text-right">
-                    <span className={`text-sm font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
-                      {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3.5 text-center">
-                    <button
-                      onClick={() => togglePaid.mutate(t)}
-                      className="text-slate-400 hover:text-income transition"
-                    >
-                      {t.isPaid ? <CheckCircle2 size={18} className="text-income" /> : <Circle size={18} />}
-                    </button>
-                  </td>
-                  <td className="px-6 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/lancamentos/${t.id}`}
-                        className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
-                      >
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <button onClick={() => togglePaid.mutate(t)} className="text-slate-400 hover:text-income transition">
+                        {t.isPaid ? <CheckCircle2 size={16} className="text-income" /> : <Circle size={16} />}
+                      </button>
+                      <Link href={`/lancamentos/${t.id}`} className="text-slate-400 hover:text-brand-600 transition">
                         <Edit size={14} />
                       </Link>
                       <button
-                        onClick={() => {
-                          if (confirm("Confirma a exclusão?")) deleteTransaction.mutate(t.id);
-                        }}
-                        className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                        onClick={() => { if (confirm("Confirma a exclusão?")) deleteTransaction.mutate(t.id); }}
+                        className="text-slate-400 hover:text-expense transition"
                       >
                         <Trash2 size={14} />
                       </button>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+
+            {/* Desktop table view */}
+            <table className="hidden md:table w-full">
+              <thead className="bg-slate-50 border-b border-slate-100">
+                <tr>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Data</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Descrição</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Parcela</th>
+                  <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Valor</th>
+                  <th className="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Pago</th>
+                  <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {txns.map((t) => (
+                  <tr key={t.id} className="hover:bg-slate-50/50 transition">
+                    <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">{formatDate(t.date)}</td>
+                    <td className="px-6 py-3.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                          {t.type === "income"
+                            ? <ArrowUpRight size={12} className="text-income" />
+                            : <ArrowDownRight size={12} className="text-expense" />
+                          }
+                        </div>
+                        <span className="text-sm font-medium text-slate-800">{t.description}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3.5 text-sm text-slate-400">
+                      {t.installmentTotal && t.installmentTotal > 1 ? (
+                        <span className="flex items-center gap-1">
+                          <Layers size={12} />
+                          {t.installmentCurrent}/{t.installmentTotal}
+                        </span>
+                      ) : null}
+                    </td>
+                    <td className="px-6 py-3.5 text-right">
+                      <span className={`text-sm font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                        {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3.5 text-center">
+                      <button onClick={() => togglePaid.mutate(t)} className="text-slate-400 hover:text-income transition">
+                        {t.isPaid ? <CheckCircle2 size={18} className="text-income" /> : <Circle size={18} />}
+                      </button>
+                    </td>
+                    <td className="px-6 py-3.5 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link href={`/lancamentos/${t.id}`} className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition">
+                          <Edit size={14} />
+                        </Link>
+                        <button
+                          onClick={() => { if (confirm("Confirma a exclusão?")) deleteTransaction.mutate(t.id); }}
+                          className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         )}
 
         {txns.length > 0 && (
