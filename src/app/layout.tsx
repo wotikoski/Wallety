@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   description: "Gerencie suas finanças pessoais e em grupo com facilidade e clareza.",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/logo.png",
   },
 };
 
