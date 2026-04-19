@@ -16,9 +16,7 @@ export async function GET(req: NextRequest) {
     if (groupId) {
       conditions.push(or(eq(paymentMethods.groupId, groupId), isNull(paymentMethods.groupId))!);
     } else {
-      conditions.push(
-        or(eq(paymentMethods.userId, auth.sub), eq(paymentMethods.isDefault, true))!,
-      );
+      conditions.push(eq(paymentMethods.userId, auth.sub));
     }
 
     const rows = await db.select().from(paymentMethods).where(and(...conditions)).orderBy(paymentMethods.name);
