@@ -49,13 +49,18 @@ export function TransactionsClient() {
 
   const togglePaid = useMutation({
     mutationFn: async (t: Transaction) => {
-      await fetch(`/api/transactions/${t.id}`, {
+      const res = await fetch(`/api/transactions/${t.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isPaid: !t.isPaid, paidAt: !t.isPaid ? new Date().toISOString() : null }),
       });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? "Erro ao atualizar lançamento");
+      }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
   const deleteTransaction = useMutation({

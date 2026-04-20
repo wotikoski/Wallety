@@ -93,15 +93,20 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!existing) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
     if (existing.userId !== auth.sub) return NextResponse.json({ error: "Sem permissão" }, { status: 403 });
 
+    // Coerce timestamp fields: the DB column expects Date, but JSON only carries strings.
+    const patch: Record<string, unknown> = { ...body, updatedAt: new Date() };
+    if (typeof patch.paidAt === "string") patch.paidAt = new Date(patch.paidAt);
+
     const [updated] = await db
       .update(transactions)
-      .set({ ...body, updatedAt: new Date() })
+      .set(patch)
       .where(eq(transactions.id, id))
       .returning();
 
     return NextResponse.json({ transaction: updated });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();
+    console.error("PATCH /api/transactions/[id] error:", e);
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }
