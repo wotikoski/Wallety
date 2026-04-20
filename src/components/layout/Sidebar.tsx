@@ -14,6 +14,8 @@ import {
   Users,
   User,
   LogOut,
+  Wallet,
+  RefreshCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -23,6 +25,8 @@ const navItems = [
   { href: "/calendario", label: "Calendário", icon: Calendar },
   { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
   { href: "/limite-diario", label: "Limite Diário", icon: Target },
+  { href: "/orcamentos", label: "Orçamentos", icon: Wallet },
+  { href: "/recorrencias", label: "Recorrências", icon: RefreshCcw },
 ];
 
 const configItems = [

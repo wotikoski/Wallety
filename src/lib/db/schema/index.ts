@@ -5,3 +5,5 @@ export * from "./banks";
 export * from "./payment-methods";
 export * from "./transactions";
 export * from "./monthly-budgets";
+export * from "./category-budgets";
+export * from "./recurring-transactions";
