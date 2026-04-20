@@ -3,7 +3,7 @@ import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware
 import { db } from "@/lib/db";
 import { groups, groupMembers } from "@/lib/db/schema";
 import { groupSchema } from "@/lib/validations/group";
-import { eq, isNull } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
       .select({ group: groups, member: groupMembers })
       .from(groupMembers)
       .innerJoin(groups, eq(groupMembers.groupId, groups.id))
-      .where(eq(groupMembers.userId, auth.sub));
+      .where(and(eq(groupMembers.userId, auth.sub), isNull(groups.deletedAt)));
 
     return NextResponse.json({ groups: myGroups.map((r) => ({ ...r.group, role: r.member.role })) });
   } catch (e) {
