@@ -59,8 +59,31 @@ export function TransactionsClient() {
         throw new Error(json.error ?? "Erro ao atualizar lançamento");
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["transactions"] }),
-    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
+    // Optimistic update: flip isPaid locally before the request returns,
+    // so the UI feels instant. Roll back if the request fails.
+    onMutate: async (t: Transaction) => {
+      await queryClient.cancelQueries({ queryKey: ["transactions"] });
+      const previous = queryClient.getQueriesData<{ transactions: Transaction[] }>({ queryKey: ["transactions"] });
+      queryClient.setQueriesData<{ transactions: Transaction[] }>(
+        { queryKey: ["transactions"] },
+        (old) => {
+          if (!old?.transactions) return old;
+          return {
+            ...old,
+            transactions: old.transactions.map((row) =>
+              row.id === t.id ? { ...row, isPaid: !t.isPaid } : row,
+            ),
+          };
+        },
+      );
+      return { previous };
+    },
+    onError: (err: Error, _t, ctx) => {
+      // Restore previous cache state on failure.
+      ctx?.previous?.forEach(([key, data]) => queryClient.setQueryData(key, data));
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["transactions"] }),
   });
 
   const deleteTransaction = useMutation({
