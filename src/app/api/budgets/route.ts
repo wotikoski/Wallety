@@ -76,8 +76,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ budgets: result });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();
-    console.error(e);
-    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+    console.error("[GET /api/budgets]", e);
+    const msg = e instanceof Error ? e.message : "Erro interno";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 
@@ -126,7 +127,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ budget: row }, { status: 201 });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();
-    console.error(e);
-    return NextResponse.json({ error: "Erro ao salvar orçamento" }, { status: 500 });
+    console.error("[POST /api/budgets]", e);
+    const msg = e instanceof Error ? e.message : "Erro ao salvar orçamento";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

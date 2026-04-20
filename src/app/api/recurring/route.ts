@@ -57,7 +57,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ recurring: row }, { status: 201 });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();
-    console.error(e);
-    return NextResponse.json({ error: "Erro ao salvar recorrência" }, { status: 500 });
+    console.error("[POST /api/recurring]", e);
+    const msg = e instanceof Error ? e.message : "Erro ao salvar recorrência";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
