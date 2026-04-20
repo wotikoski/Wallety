@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Gluten } from "next/font/google";
+import { Inter, Patrick_Hand } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
@@ -10,9 +10,10 @@ const inter = Inter({
   display: "swap",
 });
 
-const gluten = Gluten({
+const brandFont = Patrick_Hand({
   subsets: ["latin"],
-  variable: "--font-gluten",
+  weight: "400",
+  variable: "--font-brand",
   display: "swap",
 });
 
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.variable} ${gluten.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${brandFont.variable} font-sans antialiased`}>
         <Providers>
           {children}
           <Toaster />
