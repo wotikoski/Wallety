@@ -67,12 +67,16 @@ export function GroupsClient() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await fetch(`/api/groups/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/groups/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Erro ao excluir grupo");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["groups"] });
       toast({ title: "Grupo excluído" });
       setSelectedGroup(null);
+    },
+    onError: () => {
+      toast({ title: "Erro ao excluir grupo", description: "Apenas o dono pode excluir o grupo.", variant: "destructive" });
     },
   });
 
@@ -196,7 +200,7 @@ export function GroupsClient() {
                   >
                     {activeGroupId === selectedGroup ? "Ativo" : "Ativar"}
                   </button>
-                  {currentGroup.ownerId && (
+                  {currentGroup.role === "owner" && (
                     <button
                       onClick={() => confirm("Excluir grupo?") && deleteMutation.mutate(selectedGroup)}
                       className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
