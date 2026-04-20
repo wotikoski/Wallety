@@ -33,7 +33,7 @@ export const transactions = pgTable(
     paidAt: timestamp("paid_at", { withTimezone: true }),
 
     isFixed: boolean("is_fixed").notNull().default(false),
-    recurrenceGroupId: uuid("recurrence_group_id"),
+    recurrenceGroupId: uuid("recurrence_group_id"), // FK to recurring_transactions.id (no hard FK to allow soft-delete cascade control)
 
     notes: text("notes"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

@@ -9,7 +9,7 @@ import { format, startOfMonth, endOfMonth } from "date-fns";
 import Link from "next/link";
 import {
   Plus, Filter, ArrowUpRight, ArrowDownRight, CheckCircle2, Circle,
-  Trash2, Edit, ChevronLeft, ChevronRight, Layers,
+  Trash2, Edit, ChevronLeft, ChevronRight, Layers, Download,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -126,13 +126,23 @@ export function TransactionsClient() {
           <h1 className="text-2xl font-semibold text-slate-900">Lançamentos</h1>
           <p className="text-slate-500 text-sm mt-0.5">Gerencie todas as suas transações</p>
         </div>
-        <Link
-          href="/lancamentos/novo"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
-        >
-          <Plus size={16} />
-          Novo Lançamento
-        </Link>
+        <div className="flex items-center gap-2">
+          <a
+            href={`/api/transactions/export?${params}`}
+            className="flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium px-3.5 py-2.5 rounded-lg transition"
+            title="Baixar CSV com os filtros atuais"
+          >
+            <Download size={16} />
+            <span className="hidden sm:inline">Exportar CSV</span>
+          </a>
+          <Link
+            href="/lancamentos/novo"
+            className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
+          >
+            <Plus size={16} />
+            Novo Lançamento
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}

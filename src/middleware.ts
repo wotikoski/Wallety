@@ -13,6 +13,28 @@ const AUTH_PATHS = ["/login", "/register"];
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // --- CSRF defense: Origin header check for state-changing API requests ---
+  // Browsers always send Origin on POST/PUT/PATCH/DELETE from fetch/XHR. We
+  // reject when the Origin doesn't match the request host. SameSite=lax
+  // cookies already block top-level cross-site POSTs, so this is a second
+  // layer against fetch-based CSRF from embedded/malicious contexts.
+  if (pathname.startsWith("/api/") && ["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
+    const origin = req.headers.get("origin");
+    const host = req.headers.get("host");
+    if (origin) {
+      try {
+        const originHost = new URL(origin).host;
+        if (originHost !== host) {
+          return NextResponse.json({ error: "Origem não autorizada" }, { status: 403 });
+        }
+      } catch {
+        return NextResponse.json({ error: "Origem inválida" }, { status: 403 });
+      }
+    }
+    // Some same-origin fetches don't set Origin (rare; older browsers). Fall
+    // through to auth check — SameSite cookies still apply there.
+  }
+
   // Always allow static/public API routes
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
