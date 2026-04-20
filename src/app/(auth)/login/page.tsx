@@ -7,12 +7,10 @@ export const metadata: Metadata = { title: { absolute: "Wallety" } };
 export default function LoginPage() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 mb-1">Bem-vindo de volta</h1>
-      <p className="text-slate-500 text-sm mb-6">Entre com sua conta para continuar</p>
       <LoginForm />
-      <p className="text-center text-sm text-slate-500 mt-6">
+      <p style={{ textAlign: "center", fontSize: "13px", color: "#475569", marginTop: "20px" }}>
         Não tem conta?{" "}
-        <Link href="/register" className="text-brand-600 font-medium hover:text-brand-700">
+        <Link href="/register" style={{ color: "#3b82f6", textDecoration: "none", fontWeight: 500 }}>
           Cadastre-se
         </Link>
       </p>

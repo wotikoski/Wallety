@@ -7,12 +7,10 @@ export const metadata: Metadata = { title: "Criar conta" };
 export default function RegisterPage() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 mb-1">Crie sua conta</h1>
-      <p className="text-slate-500 text-sm mb-6">Comece a organizar suas finanças hoje</p>
       <RegisterForm />
-      <p className="text-center text-sm text-slate-500 mt-6">
+      <p style={{ textAlign: "center", fontSize: "13px", color: "#475569", marginTop: "20px" }}>
         Já tem conta?{" "}
-        <Link href="/login" className="text-brand-600 font-medium hover:text-brand-700">
+        <Link href="/login" style={{ color: "#3b82f6", textDecoration: "none", fontWeight: 500 }}>
           Entrar
         </Link>
       </p>
