@@ -12,6 +12,9 @@ import {
   Trash2, Edit, ChevronLeft, ChevronRight, Layers,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ListSkeleton } from "@/components/ui/Skeleton";
+import { useConfirm } from "@/lib/hooks/useConfirm";
 
 interface Transaction {
   id: string;
@@ -45,7 +48,10 @@ export function TransactionsClient() {
   const { data, isLoading } = useQuery<{ transactions: Transaction[] }>({
     queryKey: ["transactions", page, type, startDate, endDate, activeGroupId],
     queryFn: () => fetch(`/api/transactions?${params}`).then((r) => r.json()),
+    placeholderData: (prev) => prev,
   });
+
+  const { confirm: askConfirm, dialogProps } = useConfirm();
 
   const togglePaid = useMutation({
     mutationFn: async (t: Transaction) => {
@@ -88,13 +94,25 @@ export function TransactionsClient() {
 
   const deleteTransaction = useMutation({
     mutationFn: async (id: string) => {
-      await fetch(`/api/transactions/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/transactions/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? "Erro ao excluir lançamento");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       toast({ title: "Lançamento excluído" });
     },
+    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
+
+  const askDelete = (id: string, description: string) =>
+    askConfirm(() => deleteTransaction.mutate(id), {
+      title: "Excluir lançamento",
+      description: `Tem certeza que deseja excluir "${description}"?`,
+      confirmLabel: "Excluir",
+    });
 
   const txns = data?.transactions ?? [];
   const totalIncome = txns.filter((t) => t.type === "income").reduce((a, t) => a + parseFloat(t.value), 0);
@@ -182,7 +200,7 @@ export function TransactionsClient() {
       {/* Table */}
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-slate-400 text-sm">Carregando...</div>
+          <ListSkeleton rows={6} />
         ) : txns.length === 0 ? (
           <div className="p-12 text-center">
             <div className="text-4xl mb-3">💳</div>
@@ -231,7 +249,7 @@ export function TransactionsClient() {
                         <Edit size={14} />
                       </Link>
                       <button
-                        onClick={() => { if (confirm("Confirma a exclusão?")) deleteTransaction.mutate(t.id); }}
+                        onClick={() => askDelete(t.id, t.description)}
                         className="text-slate-400 hover:text-expense transition"
                       >
                         <Trash2 size={14} />
@@ -293,7 +311,7 @@ export function TransactionsClient() {
                           <Edit size={14} />
                         </Link>
                         <button
-                          onClick={() => { if (confirm("Confirma a exclusão?")) deleteTransaction.mutate(t.id); }}
+                          onClick={() => askDelete(t.id, t.description)}
                           className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
                         >
                           <Trash2 size={14} />
@@ -330,6 +348,8 @@ export function TransactionsClient() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog {...dialogProps} loading={deleteTransaction.isPending} />
     </div>
   );
 }

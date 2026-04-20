@@ -5,6 +5,9 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ListSkeleton } from "@/components/ui/Skeleton";
+import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, Building2 } from "lucide-react";
 
 interface Bank {
@@ -25,10 +28,12 @@ export function BanksClient() {
   const params = new URLSearchParams();
   if (activeGroupId) params.set("groupId", activeGroupId);
 
-  const { data } = useQuery<{ banks: Bank[] }>({
+  const { data, isLoading } = useQuery<{ banks: Bank[] }>({
     queryKey: ["banks", "all", activeGroupId],
     queryFn: () => fetch(`/api/banks?${params}`).then((r) => r.json()),
   });
+
+  const { confirm, dialogProps } = useConfirm();
 
   const { register, handleSubmit, reset } = useForm<{ name: string; code: string; color: string }>();
 
@@ -36,11 +41,15 @@ export function BanksClient() {
     mutationFn: async (d: { name: string; code: string; color: string }) => {
       const url = editing ? `/api/banks/${editing.id}` : "/api/banks";
       const method = editing ? "PUT" : "POST";
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...d, groupId: activeGroupId }),
       });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? "Erro ao salvar banco");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["banks"] });
@@ -49,16 +58,22 @@ export function BanksClient() {
       setShowForm(false);
       setEditing(null);
     },
+    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await fetch(`/api/banks/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/banks/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? "Erro ao excluir banco");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["banks"] });
       toast({ title: "Banco excluído" });
     },
+    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
   const banks = data?.banks ?? [];
@@ -124,6 +139,7 @@ export function BanksClient() {
       )}
 
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        {isLoading ? <ListSkeleton rows={4} /> : (
         <div className="divide-y divide-slate-50">
           {banks.length === 0 ? (
             <p className="px-6 py-12 text-sm text-slate-400 text-center">Nenhum banco cadastrado</p>
@@ -153,7 +169,11 @@ export function BanksClient() {
                 </button>
                 {!bank.isDefault && (
                   <button
-                    onClick={() => confirm("Excluir banco?") && deleteMutation.mutate(bank.id)}
+                    onClick={() => confirm(() => deleteMutation.mutate(bank.id), {
+                      title: "Excluir banco",
+                      description: `Tem certeza que deseja excluir o banco "${bank.name}"? Essa ação não pode ser desfeita.`,
+                      confirmLabel: "Excluir",
+                    })}
                     className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
                   >
                     <Trash2 size={14} />
@@ -163,7 +183,10 @@ export function BanksClient() {
             </div>
           ))}
         </div>
+        )}
       </div>
+
+      <ConfirmDialog {...dialogProps} loading={deleteMutation.isPending} />
     </div>
   );
 }

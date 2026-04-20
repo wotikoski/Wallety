@@ -5,6 +5,9 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ListSkeleton } from "@/components/ui/Skeleton";
+import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, X, Check } from "lucide-react";
 
 interface Category {
@@ -33,10 +36,12 @@ export function CategoriesClient() {
   const params = new URLSearchParams();
   if (activeGroupId) params.set("groupId", activeGroupId);
 
-  const { data } = useQuery<{ categories: Category[] }>({
+  const { data, isLoading } = useQuery<{ categories: Category[] }>({
     queryKey: ["categories", "all", activeGroupId],
     queryFn: () => fetch(`/api/categories?${params}`).then((r) => r.json()),
   });
+
+  const { confirm, dialogProps } = useConfirm();
 
   const { register, handleSubmit, reset } = useForm<FormData>({
     defaultValues: { type: "expense", icon: "💳", color: "#6173f4" },
@@ -51,7 +56,10 @@ export function CategoriesClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, groupId: activeGroupId }),
       });
-      if (!res.ok) throw new Error("Erro ao salvar");
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? "Erro ao salvar categoria");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -60,17 +68,30 @@ export function CategoriesClient() {
       setShowForm(false);
       setEditing(null);
     },
+    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await fetch(`/api/categories/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? "Erro ao excluir categoria");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       toast({ title: "Categoria excluída" });
     },
+    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
+
+  const askDelete = (id: string, name: string) =>
+    confirm(() => deleteMutation.mutate(id), {
+      title: "Excluir categoria",
+      description: `Tem certeza que deseja excluir "${name}"? Lançamentos que usam essa categoria ficarão sem categoria.`,
+      confirmLabel: "Excluir",
+    });
 
   const categories = data?.categories ?? [];
   const incomeCategories = categories.filter((c) => c.type === "income" || c.type === "both");
@@ -155,22 +176,35 @@ export function CategoriesClient() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <CategoryGroup
-          title="Receitas"
-          categories={incomeCategories}
-          onEdit={startEdit}
-          onDelete={(id) => confirm("Excluir categoria?") && deleteMutation.mutate(id)}
-          color="income"
-        />
-        <CategoryGroup
-          title="Despesas"
-          categories={expenseCategories}
-          onEdit={startEdit}
-          onDelete={(id) => confirm("Excluir categoria?") && deleteMutation.mutate(id)}
-          color="expense"
-        />
-      </div>
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+            <ListSkeleton rows={4} />
+          </div>
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+            <ListSkeleton rows={4} />
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CategoryGroup
+            title="Receitas"
+            categories={incomeCategories}
+            onEdit={startEdit}
+            onDelete={(id, name) => askDelete(id, name)}
+            color="income"
+          />
+          <CategoryGroup
+            title="Despesas"
+            categories={expenseCategories}
+            onEdit={startEdit}
+            onDelete={(id, name) => askDelete(id, name)}
+            color="expense"
+          />
+        </div>
+      )}
+
+      <ConfirmDialog {...dialogProps} loading={deleteMutation.isPending} />
     </div>
   );
 }
@@ -181,7 +215,7 @@ function CategoryGroup({
   title: string;
   categories: Category[];
   onEdit: (cat: Category) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
   color: "income" | "expense";
 }) {
   return (
@@ -216,7 +250,7 @@ function CategoryGroup({
                 </button>
                 {!cat.isDefault && (
                   <button
-                    onClick={() => onDelete(cat.id)}
+                    onClick={() => onDelete(cat.id, cat.name)}
                     className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
                   >
                     <Trash2 size={13} />
