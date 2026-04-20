@@ -5,6 +5,7 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
 import { useState } from "react";
+import { format, startOfMonth, endOfMonth } from "date-fns";
 import Link from "next/link";
 import {
   Plus, Filter, ArrowUpRight, ArrowDownRight, CheckCircle2, Circle,
@@ -29,10 +30,11 @@ export function TransactionsClient() {
   const { activeGroupId } = useActiveGroup();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const now = new Date();
   const [page, setPage] = useState(1);
   const [type, setType] = useState<string>("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
+  const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
 
   const params = new URLSearchParams({ page: String(page), limit: "30" });
   if (activeGroupId) params.set("groupId", activeGroupId);
