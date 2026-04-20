@@ -60,10 +60,10 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#f1f5f9", letterSpacing: "-0.03em", marginBottom: "6px" }}>
-        Bem-vindo de volta
+        Bem-vindo
       </h1>
       <p style={{ fontSize: "14px", color: "#64748b", marginBottom: "28px" }}>
-        Entre para gerenciar suas finanças
+        Sua vida financeira, simplificada.
       </p>
 
       {error && (
