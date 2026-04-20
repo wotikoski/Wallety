@@ -43,7 +43,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Wallety" className="w-8 h-8 rounded-xl block shrink-0" />
-            <span className="text-white font-bold">Wallety</span>
+            <span className="font-brand text-white font-bold text-lg">Wallety</span>
           </div>
           <button onClick={onClose} className="text-slate-400 p-1">
             <X size={20} />

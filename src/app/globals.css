@@ -114,3 +114,7 @@
 .print-only {
   display: none;
 }
+
+.font-brand {
+  font-family: var(--font-gluten), system-ui, sans-serif;
+}

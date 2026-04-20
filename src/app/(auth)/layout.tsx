@@ -55,7 +55,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px", justifyContent: "center" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.png" alt="Wallety" style={{ width: "38px", height: "38px", borderRadius: "10px", display: "block" }} />
-            <span style={{ fontSize: "22px", fontWeight: 700, color: "#e2e8f0", letterSpacing: "-0.02em" }}>
+            <span className="font-brand" style={{ fontSize: "26px", fontWeight: 700, color: "#e2e8f0", letterSpacing: "-0.02em" }}>
               Wallety
             </span>
           </div>
