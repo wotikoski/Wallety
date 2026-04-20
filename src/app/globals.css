@@ -78,19 +78,19 @@
   .sidebar, nav, header, button {
     display: none !important;
   }
+  /* Force content to start at top of page, not centered vertically.
+     Dashboard layout uses h-screen + overflow hidden which traps print
+     output in the middle of the page. Unset those during print. */
+  html, body, #__next, main, main *, body * {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
   main {
     margin: 0 !important;
     padding: 0 !important;
     display: block !important;
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-    min-height: 0 !important;
-    height: auto !important;
-  }
-  /* Force content to start at top of page, not centered vertically */
-  html, body, #__next, main, main > *, main > * > * {
-    height: auto !important;
-    min-height: 0 !important;
   }
   /* Ensure colored backgrounds/charts print accurately */
   * {
