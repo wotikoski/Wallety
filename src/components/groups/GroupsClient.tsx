@@ -5,6 +5,8 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Users, Crown, Trash2, UserPlus, Copy, Check } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/date";
@@ -28,6 +30,7 @@ export function GroupsClient() {
   const queryClient = useQueryClient();
   const { setActiveGroupId, activeGroupId } = useActiveGroup();
   const { toast } = useToast();
+  const { confirm, dialogProps } = useConfirm();
   const [showForm, setShowForm] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -202,7 +205,11 @@ export function GroupsClient() {
                   </button>
                   {currentGroup.role === "owner" && (
                     <button
-                      onClick={() => confirm("Excluir grupo?") && deleteMutation.mutate(selectedGroup)}
+                      onClick={() => confirm(() => deleteMutation.mutate(selectedGroup), {
+                      title: "Excluir grupo",
+                      description: `Tem certeza que deseja excluir o grupo "${currentGroup.name}"? Todos os lançamentos, categorias e dados compartilhados serão perdidos.`,
+                      confirmLabel: "Excluir",
+                    })}
                       className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
                     >
                       <Trash2 size={14} />
@@ -265,6 +272,8 @@ export function GroupsClient() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog {...dialogProps} loading={deleteMutation.isPending} />
     </div>
   );
 }

@@ -5,6 +5,9 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ListSkeleton } from "@/components/ui/Skeleton";
+import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, CreditCard } from "lucide-react";
 import { PAYMENT_METHOD_TYPES, getPaymentMethodLabel } from "@/lib/constants/payment-method-types";
 
@@ -26,10 +29,12 @@ export function PaymentMethodsClient() {
   const params = new URLSearchParams();
   if (activeGroupId) params.set("groupId", activeGroupId);
 
-  const { data: pmData } = useQuery<{ paymentMethods: PaymentMethod[] }>({
+  const { data: pmData, isLoading } = useQuery<{ paymentMethods: PaymentMethod[] }>({
     queryKey: ["paymentMethods", "all", activeGroupId],
     queryFn: () => fetch(`/api/payment-methods?${params}`).then((r) => r.json()),
   });
+
+  const { confirm, dialogProps } = useConfirm();
 
   const { data: banksData } = useQuery<{ banks: { id: string; name: string }[] }>({
     queryKey: ["banks", "all", activeGroupId],
@@ -42,11 +47,15 @@ export function PaymentMethodsClient() {
     mutationFn: async (d: { name: string; type: string; bankId: string }) => {
       const url = editing ? `/api/payment-methods/${editing.id}` : "/api/payment-methods";
       const method = editing ? "PUT" : "POST";
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...d, bankId: d.bankId || null, groupId: activeGroupId }),
       });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? "Erro ao salvar forma de pagamento");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
@@ -55,16 +64,22 @@ export function PaymentMethodsClient() {
       setShowForm(false);
       setEditing(null);
     },
+    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await fetch(`/api/payment-methods/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/payment-methods/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? "Erro ao excluir");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
       toast({ title: "Forma de pagamento excluída" });
     },
+    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
   const paymentMethods = pmData?.paymentMethods ?? [];
@@ -132,6 +147,7 @@ export function PaymentMethodsClient() {
       )}
 
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        {isLoading ? <ListSkeleton rows={4} /> : (
         <div className="divide-y divide-slate-50">
           {paymentMethods.length === 0 ? (
             <p className="px-6 py-12 text-sm text-slate-400 text-center">Nenhuma forma de pagamento</p>
@@ -158,7 +174,11 @@ export function PaymentMethodsClient() {
                 </button>
                 {!pm.isDefault && (
                   <button
-                    onClick={() => confirm("Excluir?") && deleteMutation.mutate(pm.id)}
+                    onClick={() => confirm(() => deleteMutation.mutate(pm.id), {
+                      title: "Excluir forma de pagamento",
+                      description: `Tem certeza que deseja excluir "${pm.name}"?`,
+                      confirmLabel: "Excluir",
+                    })}
                     className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
                   >
                     <Trash2 size={14} />
@@ -168,7 +188,10 @@ export function PaymentMethodsClient() {
             </div>
           ))}
         </div>
+        )}
       </div>
+
+      <ConfirmDialog {...dialogProps} loading={deleteMutation.isPending} />
     </div>
   );
 }
