@@ -20,8 +20,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Wallety — Sua vida financeira, simplificada.",
-    template: "Wallety | %s",
+    default: "Wallety",
+    template: "Wallety",
   },
   description: "Gerencie suas finanças pessoais e em grupo com facilidade e clareza.",
   manifest: "/manifest.json",
