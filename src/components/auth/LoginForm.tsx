@@ -62,7 +62,7 @@ export function LoginForm() {
       <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#f1f5f9", letterSpacing: "-0.03em", marginBottom: "6px" }}>
         Bem-vindo
       </h1>
-      <p style={{ fontSize: "14px", color: "#64748b", marginBottom: "28px" }}>
+      <p style={{ fontSize: "14px", color: "#94a3b8", marginBottom: "28px" }}>
         Sua vida financeira, simplificada.
       </p>
 

@@ -52,12 +52,17 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       <div style={{ position: "relative", zIndex: 2, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
         <div style={{ width: "100%", maxWidth: "400px" }}>
           {/* Logo */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px", justifyContent: "center" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Wallety" style={{ width: "38px", height: "38px", borderRadius: "10px", display: "block" }} />
-            <span style={{ fontSize: "22px", fontWeight: 700, color: "#e2e8f0", letterSpacing: "-0.02em" }}>
-              Wallety
-            </span>
+          <div style={{ marginBottom: "32px", textAlign: "center" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="Wallety" style={{ width: "38px", height: "38px", borderRadius: "10px", display: "block" }} />
+              <span style={{ fontSize: "22px", fontWeight: 700, color: "#e2e8f0", letterSpacing: "-0.02em" }}>
+                Wallety
+              </span>
+            </div>
+            <p style={{ fontSize: "13px", color: "#94a3b8" }}>
+              Sua vida financeira, simplificada.
+            </p>
           </div>
 
           {/* Card */}
