@@ -6,16 +6,44 @@ import { registerSchema, RegisterInput } from "@/lib/validations/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  borderRadius: "10px",
+  padding: "11px 14px",
+  fontSize: "15px",
+  color: "#e2e8f0",
+  outline: "none",
+  marginBottom: "16px",
+  transition: "border-color 0.2s, box-shadow 0.2s",
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "13px",
+  fontWeight: 500,
+  color: "#94a3b8",
+  marginBottom: "6px",
+};
+
 export function RegisterForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema) });
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
+  });
+
+  const focusStyle = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.style.borderColor = "rgba(59,130,246,0.5)";
+    e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.12)";
+  };
+  const blurStyle = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.style.borderColor = "rgba(255,255,255,0.08)";
+    e.target.style.boxShadow = "none";
+  };
 
   async function onSubmit(data: RegisterInput) {
     setLoading(true);
@@ -41,50 +69,42 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#f1f5f9", letterSpacing: "-0.03em", marginBottom: "6px" }}>
+        Crie sua conta
+      </h1>
+      <p style={{ fontSize: "14px", color: "#64748b", marginBottom: "28px" }}>
+        Comece a organizar suas finanças hoje
+      </p>
+
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+        <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#fca5a5", fontSize: "14px", borderRadius: "10px", padding: "12px 14px", marginBottom: "16px" }}>
           {error}
         </div>
       )}
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome completo</label>
-        <input
-          {...register("name")}
-          type="text"
-          placeholder="João Silva"
-          className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-        />
-        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
-      </div>
+      <label style={labelStyle}>Nome completo</label>
+      <input {...register("name")} type="text" placeholder="João Silva" style={inputStyle} onFocus={focusStyle} onBlur={blurStyle} />
+      {errors.name && <p style={{ color: "#f87171", fontSize: "12px", marginTop: "-12px", marginBottom: "12px" }}>{errors.name.message}</p>}
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">E-mail</label>
-        <input
-          {...register("email")}
-          type="email"
-          placeholder="seu@email.com"
-          className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-        />
-        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-      </div>
+      <label style={labelStyle}>E-mail</label>
+      <input {...register("email")} type="email" placeholder="seu@email.com" style={inputStyle} onFocus={focusStyle} onBlur={blurStyle} />
+      {errors.email && <p style={{ color: "#f87171", fontSize: "12px", marginTop: "-12px", marginBottom: "12px" }}>{errors.email.message}</p>}
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Senha</label>
-        <input
-          {...register("password")}
-          type="password"
-          placeholder="Mínimo 8 caracteres"
-          className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-        />
-        {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-      </div>
+      <label style={labelStyle}>Senha</label>
+      <input {...register("password")} type="password" placeholder="Mínimo 8 caracteres" style={inputStyle} onFocus={focusStyle} onBlur={blurStyle} />
+      {errors.password && <p style={{ color: "#f87171", fontSize: "12px", marginTop: "-12px", marginBottom: "12px" }}>{errors.password.message}</p>}
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          width: "100%", padding: "13px",
+          background: loading ? "rgba(59,130,246,0.5)" : "linear-gradient(135deg, #3b82f6, #2563eb)",
+          border: "none", borderRadius: "10px", color: "#fff",
+          fontSize: "15px", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
+          marginTop: "4px", boxShadow: "0 4px 20px rgba(59,130,246,0.35)",
+        }}
       >
         {loading ? "Criando conta..." : "Criar conta"}
       </button>

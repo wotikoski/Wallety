@@ -14,7 +14,8 @@
       "Bash(mkdir -p \"D:/Users/Leonardo/OneDrive/Documents/Claude Code/Wallety/src/app/api/categories/[id]\")",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "WebFetch(domain:claude.ai)"
     ]
   }
 }
