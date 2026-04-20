@@ -116,5 +116,5 @@
 }
 
 .font-brand {
-  font-family: var(--font-gluten), system-ui, sans-serif;
+  font-family: var(--font-brand), system-ui, sans-serif;
 }
