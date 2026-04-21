@@ -10,7 +10,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000,
+            // Always re-validate data when a component mounts or the window
+            // regains focus. The 60 s staleTime was preventing dashboard /
+            // recent-transactions from refreshing after mutations.
+            staleTime: 0,
             retry: 1,
           },
         },

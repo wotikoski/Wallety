@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -47,6 +47,7 @@ export function CategoriesClient() {
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const params = new URLSearchParams();
   if (activeGroupId) params.set("groupId", activeGroupId);
@@ -116,6 +117,8 @@ export function CategoriesClient() {
     setEditing(cat);
     reset({ name: cat.name, type: cat.type as "income" | "expense" | "both", icon: cat.icon ?? "", color: cat.color ?? COLOR_PALETTE[0] });
     setShowForm(true);
+    // Scroll the form into view after React renders it.
+    setTimeout(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
 
   function startNew() {
@@ -147,7 +150,7 @@ export function CategoriesClient() {
 
       {/* Form */}
       {showForm && (
-        <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
+        <div ref={formRef} className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
           <h2 className="text-base font-semibold text-slate-800 mb-4">{editing ? "Editar" : "Nova"} Categoria</h2>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
             <div>

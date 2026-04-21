@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Plus, RefreshCcw, Trash2, Play } from "lucide-react";
+import { Plus, RefreshCcw, Trash2, Play, Pencil } from "lucide-react";
 import { useState } from "react";
 
 interface Category {
@@ -44,6 +44,7 @@ export function RecurringClient() {
   const { toast } = useToast();
   const { confirm, dialogProps } = useConfirm();
   const [showForm, setShowForm] = useState(false);
+  const [editingRule, setEditingRule] = useState<Recurring | null>(null);
 
   const params = new URLSearchParams();
   if (activeGroupId) params.set("groupId", activeGroupId);
@@ -102,6 +103,21 @@ export function RecurringClient() {
   const categories = catsData?.categories ?? [];
   const catMap = new Map(categories.map((c) => [c.id, c]));
 
+  function openNew() {
+    setEditingRule(null);
+    setShowForm(true);
+  }
+
+  function openEdit(r: Recurring) {
+    setEditingRule(r);
+    setShowForm(true);
+  }
+
+  function closeForm() {
+    setShowForm(false);
+    setEditingRule(null);
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -119,7 +135,7 @@ export function RecurringClient() {
             {materializeMutation.isPending ? "Gerando..." : "Gerar pendentes"}
           </button>
           <button
-            onClick={() => setShowForm(true)}
+            onClick={openNew}
             className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700"
           >
             <Plus size={14} />
@@ -129,20 +145,25 @@ export function RecurringClient() {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-        {isLoading ? <ListSkeleton rows={4} /> : rows.length === 0 ? (
+        {isLoading ? (
+          <ListSkeleton rows={4} />
+        ) : rows.length === 0 ? (
           <p className="px-6 py-12 text-sm text-slate-400 text-center">Nenhuma recorrência cadastrada</p>
         ) : (
           <div className="divide-y divide-slate-50">
             {rows.map((r) => {
               const cat = r.categoryId ? catMap.get(r.categoryId) : null;
               return (
-                <div key={r.id} className="px-6 py-4 flex items-center gap-4">
+                <div key={r.id} className="px-4 py-4 flex items-center gap-3">
+                  {/* Category icon */}
                   <div
                     className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-sm"
                     style={{ backgroundColor: cat?.color ? cat.color + "22" : "#f1f5f9" }}
                   >
                     {cat?.icon || <RefreshCcw size={14} className="text-slate-500" />}
                   </div>
+
+                  {/* Description + metadata */}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-800 truncate">{r.description}</p>
                     <p className="text-xs text-slate-400 mt-0.5">
@@ -153,12 +174,16 @@ export function RecurringClient() {
                       {cat && ` · ${cat.name}`}
                     </p>
                   </div>
-                  <div className={`text-sm font-mono font-semibold ${r.type === "income" ? "text-income" : "text-expense"}`}>
+
+                  {/* Value */}
+                  <span className={`text-sm font-mono font-semibold shrink-0 ${r.type === "income" ? "text-income" : "text-expense"}`}>
                     {r.type === "income" ? "+" : "-"}{formatCurrency(r.value)}
-                  </div>
+                  </span>
+
+                  {/* Active toggle */}
                   <button
                     onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
-                    className={`text-xs px-2.5 py-1 rounded-full border ${
+                    className={`shrink-0 text-xs px-2.5 py-1 rounded-full border ${
                       r.isActive
                         ? "bg-income-light text-income border-income/20"
                         : "bg-slate-50 text-slate-400 border-slate-200"
@@ -166,12 +191,25 @@ export function RecurringClient() {
                   >
                     {r.isActive ? "Ativa" : "Pausada"}
                   </button>
+
+                  {/* Edit */}
                   <button
-                    onClick={() => confirm(
-                      () => deleteMutation.mutate(r.id),
-                      { title: "Remover recorrência?", description: "Os lançamentos já gerados permanecem.", variant: "danger" },
-                    )}
-                    className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                    onClick={() => openEdit(r)}
+                    className="shrink-0 px-2 py-1 text-xs font-medium text-brand-600 bg-brand-50 border border-brand-200 rounded-lg hover:bg-brand-100 transition"
+                  >
+                    Editar
+                  </button>
+
+                  {/* Delete */}
+                  <button
+                    onClick={() =>
+                      confirm(() => deleteMutation.mutate(r.id), {
+                        title: "Remover recorrência?",
+                        description: "Os lançamentos já gerados permanecem.",
+                        variant: "danger",
+                      })
+                    }
+                    className="shrink-0 p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
                   >
                     <Trash2 size={14} />
                   </button>
@@ -186,17 +224,21 @@ export function RecurringClient() {
         <RecurringForm
           categories={categories}
           groupId={activeGroupId ?? null}
-          onClose={() => setShowForm(false)}
-          onSaved={() => {
-            setShowForm(false);
+          editing={editingRule}
+          onClose={closeForm}
+          onSaved={(wasEditing) => {
+            closeForm();
             queryClient.invalidateQueries({ queryKey: ["recurring"] });
-            toast({ title: "Recorrência criada" });
-            // Clear throttle and trigger materialize so new occurrences show up
-            // in Lançamentos/Dashboard immediately.
-            if (typeof window !== "undefined") {
-              sessionStorage.removeItem("recurring_materialized_at");
+            queryClient.invalidateQueries({ queryKey: ["recurring-projected"] });
+            queryClient.invalidateQueries({ queryKey: ["recurring-projected-budgets"] });
+            queryClient.invalidateQueries({ queryKey: ["recurring-projected-calendar"] });
+            toast({ title: wasEditing ? "Recorrência atualizada!" : "Recorrência criada!" });
+            if (!wasEditing) {
+              if (typeof window !== "undefined") {
+                sessionStorage.removeItem("recurring_materialized_at");
+              }
+              materializeMutation.mutate();
             }
-            materializeMutation.mutate();
           }}
           onError={(msg) => toast({ title: "Erro", description: msg, variant: "destructive" })}
         />
@@ -208,23 +250,35 @@ export function RecurringClient() {
 }
 
 function RecurringForm({
-  categories, groupId, onClose, onSaved, onError,
+  categories,
+  groupId,
+  editing,
+  onClose,
+  onSaved,
+  onError,
 }: {
   categories: Category[];
   groupId: string | null;
+  editing: Recurring | null;
   onClose: () => void;
-  onSaved: () => void;
+  onSaved: (wasEditing: boolean) => void;
   onError: (msg: string) => void;
 }) {
   const today = new Date().toISOString().slice(0, 10);
-  const [type, setType] = useState<"income" | "expense">("expense");
-  const [description, setDescription] = useState("");
-  const [valueStr, setValueStr] = useState("");
-  const [categoryId, setCategoryId] = useState<string>("");
-  const [frequency, setFrequency] = useState<"monthly" | "weekly" | "yearly">("monthly");
-  const [dayOfMonth, setDayOfMonth] = useState<string>(String(new Date().getDate()));
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState("");
+  const [type, setType] = useState<"income" | "expense">(editing?.type ?? "expense");
+  const [description, setDescription] = useState(editing?.description ?? "");
+  const [valueStr, setValueStr] = useState(
+    editing ? String(parseFloat(editing.value)).replace(".", ",") : "",
+  );
+  const [categoryId, setCategoryId] = useState<string>(editing?.categoryId ?? "");
+  const [frequency, setFrequency] = useState<"monthly" | "weekly" | "yearly">(
+    editing?.frequency ?? "monthly",
+  );
+  const [dayOfMonth, setDayOfMonth] = useState<string>(
+    editing?.dayOfMonth ?? String(new Date().getDate()),
+  );
+  const [startDate, setStartDate] = useState(editing?.startDate ?? today);
+  const [endDate, setEndDate] = useState(editing?.endDate ?? "");
   const [saving, setSaving] = useState(false);
 
   const filteredCats = categories.filter((c) => c.type === type || c.type === "both");
@@ -238,18 +292,20 @@ function RecurringForm({
     }
     setSaving(true);
     try {
-      const res = await fetch("/api/recurring", {
-        method: "POST",
+      const url = editing ? `/api/recurring/${editing.id}` : "/api/recurring";
+      const method = editing ? "PATCH" : "POST";
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type,
           description: description.trim(),
           value,
-          categoryId: categoryId || undefined,
+          categoryId: categoryId || null,
           frequency,
-          dayOfMonth: frequency === "monthly" ? dayOfMonth : undefined,
+          dayOfMonth: frequency === "monthly" ? dayOfMonth : null,
           startDate,
-          endDate: endDate || undefined,
+          endDate: endDate || null,
           groupId: groupId ?? undefined,
         }),
       });
@@ -257,7 +313,7 @@ function RecurringForm({
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error ?? "Erro ao salvar");
       }
-      onSaved();
+      onSaved(!!editing);
     } catch (e) {
       onError((e as Error).message);
     } finally {
@@ -266,13 +322,18 @@ function RecurringForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
+    >
       <form
         onSubmit={submit}
         onClick={(e) => e.stopPropagation()}
         className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4"
       >
-        <h2 className="text-lg font-semibold text-slate-900">Nova recorrência</h2>
+        <h2 className="text-lg font-semibold text-slate-900">
+          {editing ? "Editar recorrência" : "Nova recorrência"}
+        </h2>
 
         <div className="flex gap-2">
           {(["expense", "income"] as const).map((t) => (
@@ -325,7 +386,9 @@ function RecurringForm({
             >
               <option value="">—</option>
               {filteredCats.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
               ))}
             </select>
           </div>
@@ -353,7 +416,9 @@ function RecurringForm({
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
               >
                 {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-                  <option key={d} value={String(d)}>{d}</option>
+                  <option key={d} value={String(d)}>
+                    {d}
+                  </option>
                 ))}
                 <option value="last">Último</option>
               </select>
@@ -395,7 +460,7 @@ function RecurringForm({
             disabled={saving}
             className="flex-1 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-60"
           >
-            {saving ? "Salvando..." : "Salvar"}
+            {saving ? "Salvando..." : editing ? "Atualizar" : "Salvar"}
           </button>
         </div>
       </form>
