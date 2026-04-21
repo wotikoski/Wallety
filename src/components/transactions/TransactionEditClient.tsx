@@ -18,5 +18,10 @@ export function TransactionEditClient({ id }: { id: string }) {
     return <div className="text-slate-400 text-sm">Carregando...</div>;
   }
 
-  return <TransactionForm transaction={data?.transaction} />;
+  // Key on the row's updatedAt so a refetch after a save force-remounts the
+  // form with fresh defaults — belt-and-suspenders alongside the reset()
+  // effect inside TransactionForm.
+  const t = data?.transaction;
+  const formKey = t ? `${t.id}:${t.updatedAt ?? ""}` : "empty";
+  return <TransactionForm key={formKey} transaction={t} />;
 }

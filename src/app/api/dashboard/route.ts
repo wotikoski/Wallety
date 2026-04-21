@@ -107,6 +107,25 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // "Lançamentos Recentes" uses purchase date, not effectiveDate.
+    // Financial totals and charts use effectiveDate (cash-flow month), but
+    // the recent list should show what the user physically bought this month —
+    // a credit-card purchase on Apr 20 belongs in April's recent list even
+    // though its invoice lands in May.
+    const recentTxns = await db
+      .select()
+      .from(transactions)
+      .where(
+        and(
+          scopeCondition,
+          isNull(transactions.deletedAt),
+          gte(transactions.date, start),
+          lte(transactions.date, end),
+        ),
+      )
+      .orderBy(desc(transactions.date), desc(transactions.createdAt))
+      .limit(10);
+
     return NextResponse.json({
       totalIncome,
       totalExpenses,
@@ -115,7 +134,7 @@ export async function GET(req: NextRequest) {
       balance: totalIncome - totalExpenses,
       expensesByCategory: Object.values(expensesByCategory).sort((a, b) => b.total - a.total),
       monthlyTrend,
-      recentTransactions: currentMonthTxns.slice(0, 10),
+      recentTransactions: recentTxns,
     });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();

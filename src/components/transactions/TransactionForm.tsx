@@ -82,7 +82,21 @@ export function TransactionForm({ transaction }: Props) {
       notes: transaction.notes,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transaction?.id, transaction?.date, transaction?.value, transaction?.description, transaction?.isPaid]);
+  }, [
+    transaction?.id,
+    transaction?.date,
+    transaction?.value,
+    transaction?.description,
+    transaction?.categoryId,
+    transaction?.paymentMethodId,
+    transaction?.bankId,
+    transaction?.installmentTotal,
+    transaction?.installmentValue,
+    transaction?.isPaid,
+    transaction?.isFixed,
+    transaction?.notes,
+    transaction?.type,
+  ]);
 
   const type = watch("type");
   const value = watch("value");
@@ -148,6 +162,9 @@ export function TransactionForm({ transaction }: Props) {
         queryClient.invalidateQueries({ queryKey: ["transaction", transaction.id] });
       }
       toast({ title: isEdit ? "Lançamento atualizado!" : "Lançamento criado!" });
+      // Flush the Next.js router cache so navigating back to any page
+      // (dashboard, transactions list) always shows server-fresh data.
+      router.refresh();
       router.push("/lancamentos");
     },
     onError: () => {
@@ -202,15 +219,25 @@ export function TransactionForm({ transaction }: Props) {
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1.5">Categoria</label>
-          <select
-            {...register("categoryId")}
-            className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-          >
-            <option value="">Sem categoria</option>
-            {categories.map((c: { id: string; name: string; icon: string }) => (
-              <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
-            ))}
-          </select>
+          {/* Controlled so the rendered value always tracks RHF state, even
+              when the categories list loads asynchronously after mount. */}
+          <Controller
+            control={control}
+            name="categoryId"
+            render={({ field }) => (
+              <select
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
+                onBlur={field.onBlur}
+                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              >
+                <option value="">Sem categoria</option>
+                {categories.map((c: { id: string; name: string; icon: string }) => (
+                  <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                ))}
+              </select>
+            )}
+          />
         </div>
       </div>
 
@@ -240,29 +267,45 @@ export function TransactionForm({ transaction }: Props) {
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1.5">Forma de Pagamento</label>
-          <select
-            {...register("paymentMethodId")}
-            className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-          >
-            <option value="">Selecionar...</option>
-            {paymentMethods.map((pm: { id: string; name: string; type: string }) => (
-              <option key={pm.id} value={pm.id}>{pm.name}</option>
-            ))}
-          </select>
+          <Controller
+            control={control}
+            name="paymentMethodId"
+            render={({ field }) => (
+              <select
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
+                onBlur={field.onBlur}
+                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              >
+                <option value="">Selecionar...</option>
+                {paymentMethods.map((pm: { id: string; name: string; type: string }) => (
+                  <option key={pm.id} value={pm.id}>{pm.name}</option>
+                ))}
+              </select>
+            )}
+          />
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1.5">Banco</label>
-        <select
-          {...register("bankId")}
-          className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-        >
-          <option value="">Sem banco</option>
-          {banks.map((b: { id: string; name: string }) => (
-            <option key={b.id} value={b.id}>{b.name}</option>
-          ))}
-        </select>
+        <Controller
+          control={control}
+          name="bankId"
+          render={({ field }) => (
+            <select
+              value={field.value ?? ""}
+              onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
+              onBlur={field.onBlur}
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+              <option value="">Sem banco</option>
+              {banks.map((b: { id: string; name: string }) => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+          )}
+        />
       </div>
 
       {/* Installments */}
