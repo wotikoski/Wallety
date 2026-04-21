@@ -66,7 +66,11 @@ export function RecurringClient() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recurring"] });
-      toast({ title: "Recorrência removida" });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["recurring-projected"] });
+      toast({ title: "Recorrência e lançamentos removidos" });
     },
     onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
@@ -205,11 +209,12 @@ export function RecurringClient() {
                     onClick={() =>
                       confirm(() => deleteMutation.mutate(r.id), {
                         title: "Remover recorrência?",
-                        description: "Os lançamentos já gerados permanecem.",
+                        description: "A regra e todos os lançamentos gerados por ela serão removidos.",
                         variant: "danger",
                       })
                     }
                     className="shrink-0 p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                    title="Remover"
                   >
                     <Trash2 size={14} />
                   </button>

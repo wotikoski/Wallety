@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
-import { recurringTransactions } from "@/lib/db/schema";
+import { recurringTransactions, transactions } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -38,7 +38,12 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     if (!existing) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
     if (existing.userId !== auth.sub) return NextResponse.json({ error: "Sem permissão" }, { status: 403 });
 
-    await db.update(recurringTransactions).set({ deletedAt: new Date() }).where(eq(recurringTransactions.id, id));
+    const now = new Date();
+    // Soft-delete the rule itself.
+    await db.update(recurringTransactions).set({ deletedAt: now }).where(eq(recurringTransactions.id, id));
+    // Soft-delete every transaction that was materialized from this rule so
+    // they disappear from the dashboard, recent list and category charts.
+    await db.update(transactions).set({ deletedAt: now }).where(eq(transactions.recurrenceGroupId, id));
     return NextResponse.json({ success: true });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();
