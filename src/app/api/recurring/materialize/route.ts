@@ -5,7 +5,7 @@ import { recurringTransactions, transactions, paymentMethods } from "@/lib/db/sc
 import { and, eq, isNull, inArray } from "drizzle-orm";
 import { computeOccurrences } from "@/lib/utils/recurrence";
 import { computeEffectiveDate } from "@/lib/utils/invoice";
-import { format } from "date-fns";
+import { endOfMonth, format } from "date-fns";
 
 /**
  * POST /api/recurring/materialize
@@ -19,6 +19,10 @@ export async function POST(req: NextRequest) {
     const auth = await requireAuth(req);
     const today = new Date();
     const todayStr = format(today, "yyyy-MM-dd");
+    // Materialize every occurrence due through the end of the current month so
+    // upcoming bills (rent on the 5th, salary on the 25th) appear as pending
+    // lançamentos — giving users a predictive view of the month's cash flow.
+    const horizon = endOfMonth(today);
 
     const rules = await db
       .select()
@@ -61,7 +65,7 @@ export async function POST(req: NextRequest) {
           endDate: rule.endDate,
           lastGeneratedDate: rule.lastGeneratedDate,
         },
-        today,
+        horizon,
       );
       if (dates.length === 0) continue;
 
