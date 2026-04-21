@@ -9,7 +9,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, X, Check } from "lucide-react";
-import { COLOR_PALETTE, ColorPicker, suggestPaletteColor } from "@/components/ui/ColorPicker";
+import { COLOR_PALETTE, ColorPicker, suggestPaletteColor, rotatePaletteColor } from "@/components/ui/ColorPicker";
 
 /** Common category emojis, grouped visually. Covers most finance use cases. */
 const EMOJI_SUGGESTIONS = [
@@ -20,9 +20,9 @@ const EMOJI_SUGGESTIONS = [
 ];
 
 /** Pick the first palette color not yet used by categories of the same type. */
-function suggestColor(type: string, categories: Category[], currentColor?: string | null): string {
+function suggestColor(type: string, categories: Category[]): string {
   const typeCats = categories.filter((c) => c.type === type || c.type === "both" || type === "both");
-  return suggestPaletteColor(typeCats.map((c) => c.color), currentColor);
+  return suggestPaletteColor(typeCats.map((c) => c.color));
 }
 
 interface Category {
@@ -194,24 +194,15 @@ export function CategoriesClient() {
                   ))}
                 </div>
               </div>
-              {/* Custom emoji fallback, collapsed by default */}
-              <details className="mt-2">
-                <summary className="text-xs text-slate-400 cursor-pointer hover:text-slate-600 select-none inline-block">
-                  Usar outro emoji
-                </summary>
-                <input
-                  {...register("icon")}
-                  className="mt-1.5 w-32 px-3 py-1.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  placeholder="Cole aqui"
-                />
-              </details>
+              {/* Hidden field so the form carries the icon value. */}
+              <input type="hidden" {...register("icon")} />
             </div>
             <div className="col-span-2">
               <ColorPicker
                 value={watchedColor ?? COLOR_PALETTE[0]}
                 onChange={(c) => setValue("color", c)}
                 showSuggest={!editing}
-                onSuggest={() => setValue("color", suggestColor(watchedType, categories, watchedColor))}
+                onSuggest={() => setValue("color", rotatePaletteColor(watchedColor))}
               />
             </div>
             <div className="col-span-2 flex gap-3">

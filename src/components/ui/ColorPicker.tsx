@@ -16,22 +16,23 @@ export const COLOR_PALETTE = [
   "#64748b", // slate gray (neutral)
 ] as const;
 
-/** Pick the first palette color not present in `usedColors`. If all are
- * used, rotate to the next one after `currentColor` (or first). */
-export function suggestPaletteColor(
-  usedColors: (string | null | undefined)[],
-  currentColor?: string | null,
-): string {
+/** Pick an initial palette color for a new item: first slot not yet used
+ * by siblings; if all are used, starts at the first palette slot. */
+export function suggestPaletteColor(usedColors: (string | null | undefined)[]): string {
   const used = new Set(usedColors.filter(Boolean).map((c) => c!.toLowerCase()));
-  if (currentColor) used.add(currentColor.toLowerCase());
   for (const c of COLOR_PALETTE) {
     if (!used.has(c.toLowerCase())) return c;
   }
-  if (currentColor) {
-    const idx = COLOR_PALETTE.findIndex((c) => c.toLowerCase() === currentColor.toLowerCase());
-    if (idx >= 0) return COLOR_PALETTE[(idx + 1) % COLOR_PALETTE.length];
-  }
   return COLOR_PALETTE[0];
+}
+
+/** Rotate strictly to the next palette color. Used by the "Sugerir" button
+ * so repeated clicks always cycle through the full palette. */
+export function rotatePaletteColor(currentColor?: string | null): string {
+  if (!currentColor) return COLOR_PALETTE[0];
+  const idx = COLOR_PALETTE.findIndex((c) => c.toLowerCase() === currentColor.toLowerCase());
+  if (idx < 0) return COLOR_PALETTE[0];
+  return COLOR_PALETTE[(idx + 1) % COLOR_PALETTE.length];
 }
 
 export function ColorPicker({
