@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
 import { recurringTransactions, transactions, paymentMethods } from "@/lib/db/schema";
-import { and, eq, isNull, inArray } from "drizzle-orm";
+import { and, eq, isNull, inArray, sql } from "drizzle-orm";
 import { computeOccurrences } from "@/lib/utils/recurrence";
 import { computeEffectiveDate } from "@/lib/utils/invoice";
 import { format } from "date-fns";
@@ -65,31 +65,49 @@ export async function POST(req: NextRequest) {
       );
       if (dates.length === 0) continue;
 
-      await db.insert(transactions).values(
-        dates.map((d) => ({
-          userId: rule.userId,
-          groupId: rule.groupId,
-          date: d,
-          effectiveDate: computeEffectiveDate(d, pm),
-          type: rule.type,
-          categoryId: rule.categoryId,
-          description: rule.description,
-          value: rule.value,
-          paymentMethodId: rule.paymentMethodId,
-          bankId: rule.bankId,
-          notes: rule.notes,
-          isFixed: true,
-          recurrenceGroupId: rule.id,
-          isPaid: false,
-        })),
-      );
+      // Deduplicate: skip dates that already have a (non-deleted) transaction
+      // for this rule. This is needed when lastGeneratedDate is reset after a
+      // retroactive startDate edit — we don't want to double-insert past rows.
+      const existingRows = await db
+        .select({ date: transactions.date })
+        .from(transactions)
+        .where(
+          and(
+            eq(transactions.recurrenceGroupId, rule.id),
+            isNull(transactions.deletedAt),
+          ),
+        );
+      const existingDates = new Set(existingRows.map((r) => r.date));
+      const newDates = dates.filter((d) => !existingDates.has(d));
 
+      if (newDates.length > 0) {
+        await db.insert(transactions).values(
+          newDates.map((d) => ({
+            userId: rule.userId,
+            groupId: rule.groupId,
+            date: d,
+            effectiveDate: computeEffectiveDate(d, pm),
+            type: rule.type,
+            categoryId: rule.categoryId,
+            description: rule.description,
+            value: rule.value,
+            paymentMethodId: rule.paymentMethodId,
+            bankId: rule.bankId,
+            notes: rule.notes,
+            isFixed: true,
+            recurrenceGroupId: rule.id,
+            isPaid: false,
+          })),
+        );
+        created += newDates.length;
+      }
+
+      // Always advance lastGeneratedDate to the furthest date evaluated,
+      // even if all of them were already present (avoids re-checking them).
       await db
         .update(recurringTransactions)
         .set({ lastGeneratedDate: dates[dates.length - 1], updatedAt: new Date() })
         .where(eq(recurringTransactions.id, rule.id));
-
-      created += dates.length;
     }
 
     return NextResponse.json({ created, asOf: todayStr });
