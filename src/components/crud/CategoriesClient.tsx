@@ -8,7 +8,33 @@ import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
-import { Plus, Trash2, Edit, X, Check } from "lucide-react";
+import { Plus, Trash2, Edit, X, Check, Shuffle } from "lucide-react";
+
+/** Curated palette with good contrast on white backgrounds. */
+const COLOR_PALETTE = [
+  "#6173f4", // brand blue
+  "#10b981", // emerald
+  "#f59e0b", // amber
+  "#ef4444", // red
+  "#8b5cf6", // violet
+  "#ec4899", // pink
+  "#14b8a6", // teal
+  "#f97316", // orange
+  "#06b6d4", // cyan
+  "#84cc16", // lime
+  "#a855f7", // purple
+  "#facc15", // yellow
+];
+
+/** Pick the first palette color not yet used by categories of the same type. */
+function suggestColor(type: string, categories: Category[]): string {
+  const typeCats = categories.filter((c) => c.type === type || c.type === "both" || type === "both");
+  const used = new Set(typeCats.map((c) => (c.color ?? "").toLowerCase()));
+  for (const c of COLOR_PALETTE) {
+    if (!used.has(c.toLowerCase())) return c;
+  }
+  return COLOR_PALETTE[typeCats.length % COLOR_PALETTE.length];
+}
 
 interface Category {
   id: string;
@@ -43,8 +69,8 @@ export function CategoriesClient() {
 
   const { confirm, dialogProps } = useConfirm();
 
-  const { register, handleSubmit, reset } = useForm<FormData>({
-    defaultValues: { type: "expense", icon: "💳", color: "#6173f4" },
+  const { register, handleSubmit, reset, watch, setValue } = useForm<FormData>({
+    defaultValues: { type: "expense", icon: "💳", color: COLOR_PALETTE[0] },
   });
 
   const saveMutation = useMutation({
@@ -99,9 +125,19 @@ export function CategoriesClient() {
 
   function startEdit(cat: Category) {
     setEditing(cat);
-    reset({ name: cat.name, type: cat.type as "income" | "expense" | "both", icon: cat.icon ?? "", color: cat.color ?? "#6173f4" });
+    reset({ name: cat.name, type: cat.type as "income" | "expense" | "both", icon: cat.icon ?? "", color: cat.color ?? COLOR_PALETTE[0] });
     setShowForm(true);
   }
+
+  function startNew() {
+    setEditing(null);
+    reset({ type: "expense", icon: "💳", color: suggestColor("expense", categories), name: "" });
+    setShowForm(true);
+  }
+
+  // When user switches type in the form (for a new category), refresh suggested color.
+  const watchedType = watch("type");
+  const watchedColor = watch("color");
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -111,7 +147,7 @@ export function CategoriesClient() {
           <p className="text-slate-500 text-sm mt-0.5">Organize seus lançamentos por categoria</p>
         </div>
         <button
-          onClick={() => { setShowForm(!showForm); setEditing(null); reset(); }}
+          onClick={() => { if (showForm) { setShowForm(false); setEditing(null); reset(); } else startNew(); }}
           className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
         >
           <Plus size={16} />
@@ -149,12 +185,39 @@ export function CategoriesClient() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Cor</label>
-              <input
-                {...register("color")}
-                type="color"
-                className="w-full h-10 rounded-lg border border-slate-200 cursor-pointer"
-              />
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm font-medium text-slate-700">Cor</label>
+                {!editing && (
+                  <button
+                    type="button"
+                    onClick={() => setValue("color", suggestColor(watchedType, categories.filter((c) => c.color !== watchedColor)))}
+                    className="text-xs text-slate-400 hover:text-brand-600 inline-flex items-center gap-1"
+                    title="Sugerir outra cor"
+                  >
+                    <Shuffle size={11} />
+                    Sugerir
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  {...register("color")}
+                  type="color"
+                  className="w-12 h-10 rounded-lg border border-slate-200 cursor-pointer shrink-0"
+                />
+                <div className="flex-1 flex flex-wrap gap-1.5">
+                  {COLOR_PALETTE.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setValue("color", c)}
+                      className={`w-6 h-6 rounded-md border transition ${watchedColor?.toLowerCase() === c.toLowerCase() ? "border-slate-900 ring-2 ring-slate-900/20" : "border-slate-200 hover:scale-110"}`}
+                      style={{ backgroundColor: c }}
+                      title={c}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="col-span-2 flex gap-3">
               <button
