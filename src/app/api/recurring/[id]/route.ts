@@ -17,6 +17,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const patch: Record<string, unknown> = { ...body, updatedAt: new Date() };
     if (typeof patch.value === "number") patch.value = (patch.value as number).toFixed(2);
 
+    // If startDate is being moved to an earlier date, reset lastGeneratedDate
+    // so the next materialization re-evaluates occurrences from the new start.
+    // The materialize endpoint deduplicates by date, so no double-inserts occur.
+    if (
+      typeof patch.startDate === "string" &&
+      patch.startDate < existing.startDate
+    ) {
+      patch.lastGeneratedDate = null;
+    }
+
     const [updated] = await db
       .update(recurringTransactions)
       .set(patch)
