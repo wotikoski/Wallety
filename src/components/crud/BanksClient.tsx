@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, Building2 } from "lucide-react";
+import { COLOR_PALETTE, ColorPicker, suggestPaletteColor } from "@/components/ui/ColorPicker";
 
 interface Bank {
   id: string;
@@ -35,7 +36,10 @@ export function BanksClient() {
 
   const { confirm, dialogProps } = useConfirm();
 
-  const { register, handleSubmit, reset } = useForm<{ name: string; code: string; color: string }>();
+  const { register, handleSubmit, reset, watch, setValue } = useForm<{ name: string; code: string; color: string }>({
+    defaultValues: { color: COLOR_PALETTE[0] },
+  });
+  const watchedColor = watch("color");
 
   const saveMutation = useMutation({
     mutationFn: async (d: { name: string; code: string; color: string }) => {
@@ -86,7 +90,14 @@ export function BanksClient() {
           <p className="text-slate-500 text-sm mt-0.5">Gerencie seus bancos e instituições financeiras</p>
         </div>
         <button
-          onClick={() => { setShowForm(!showForm); setEditing(null); reset(); }}
+          onClick={() => {
+            if (showForm) { setShowForm(false); setEditing(null); reset(); }
+            else {
+              setEditing(null);
+              reset({ name: "", code: "", color: suggestPaletteColor(banks.map((b) => b.color)) });
+              setShowForm(true);
+            }
+          }}
           className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
         >
           <Plus size={16} />
@@ -114,11 +125,15 @@ export function BanksClient() {
                 placeholder="260"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Cor</label>
-              <input {...register("color")} type="color" className="w-full h-10 rounded-lg border border-slate-200 cursor-pointer" />
+            <div className="col-span-3">
+              <ColorPicker
+                value={watchedColor ?? COLOR_PALETTE[0]}
+                onChange={(c) => setValue("color", c)}
+                showSuggest={!editing}
+                onSuggest={() => setValue("color", suggestPaletteColor(banks.map((b) => b.color), watchedColor))}
+              />
             </div>
-            <div className="col-span-2 flex gap-3 items-end">
+            <div className="col-span-3 flex gap-3 items-end">
               <button
                 type="button"
                 onClick={() => { setShowForm(false); setEditing(null); }}
@@ -160,7 +175,7 @@ export function BanksClient() {
                 <button
                   onClick={() => {
                     setEditing(bank);
-                    reset({ name: bank.name, code: bank.code ?? "", color: bank.color ?? "#6173f4" });
+                    reset({ name: bank.name, code: bank.code ?? "", color: bank.color ?? COLOR_PALETTE[0] });
                     setShowForm(true);
                   }}
                   className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"

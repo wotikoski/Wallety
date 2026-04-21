@@ -8,19 +8,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
-import { Plus, Trash2, Edit, X, Check, Shuffle } from "lucide-react";
-
-/** Curated palette with good contrast on white backgrounds. */
-const COLOR_PALETTE = [
-  "#6173f4", // brand blue
-  "#10b981", // emerald
-  "#f59e0b", // amber
-  "#ef4444", // red
-  "#8b5cf6", // violet
-  "#ec4899", // pink
-  "#14b8a6", // teal
-  "#f97316", // orange
-];
+import { Plus, Trash2, Edit, X, Check } from "lucide-react";
+import { COLOR_PALETTE, ColorPicker, suggestPaletteColor } from "@/components/ui/ColorPicker";
 
 /** Common category emojis, grouped visually. Covers most finance use cases. */
 const EMOJI_SUGGESTIONS = [
@@ -31,13 +20,9 @@ const EMOJI_SUGGESTIONS = [
 ];
 
 /** Pick the first palette color not yet used by categories of the same type. */
-function suggestColor(type: string, categories: Category[]): string {
+function suggestColor(type: string, categories: Category[], currentColor?: string | null): string {
   const typeCats = categories.filter((c) => c.type === type || c.type === "both" || type === "both");
-  const used = new Set(typeCats.map((c) => (c.color ?? "").toLowerCase()));
-  for (const c of COLOR_PALETTE) {
-    if (!used.has(c.toLowerCase())) return c;
-  }
-  return COLOR_PALETTE[typeCats.length % COLOR_PALETTE.length];
+  return suggestPaletteColor(typeCats.map((c) => c.color), currentColor);
 }
 
 interface Category {
@@ -143,7 +128,6 @@ export function CategoriesClient() {
   const watchedType = watch("type");
   const watchedColor = watch("color");
   const watchedIcon = watch("icon");
-  const [showCustomColor, setShowCustomColor] = useState(false);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -223,50 +207,12 @@ export function CategoriesClient() {
               </details>
             </div>
             <div className="col-span-2">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium text-slate-700">Cor</label>
-                {!editing && (
-                  <button
-                    type="button"
-                    onClick={() => setValue("color", suggestColor(watchedType, [...categories, { color: watchedColor } as Category]))}
-                    className="text-xs text-slate-400 hover:text-brand-600 inline-flex items-center gap-1"
-                    title="Sugerir outra cor"
-                  >
-                    <Shuffle size={11} />
-                    Sugerir
-                  </button>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                {COLOR_PALETTE.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => { setValue("color", c); setShowCustomColor(false); }}
-                    className={`w-9 h-9 rounded-full border-2 transition shrink-0 ${
-                      watchedColor?.toLowerCase() === c.toLowerCase()
-                        ? "border-slate-900 scale-110 shadow-md"
-                        : "border-transparent hover:scale-105"
-                    }`}
-                    style={{ backgroundColor: c }}
-                    title={c}
-                  />
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setShowCustomColor((v) => !v)}
-                  className="text-xs text-slate-400 hover:text-brand-600 ml-auto"
-                >
-                  {showCustomColor ? "Fechar" : "Personalizada"}
-                </button>
-              </div>
-              {showCustomColor && (
-                <input
-                  {...register("color")}
-                  type="color"
-                  className="mt-2 w-20 h-9 rounded-lg border border-slate-200 cursor-pointer"
-                />
-              )}
+              <ColorPicker
+                value={watchedColor ?? COLOR_PALETTE[0]}
+                onChange={(c) => setValue("color", c)}
+                showSuggest={!editing}
+                onSuggest={() => setValue("color", suggestColor(watchedType, categories, watchedColor))}
+              />
             </div>
             <div className="col-span-2 flex gap-3">
               <button
