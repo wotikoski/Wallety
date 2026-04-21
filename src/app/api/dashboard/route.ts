@@ -49,6 +49,10 @@ export async function GET(req: NextRequest) {
       .filter((t) => t.type === "expense")
       .reduce((acc, t) => acc + parseFloat(t.value), 0);
 
+    const paidExpenses = currentMonthTxns
+      .filter((t) => t.type === "expense" && t.isPaid)
+      .reduce((acc, t) => acc + parseFloat(t.value), 0);
+
     // Group current-month expenses by category.
     const expensesByCategory: Record<
       string,
@@ -94,6 +98,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       totalIncome,
       totalExpenses,
+      paidExpenses,
+      pendingExpenses: totalExpenses - paidExpenses,
       balance: totalIncome - totalExpenses,
       expensesByCategory: Object.values(expensesByCategory).sort((a, b) => b.total - a.total),
       monthlyTrend,
