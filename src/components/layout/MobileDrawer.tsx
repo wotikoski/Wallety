@@ -11,11 +11,21 @@ import {
   LogOut,
   X,
   Target,
+  RefreshCcw,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-const drawerItems = [
+// Main items that don't fit on the 4-slot bottom nav. Same frequency
+// order as the desktop sidebar: data entry → planning → analysis.
+const mainDrawerItems = [
+  { href: "/recorrencias", label: "Recorrências", icon: RefreshCcw },
   { href: "/limite-diario", label: "Limite Diário", icon: Target },
+  { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
+];
+
+// Settings, in setup-flow order — mirrors the desktop sidebar.
+const configDrawerItems = [
   { href: "/categorias", label: "Categorias", icon: Tag },
   { href: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard },
   { href: "/bancos", label: "Bancos", icon: Building2 },
@@ -39,8 +49,8 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
         className="fixed inset-0 bg-black/60 z-50 md:hidden"
         onClick={onClose}
       />
-      <div className="fixed bottom-0 left-0 right-0 bg-slate-950 rounded-t-2xl z-50 md:hidden pb-safe">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-950 rounded-t-2xl z-50 md:hidden pb-safe max-h-[85vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 sticky top-0 bg-slate-950">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Wallety" className="w-8 h-8 rounded-xl block shrink-0" />
             <span className="font-brand text-white font-bold text-lg">Wallety</span>
@@ -51,28 +61,23 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
         </div>
 
         <nav className="p-4 space-y-1">
-          {drawerItems.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClose}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition",
-                  active
-                    ? "bg-brand-600/20 text-brand-400 font-medium"
-                    : "text-slate-400"
-                )}
-              >
-                <item.icon size={18} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          {mainDrawerItems.map((item) => (
+            <DrawerItem key={item.href} item={item} pathname={pathname} onClose={onClose} />
+          ))}
         </nav>
 
-        <div className="px-4 pb-6 border-t border-slate-800 pt-3">
+        <div className="px-4 pb-2 pt-3 border-t border-slate-800">
+          <p className="text-slate-500 text-xs font-medium px-3 mb-2 uppercase tracking-wider">
+            Configurações
+          </p>
+          <nav className="space-y-1">
+            {configDrawerItems.map((item) => (
+              <DrawerItem key={item.href} item={item} pathname={pathname} onClose={onClose} />
+            ))}
+          </nav>
+        </div>
+
+        <div className="px-4 pb-6 border-t border-slate-800 pt-3 mt-2">
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-3 py-3 rounded-lg text-slate-400 text-sm"
@@ -83,5 +88,30 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
         </div>
       </div>
     </>
+  );
+}
+
+function DrawerItem({
+  item,
+  pathname,
+  onClose,
+}: {
+  item: { href: string; label: string; icon: React.ComponentType<{ size?: number }> };
+  pathname: string;
+  onClose: () => void;
+}) {
+  const active = pathname === item.href || pathname.startsWith(item.href + "/");
+  return (
+    <Link
+      href={item.href}
+      onClick={onClose}
+      className={cn(
+        "flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition",
+        active ? "bg-brand-600/20 text-brand-400 font-medium" : "text-slate-400",
+      )}
+    >
+      <item.icon size={18} />
+      <span>{item.label}</span>
+    </Link>
   );
 }

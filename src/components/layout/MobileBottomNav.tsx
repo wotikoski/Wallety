@@ -6,18 +6,20 @@ import {
   LayoutDashboard,
   ArrowLeftRight,
   Calendar,
-  BarChart3,
+  Wallet,
   Menu,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useState } from "react";
 import { MobileDrawer } from "./MobileDrawer";
 
+// Four thumb-reach slots for the daily loop ("is my month ok?"):
+// overview → log → see when → check budget. Relatórios moves into "Mais".
 const mainItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/lancamentos", label: "Lançamentos", icon: ArrowLeftRight },
   { href: "/calendario", label: "Calendário", icon: Calendar },
-  { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
+  { href: "/orcamentos", label: "Orçamentos", icon: Wallet },
 ];
 
 export function MobileBottomNav() {
