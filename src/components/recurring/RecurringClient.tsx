@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Plus, RefreshCcw, Trash2, Play, Edit } from "lucide-react";
+import { Plus, RefreshCcw, Trash2, Play, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useState } from "react";
 
 interface Category {
@@ -152,80 +152,143 @@ export function RecurringClient() {
         {isLoading ? (
           <ListSkeleton rows={4} />
         ) : rows.length === 0 ? (
-          <p className="px-6 py-12 text-sm text-slate-400 text-center">Nenhuma recorrência cadastrada</p>
-        ) : (
-          <div className="divide-y divide-slate-50">
-            {rows.map((r) => {
-              const cat = r.categoryId ? catMap.get(r.categoryId) : null;
-              return (
-                <div key={r.id} className="px-4 py-4 flex items-center gap-3">
-                  {/* Category icon */}
-                  <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-sm"
-                    style={{ backgroundColor: cat?.color ? cat.color + "22" : "#f1f5f9" }}
-                  >
-                    {cat?.icon || <RefreshCcw size={14} className="text-slate-500" />}
-                  </div>
-
-                  {/* Description + metadata */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{r.description}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {FREQ_LABEL[r.frequency]}
-                      {r.frequency === "monthly" && r.dayOfMonth && ` · dia ${r.dayOfMonth === "last" ? "último" : r.dayOfMonth}`}
-                      {" · desde "}{r.startDate}
-                      {r.endDate && ` até ${r.endDate}`}
-                      {cat && ` · ${cat.name}`}
-                    </p>
-                  </div>
-
-                  {/* Value */}
-                  <span className={`text-sm font-mono font-semibold shrink-0 ${r.type === "income" ? "text-income" : "text-expense"}`}>
-                    {r.type === "income" ? "+" : "-"}{formatCurrency(r.value)}
-                  </span>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 shrink-0">
-                    {/* Active toggle */}
-                    <button
-                      onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
-                      className={`text-xs px-2.5 py-1 rounded-full border ${
-                        r.isActive
-                          ? "bg-income-light text-income border-income/20"
-                          : "bg-slate-50 text-slate-400 border-slate-200"
-                      }`}
-                    >
-                      {r.isActive ? "Ativa" : "Pausada"}
-                    </button>
-
-                    {/* Edit */}
-                    <button
-                      onClick={() => openEdit(r)}
-                      className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
-                      title="Editar"
-                    >
-                      <Edit size={14} />
-                    </button>
-
-                    {/* Delete */}
-                    <button
-                      onClick={() =>
-                        confirm(() => deleteMutation.mutate(r.id), {
-                          title: "Remover recorrência?",
-                          description: "A regra e todos os lançamentos gerados por ela serão removidos.",
-                          variant: "danger",
-                        })
-                      }
-                      className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
-                      title="Remover"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="p-12 text-center">
+            <div className="text-4xl mb-3">🔁</div>
+            <p className="text-slate-500 text-sm">Nenhuma recorrência cadastrada</p>
+            <button onClick={openNew} className="mt-3 inline-flex items-center gap-1 text-brand-600 text-sm font-medium hover:text-brand-700">
+              <Plus size={14} /> Criar primeira recorrência
+            </button>
           </div>
+        ) : (
+          <>
+            {/* Mobile card view */}
+            <div className="md:hidden divide-y divide-slate-50">
+              {rows.map((r) => {
+                const cat = r.categoryId ? catMap.get(r.categoryId) : null;
+                return (
+                  <div key={r.id} className="px-4 py-3.5 flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${r.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                      {r.type === "income"
+                        ? <ArrowUpRight size={14} className="text-income" />
+                        : <ArrowDownRight size={14} className="text-expense" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-800 truncate">{r.description}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {FREQ_LABEL[r.frequency]}
+                        {r.frequency === "monthly" && r.dayOfMonth && ` · dia ${r.dayOfMonth === "last" ? "último" : r.dayOfMonth}`}
+                        {cat && ` · ${cat.name}`}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="text-right">
+                        <p className={`text-sm font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
+                          {r.type === "income" ? "+" : "-"}{formatCurrency(r.value)}
+                        </p>
+                        <span className={`text-xs ${r.isActive ? "text-income" : "text-slate-400"}`}>
+                          {r.isActive ? "Ativa" : "Pausada"}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <button onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })} className="text-slate-400 hover:text-income transition">
+                          {r.isActive ? <CheckCircle2 size={16} className="text-income" /> : <Circle size={16} />}
+                        </button>
+                        <button onClick={() => openEdit(r)} className="text-slate-400 hover:text-brand-600 transition">
+                          <Edit size={14} />
+                        </button>
+                        <button
+                          onClick={() => confirm(() => deleteMutation.mutate(r.id), { title: "Remover recorrência?", description: "A regra e todos os lançamentos gerados por ela serão removidos.", variant: "danger" })}
+                          className="text-slate-400 hover:text-expense transition"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop table view */}
+            <table className="hidden md:table w-full">
+              <thead className="bg-slate-50 border-b border-slate-100">
+                <tr>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Descrição</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Frequência</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Início</th>
+                  <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Valor</th>
+                  <th className="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Ativa</th>
+                  <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {rows.map((r) => {
+                  const cat = r.categoryId ? catMap.get(r.categoryId) : null;
+                  return (
+                    <tr key={r.id} className="hover:bg-slate-50/50 transition">
+                      {/* Descrição */}
+                      <td className="px-6 py-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${r.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                            {r.type === "income"
+                              ? <ArrowUpRight size={12} className="text-income" />
+                              : <ArrowDownRight size={12} className="text-expense" />}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-slate-800 truncate">{r.description}</p>
+                            {cat && <p className="text-xs text-slate-400 truncate">{cat.icon} {cat.name}</p>}
+                          </div>
+                        </div>
+                      </td>
+                      {/* Frequência */}
+                      <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">
+                        {FREQ_LABEL[r.frequency]}
+                        {r.frequency === "monthly" && r.dayOfMonth && (
+                          <span className="text-slate-400"> · dia {r.dayOfMonth === "last" ? "último" : r.dayOfMonth}</span>
+                        )}
+                      </td>
+                      {/* Início */}
+                      <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">
+                        {r.startDate}
+                        {r.endDate && <p className="text-xs text-slate-400">até {r.endDate}</p>}
+                      </td>
+                      {/* Valor */}
+                      <td className="px-6 py-3.5 text-right">
+                        <span className={`text-sm font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
+                          {r.type === "income" ? "+" : "-"}{formatCurrency(r.value)}
+                        </span>
+                      </td>
+                      {/* Ativa */}
+                      <td className="px-6 py-3.5 text-center">
+                        <button onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })} className="text-slate-400 hover:text-income transition">
+                          {r.isActive ? <CheckCircle2 size={18} className="text-income" /> : <Circle size={18} />}
+                        </button>
+                      </td>
+                      {/* Ações */}
+                      <td className="px-6 py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => openEdit(r)}
+                            className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
+                            title="Editar"
+                          >
+                            <Edit size={14} />
+                          </button>
+                          <button
+                            onClick={() => confirm(() => deleteMutation.mutate(r.id), { title: "Remover recorrência?", description: "A regra e todos os lançamentos gerados por ela serão removidos.", variant: "danger" })}
+                            className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                            title="Remover"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </>
         )}
       </div>
 
