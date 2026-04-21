@@ -17,7 +17,9 @@
       "Bash(git push *)",
       "WebFetch(domain:claude.ai)",
       "Bash(npx tsc *)",
-      "Bash(echo \"EXIT=$?\")"
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(npm ls *)",
+      "Bash(npm uninstall *)"
     ]
   }
 }

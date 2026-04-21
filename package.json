@@ -43,7 +43,6 @@
     "react-day-picker": "^9.3.2",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.53.2",
-    "react-to-print": "^3.0.3",
     "recharts": "^2.13.3",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",

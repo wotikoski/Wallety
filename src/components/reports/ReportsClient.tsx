@@ -2,9 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { formatCurrency } from "@/lib/utils/currency";
-import { useReactToPrint } from "react-to-print";
 import {
   BarChart,
   Bar,
@@ -15,7 +14,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { Printer, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 
 interface ReportItem {
@@ -37,7 +36,6 @@ const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Jul
 
 export function ReportsClient() {
   const { activeGroupId } = useActiveGroup();
-  const printRef = useRef<HTMLDivElement>(null);
   const now = new Date();
 
   const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
@@ -54,27 +52,13 @@ export function ReportsClient() {
       fetch(`/api/reports/${reportType === "income" ? "income" : "expenses"}?${params}`).then((r) => r.json()),
   });
 
-  const handlePrint = useReactToPrint({
-    contentRef: printRef,
-    documentTitle: `Wallety - Relatório ${reportType === "income" ? "Receitas" : "Despesas"}`,
-  });
-
   const items = data?.items ?? [];
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 no-print">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Relatórios</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Analise suas finanças por período</p>
-        </div>
-        <button
-          onClick={handlePrint}
-          className="self-start sm:self-auto flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-lg text-sm font-medium transition"
-        >
-          <Printer size={16} />
-          Imprimir
-        </button>
+      <div className="no-print">
+        <h1 className="text-2xl font-semibold text-slate-900">Relatórios</h1>
+        <p className="text-slate-500 text-sm mt-0.5">Analise suas finanças por período</p>
       </div>
 
       {/* Filters */}
@@ -129,7 +113,7 @@ export function ReportsClient() {
       </div>
 
       {/* Printable content */}
-      <div ref={printRef} className="space-y-6">
+      <div className="space-y-6">
         {/* Print header */}
         <div className="hidden print:block print-only mb-6">
           <h1 className="text-2xl font-bold">Wallety — Relatório de {reportType === "income" ? "Receitas" : "Despesas"}</h1>
