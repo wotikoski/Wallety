@@ -46,6 +46,7 @@ export async function GET(req: NextRequest) {
 
     const csv = toCSV(rows, [
       { key: "date", label: "Data", format: (v) => String(v ?? "") },
+      { key: "effectiveDate", label: "Data efetiva (fatura)", format: (v) => String(v ?? "") },
       { key: "type", label: "Tipo", format: (v) => (v === "income" ? "Receita" : "Despesa") },
       { key: "description", label: "Descrição" },
       { key: "value", label: "Valor", format: (v) => String(v ?? "").replace(".", ",") },

@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
       ? eq(transactions.groupId, groupId)
       : eq(transactions.userId, auth.sub);
 
+    const effDate = sql<string>`COALESCE(${transactions.effectiveDate}, ${transactions.date})`;
     const spentRows = await db
       .select({
         categoryId: transactions.categoryId,
@@ -48,8 +49,8 @@ export async function GET(req: NextRequest) {
           txnOwner,
           isNull(transactions.deletedAt),
           eq(transactions.type, "expense"),
-          gte(transactions.date, start),
-          lte(transactions.date, end),
+          gte(effDate, start),
+          lte(effDate, end),
         ),
       )
       .groupBy(transactions.categoryId);

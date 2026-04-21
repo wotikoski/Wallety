@@ -19,6 +19,7 @@ import { useConfirm } from "@/lib/hooks/useConfirm";
 interface Transaction {
   id: string;
   date: string;
+  effectiveDate: string | null;
   type: "income" | "expense";
   description: string;
   value: string;
@@ -27,6 +28,13 @@ interface Transaction {
   bankId: string | null;
   installmentCurrent: number | null;
   installmentTotal: number | null;
+}
+
+// Short month labels in pt-BR for invoice chips ("Fatura mai/26").
+const MONTHS_PT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+function formatInvoiceMonth(isoDate: string) {
+  const [y, m] = isoDate.split("-");
+  return `${MONTHS_PT[parseInt(m) - 1]}/${y.slice(2)}`;
 }
 
 export function TransactionsClient() {
@@ -261,6 +269,11 @@ export function TransactionsClient() {
                           <Layers size={10} />{t.installmentCurrent}/{t.installmentTotal}
                         </span>
                       )}
+                      {t.effectiveDate && t.effectiveDate !== t.date && (
+                        <span className="text-[10px] font-medium text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
+                          Fatura {formatInvoiceMonth(t.effectiveDate)}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -306,7 +319,14 @@ export function TransactionsClient() {
               <tbody className="divide-y divide-slate-50">
                 {txns.map((t) => (
                   <tr key={t.id} className="hover:bg-slate-50/50 transition">
-                    <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">{formatDate(t.date)}</td>
+                    <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">
+                      {formatDate(t.date)}
+                      {t.effectiveDate && t.effectiveDate !== t.date && (
+                        <div className="text-[10px] font-medium text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded inline-block mt-1">
+                          Fatura {formatInvoiceMonth(t.effectiveDate)}
+                        </div>
+                      )}
+                    </td>
                     <td className="px-6 py-3.5">
                       <div className="flex items-center gap-2.5">
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
