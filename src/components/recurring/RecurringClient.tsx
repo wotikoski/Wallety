@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Plus, RefreshCcw, Trash2, Play, Pencil } from "lucide-react";
+import { Plus, RefreshCcw, Trash2, Play, Edit } from "lucide-react";
 import { useState } from "react";
 
 interface Category {
@@ -184,41 +184,44 @@ export function RecurringClient() {
                     {r.type === "income" ? "+" : "-"}{formatCurrency(r.value)}
                   </span>
 
-                  {/* Active toggle */}
-                  <button
-                    onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
-                    className={`shrink-0 text-xs px-2.5 py-1 rounded-full border ${
-                      r.isActive
-                        ? "bg-income-light text-income border-income/20"
-                        : "bg-slate-50 text-slate-400 border-slate-200"
-                    }`}
-                  >
-                    {r.isActive ? "Ativa" : "Pausada"}
-                  </button>
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {/* Active toggle */}
+                    <button
+                      onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
+                      className={`text-xs px-2.5 py-1 rounded-full border ${
+                        r.isActive
+                          ? "bg-income-light text-income border-income/20"
+                          : "bg-slate-50 text-slate-400 border-slate-200"
+                      }`}
+                    >
+                      {r.isActive ? "Ativa" : "Pausada"}
+                    </button>
 
-                  {/* Edit */}
-                  <button
-                    onClick={() => openEdit(r)}
-                    className="shrink-0 p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
-                    title="Editar"
-                  >
-                    <Pencil size={14} />
-                  </button>
+                    {/* Edit */}
+                    <button
+                      onClick={() => openEdit(r)}
+                      className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
+                      title="Editar"
+                    >
+                      <Edit size={14} />
+                    </button>
 
-                  {/* Delete */}
-                  <button
-                    onClick={() =>
-                      confirm(() => deleteMutation.mutate(r.id), {
-                        title: "Remover recorrência?",
-                        description: "A regra e todos os lançamentos gerados por ela serão removidos.",
-                        variant: "danger",
-                      })
-                    }
-                    className="shrink-0 p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
-                    title="Remover"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                    {/* Delete */}
+                    <button
+                      onClick={() =>
+                        confirm(() => deleteMutation.mutate(r.id), {
+                          title: "Remover recorrência?",
+                          description: "A regra e todos os lançamentos gerados por ela serão removidos.",
+                          variant: "danger",
+                        })
+                      }
+                      className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                      title="Remover"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               );
             })}
