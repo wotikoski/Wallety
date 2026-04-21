@@ -4,7 +4,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
-import { FileText, ShieldCheck } from "lucide-react";
+import { FileText, ShieldCheck, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: string;
@@ -17,6 +19,10 @@ interface User {
 export function ProfileClient() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const router = useRouter();
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [confirmEmail, setConfirmEmail] = useState("");
 
   const { data, isLoading } = useQuery<{ user: User }>({
     queryKey: ["me"],
@@ -41,7 +47,26 @@ export function ProfileClient() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/users/me", { method: "DELETE" });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? "Erro ao excluir conta");
+      }
+    },
+    onSuccess: () => {
+      queryClient.clear();
+      router.push("/login");
+    },
+    onError: (err: Error) => {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      setShowDeleteDialog(false);
+    },
+  });
+
   const user = data?.user;
+  const emailMatches = confirmEmail.trim().toLowerCase() === user?.email?.toLowerCase();
 
   if (isLoading) return <div className="text-slate-400 text-sm">Carregando...</div>;
 
@@ -52,6 +77,7 @@ export function ProfileClient() {
         <p className="text-slate-500 text-sm mt-0.5">Gerencie suas informações pessoais</p>
       </div>
 
+      {/* Profile form */}
       <div className="bg-white rounded-xl border border-slate-100 p-6 shadow-sm">
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
           <div className="w-16 h-16 rounded-2xl bg-brand-100 flex items-center justify-center text-2xl font-bold text-brand-700">
@@ -89,6 +115,7 @@ export function ProfileClient() {
           </button>
         </form>
       </div>
+
       {/* Legal */}
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="px-6 py-3.5 border-b border-slate-100">
@@ -121,6 +148,89 @@ export function ProfileClient() {
           </Link>
         </div>
       </div>
+
+      {/* Danger zone */}
+      <div className="bg-white rounded-xl border border-red-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-3.5 border-b border-red-100 bg-red-50/60">
+          <h2 className="text-sm font-semibold text-red-700">Zona de Perigo</h2>
+        </div>
+        <div className="px-6 py-5 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-slate-800">Excluir minha conta</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Todos os seus dados serão removidos permanentemente. Esta ação não pode ser desfeita.
+            </p>
+          </div>
+          <button
+            onClick={() => { setConfirmEmail(""); setShowDeleteDialog(true); }}
+            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition"
+          >
+            <Trash2 size={14} />
+            Excluir conta
+          </button>
+        </div>
+      </div>
+
+      {/* Delete confirmation modal */}
+      {showDeleteDialog && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setShowDeleteDialog(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Icon + title */}
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                <Trash2 size={18} className="text-red-600" />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-slate-900">Excluir conta</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Esta ação é <strong>permanente e irreversível</strong>. Todos os seus lançamentos,
+                  categorias, recorrências e configurações serão apagados.
+                </p>
+              </div>
+            </div>
+
+            {/* Email confirmation */}
+            <div className="bg-slate-50 rounded-xl p-4 space-y-2">
+              <p className="text-xs font-medium text-slate-600">
+                Para confirmar, digite seu e-mail: <span className="font-semibold text-slate-800">{user?.email}</span>
+              </p>
+              <input
+                type="email"
+                value={confirmEmail}
+                onChange={(e) => setConfirmEmail(e.target.value)}
+                placeholder={user?.email}
+                autoFocus
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 bg-white"
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setShowDeleteDialog(false)}
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={!emailMatches || deleteMutation.isPending}
+                onClick={() => deleteMutation.mutate()}
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {deleteMutation.isPending ? "Excluindo..." : "Excluir permanentemente"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

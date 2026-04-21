@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse } from "@/lib/auth/middleware";
 import { AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
+import { users, refreshTokens } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
@@ -37,6 +37,39 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ user: updated });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const auth = await requireAuth(req);
+    const now = new Date();
+
+    // Soft-delete the user account.
+    await db.update(users).set({ deletedAt: now }).where(eq(users.id, auth.sub));
+
+    // Revoke all active refresh tokens so no session survives deletion.
+    await db.update(refreshTokens).set({ revokedAt: now }).where(eq(refreshTokens.userId, auth.sub));
+
+    // Clear auth cookies so the current session ends immediately.
+    const cookieDomain = process.env.COOKIE_DOMAIN;
+    const expireOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax" as const,
+      maxAge: 0,
+      path: "/",
+      ...(cookieDomain && { domain: cookieDomain }),
+    };
+
+    const response = NextResponse.json({ success: true });
+    response.cookies.set("access_token", "", expireOptions);
+    response.cookies.set("refresh_token", "", expireOptions);
+    return response;
+  } catch (e) {
+    if (e instanceof AuthError) return authErrorResponse();
+    console.error(e);
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }
