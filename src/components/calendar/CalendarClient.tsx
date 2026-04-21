@@ -26,6 +26,7 @@ interface Transaction {
   description: string;
   value: string;
   isPaid: boolean;
+  notes?: string | null;
   projected?: boolean;
 }
 
@@ -200,6 +201,9 @@ export function CalendarClient() {
                         <p className={`text-sm font-medium truncate ${t.projected ? "text-slate-500 italic" : "text-slate-800"}`}>
                           {t.description}
                         </p>
+                        {t.notes && (
+                          <p className="text-xs text-slate-400 truncate mt-0.5">{t.notes}</p>
+                        )}
                         <span className={`text-xs ${t.projected ? "text-slate-400" : t.isPaid ? "text-income" : "text-slate-400"}`}>
                           {t.projected ? "Previsto" : t.isPaid ? "Pago" : "Pendente"}
                         </span>
