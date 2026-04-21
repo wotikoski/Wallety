@@ -8,7 +8,7 @@ const PUBLIC_PATHS = [
   "/opengraph-image",
 ];
 
-const AUTH_PATHS = ["/login", "/register"];
+const AUTH_PATHS = ["/login", "/register", "/termos", "/privacidade"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
