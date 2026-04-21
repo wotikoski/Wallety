@@ -5,7 +5,7 @@ import { transactions, paymentMethods } from "@/lib/db/schema";
 import { transactionSchema } from "@/lib/validations/transaction";
 import { generateInstallments } from "@/lib/utils/installments";
 import { computeEffectiveDate } from "@/lib/utils/invoice";
-import { and, eq, gte, lte, isNull, desc, or } from "drizzle-orm";
+import { and, eq, gte, lte, isNull, desc, or, sql } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,12 +15,19 @@ export async function GET(req: NextRequest) {
     const groupId = searchParams.get("groupId");
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
+    // effectiveStartDate / effectiveEndDate filter by COALESCE(effectiveDate, date)
+    // so drill-downs in Reports match the same bucketing used by the report APIs.
+    const effectiveStartDate = searchParams.get("effectiveStartDate");
+    const effectiveEndDate = searchParams.get("effectiveEndDate");
     const type = searchParams.get("type");
-    const categoryId = searchParams.get("categoryId");
+    const categoryId = searchParams.get("categoryId"); // "__none__" → NULL
+    const bankId = searchParams.get("bankId");         // "__none__" → NULL
     const isPaid = searchParams.get("isPaid");
     const page = parseInt(searchParams.get("page") ?? "1");
     const limit = parseInt(searchParams.get("limit") ?? "50");
     const offset = (page - 1) * limit;
+
+    const effDate = sql<string>`COALESCE(${transactions.effectiveDate}, ${transactions.date})`;
 
     const conditions = [isNull(transactions.deletedAt)];
 
@@ -32,8 +39,13 @@ export async function GET(req: NextRequest) {
 
     if (startDate) conditions.push(gte(transactions.date, startDate));
     if (endDate) conditions.push(lte(transactions.date, endDate));
+    if (effectiveStartDate) conditions.push(gte(effDate, effectiveStartDate));
+    if (effectiveEndDate) conditions.push(lte(effDate, effectiveEndDate));
     if (type) conditions.push(eq(transactions.type, type));
-    if (categoryId) conditions.push(eq(transactions.categoryId, categoryId));
+    if (categoryId === "__none__") conditions.push(isNull(transactions.categoryId));
+    else if (categoryId) conditions.push(eq(transactions.categoryId, categoryId));
+    if (bankId === "__none__") conditions.push(isNull(transactions.bankId));
+    else if (bankId) conditions.push(eq(transactions.bankId, bankId));
     if (isPaid !== null && isPaid !== undefined) {
       conditions.push(eq(transactions.isPaid, isPaid === "true"));
     }
