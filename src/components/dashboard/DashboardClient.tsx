@@ -243,6 +243,8 @@ function SummaryCard({
   value,
   icon,
   color,
+  paid,
+  pending,
 }: {
   label: string;
   value: number;
