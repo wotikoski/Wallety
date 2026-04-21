@@ -41,6 +41,7 @@ export function TransactionForm({ transaction }: Props) {
     watch,
     control,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<TransactionInput>({
     resolver: zodResolver(transactionSchema),
@@ -60,6 +61,28 @@ export function TransactionForm({ transaction }: Props) {
       notes: transaction?.notes ?? null,
     },
   });
+
+  // If fresh data arrives after the form already mounted (cached-first fetch),
+  // reset the form so the user edits the current state, not a stale snapshot.
+  useEffect(() => {
+    if (!transaction) return;
+    reset({
+      date: transaction.date,
+      type: transaction.type as "income" | "expense",
+      categoryId: transaction.categoryId,
+      description: transaction.description,
+      value: parseFloat(transaction.value),
+      paymentMethodId: transaction.paymentMethodId,
+      bankId: transaction.bankId,
+      installmentTotal: transaction.installmentTotal,
+      installmentValue: transaction.installmentValue ? parseFloat(transaction.installmentValue) : null,
+      isPaid: transaction.isPaid,
+      isFixed: transaction.isFixed,
+      groupId: activeGroupId ?? null,
+      notes: transaction.notes,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transaction?.id, transaction?.date, transaction?.value, transaction?.description, transaction?.isPaid]);
 
   const type = watch("type");
   const value = watch("value");
@@ -112,8 +135,18 @@ export function TransactionForm({ transaction }: Props) {
       return res.json();
     },
     onSuccess: () => {
+      // A transaction change ripples into every derived view — invalidate
+      // every query that reads from transactions, plus the single-row cache
+      // so the next edit page opens with fresh data.
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions-calendar"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["report"] });
+      queryClient.invalidateQueries({ queryKey: ["daily-limit"] });
+      if (isEdit && transaction) {
+        queryClient.invalidateQueries({ queryKey: ["transaction", transaction.id] });
+      }
       toast({ title: isEdit ? "Lançamento atualizado!" : "Lançamento criado!" });
       router.push("/lancamentos");
     },

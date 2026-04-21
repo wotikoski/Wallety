@@ -121,7 +121,15 @@ export function TransactionsClient() {
       ctx?.previous?.forEach(([key, data]) => queryClient.setQueryData(key, data));
       toast({ title: "Erro", description: err.message, variant: "destructive" });
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+    // Toggling paid affects every derived view (dashboard pending totals,
+    // daily limit, budgets, calendar). Invalidate all of them.
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions-calendar"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["daily-limit"] });
+    },
   });
 
   const deleteTransaction = useMutation({
@@ -134,6 +142,10 @@ export function TransactionsClient() {
     },
     onSuccess: (_d, vars) => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions-calendar"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["daily-limit"] });
       toast({
         title:
           vars.scope === "all"
