@@ -86,8 +86,6 @@ export function Sidebar() {
           <a href="mailto:leonardoschneider@outlook.pt" className="text-slate-600 hover:text-slate-400 transition">E-mail</a>
           <span className="text-slate-700">·</span>
           <a href="https://t.me/leonardoschneider" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-slate-400 transition">Telegram</a>
-          <span className="text-slate-700">·</span>
-          <a href="https://www.linkedin.com/in/wotikoski/" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-slate-400 transition">LinkedIn</a>
         </div>
       </div>
 
