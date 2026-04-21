@@ -17,8 +17,8 @@ import { cn } from "@/lib/utils/cn";
 const drawerItems = [
   { href: "/limite-diario", label: "Limite Diário", icon: Target },
   { href: "/categorias", label: "Categorias", icon: Tag },
-  { href: "/bancos", label: "Bancos", icon: Building2 },
   { href: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard },
+  { href: "/bancos", label: "Bancos", icon: Building2 },
   { href: "/grupos", label: "Grupos", icon: Users },
   { href: "/perfil", label: "Meu Perfil", icon: User },
 ];
