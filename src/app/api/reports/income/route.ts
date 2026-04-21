@@ -36,15 +36,15 @@ export async function GET(req: NextRequest) {
 
     const grandTotal = txns.reduce((acc, t) => acc + parseFloat(t.value), 0);
 
-    let groups: Record<string, { label: string; total: number; count: number }> = {};
+    let groups: Record<string, { label: string; total: number; count: number; groupKey: string }> = {};
 
     if (groupBy === "category") {
       const cats = await db.select().from(categories).where(isNull(categories.deletedAt));
       const catMap = Object.fromEntries(cats.map((c) => [c.id, c.name]));
       for (const t of txns) {
-        const key = t.categoryId ?? "other";
+        const key = t.categoryId ?? "__none__";
         const label = t.categoryId ? (catMap[t.categoryId] ?? "Outros") : "Sem Categoria";
-        if (!groups[key]) groups[key] = { label, total: 0, count: 0 };
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;
       }
@@ -52,9 +52,9 @@ export async function GET(req: NextRequest) {
       const bks = await db.select().from(banks).where(isNull(banks.deletedAt));
       const bankMap = Object.fromEntries(bks.map((b) => [b.id, b.name]));
       for (const t of txns) {
-        const key = t.bankId ?? "none";
+        const key = t.bankId ?? "__none__";
         const label = t.bankId ? (bankMap[t.bankId] ?? "Outro Banco") : "Sem Banco";
-        if (!groups[key]) groups[key] = { label, total: 0, count: 0 };
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;
       }
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
       for (const t of txns) {
         const key = t.userId;
         const label = userMap[t.userId] ?? "Usuário";
-        if (!groups[key]) groups[key] = { label, total: 0, count: 0 };
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;
       }
