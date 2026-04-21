@@ -79,28 +79,16 @@ export function Sidebar() {
 
       {/* Author */}
       <div className="px-5 py-3 border-t border-slate-800/60">
-        <p className="text-slate-600 text-[10px] leading-relaxed">
-          Feito por{" "}
-          <span className="text-slate-500 font-medium">Leonardo Schneider</span>
+        <p className="text-slate-600 text-[10px] mb-1">
+          Feito por <span className="text-slate-500 font-medium">Leonardo Schneider</span>
         </p>
-        <div className="flex items-center gap-3 mt-1">
-          <a
-            href="mailto:leonardoschneider@outlook.pt"
-            className="text-slate-600 hover:text-slate-400 text-[10px] transition"
-            title="E-mail"
-          >
-            leonardoschneider@outlook.pt
-          </a>
+        <div className="flex items-center gap-2 text-[10px]">
+          <a href="mailto:leonardoschneider@outlook.pt" className="text-slate-600 hover:text-slate-400 transition">E-mail</a>
+          <span className="text-slate-700">·</span>
+          <a href="https://t.me/leonardoschneider" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-slate-400 transition">Telegram</a>
+          <span className="text-slate-700">·</span>
+          <a href="https://www.linkedin.com/in/wotikoski/" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-slate-400 transition">LinkedIn</a>
         </div>
-        <a
-          href="https://t.me/leonardoschneider"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-slate-600 hover:text-slate-400 text-[10px] transition"
-          title="Telegram"
-        >
-          t.me/leonardoschneider
-        </a>
       </div>
 
       {/* Logout */}
