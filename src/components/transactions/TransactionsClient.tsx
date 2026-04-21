@@ -28,7 +28,10 @@ interface Transaction {
   bankId: string | null;
   installmentCurrent: number | null;
   installmentTotal: number | null;
+  installmentGroupId: string | null;
 }
+
+type DeleteScope = "single" | "this_and_future" | "all";
 
 // Short month labels in pt-BR for invoice chips ("Fatura mai/26").
 const MONTHS_PT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
@@ -122,26 +125,42 @@ export function TransactionsClient() {
   });
 
   const deleteTransaction = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/transactions/${id}`, { method: "DELETE" });
+    mutationFn: async ({ id, scope }: { id: string; scope: DeleteScope }) => {
+      const res = await fetch(`/api/transactions/${id}?scope=${scope}`, { method: "DELETE" });
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
         throw new Error(json.error ?? "Erro ao excluir lançamento");
       }
     },
-    onSuccess: () => {
+    onSuccess: (_d, vars) => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      toast({ title: "Lançamento excluído" });
+      toast({
+        title:
+          vars.scope === "all"
+            ? "Todas as parcelas excluídas"
+            : vars.scope === "this_and_future"
+              ? "Parcela atual e futuras excluídas"
+              : "Lançamento excluído",
+      });
     },
     onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
-  const askDelete = (id: string, description: string) =>
-    askConfirm(() => deleteTransaction.mutate(id), {
+  // State for the installment-scope dialog (shown instead of the simple
+  // confirm when the transaction belongs to an installment group).
+  const [installmentDelete, setInstallmentDelete] = useState<Transaction | null>(null);
+
+  const askDelete = (t: Transaction) => {
+    if (t.installmentGroupId && t.installmentTotal && t.installmentTotal > 1) {
+      setInstallmentDelete(t);
+      return;
+    }
+    askConfirm(() => deleteTransaction.mutate({ id: t.id, scope: "single" }), {
       title: "Excluir lançamento",
-      description: `Tem certeza que deseja excluir "${description}"?`,
+      description: `Tem certeza que deseja excluir "${t.description}"?`,
       confirmLabel: "Excluir",
     });
+  };
 
   const txns = data?.transactions ?? [];
   const totalIncome = txns.filter((t) => t.type === "income").reduce((a, t) => a + parseFloat(t.value), 0);
@@ -293,7 +312,7 @@ export function TransactionsClient() {
                         <Edit size={14} />
                       </Link>
                       <button
-                        onClick={() => askDelete(t.id, t.description)}
+                        onClick={() => askDelete(t)}
                         className="text-slate-400 hover:text-expense transition"
                       >
                         <Trash2 size={14} />
@@ -362,7 +381,7 @@ export function TransactionsClient() {
                           <Edit size={14} />
                         </Link>
                         <button
-                          onClick={() => askDelete(t.id, t.description)}
+                          onClick={() => askDelete(t)}
                           className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
                         >
                           <Trash2 size={14} />
@@ -401,6 +420,118 @@ export function TransactionsClient() {
       </div>
 
       <ConfirmDialog {...dialogProps} loading={deleteTransaction.isPending} />
+
+      {installmentDelete && (
+        <InstallmentDeleteDialog
+          transaction={installmentDelete}
+          loading={deleteTransaction.isPending}
+          onCancel={() => setInstallmentDelete(null)}
+          onConfirm={(scope) => {
+            const id = installmentDelete.id;
+            setInstallmentDelete(null);
+            deleteTransaction.mutate({ id, scope });
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// Scope picker for installment deletion: "only this", "this and future",
+// or "all installments". Mirrors the backend DELETE ?scope= contract.
+function InstallmentDeleteDialog({
+  transaction,
+  loading,
+  onConfirm,
+  onCancel,
+}: {
+  transaction: Transaction;
+  loading: boolean;
+  onConfirm: (scope: DeleteScope) => void;
+  onCancel: () => void;
+}) {
+  const [scope, setScope] = useState<DeleteScope>("single");
+  const total = transaction.installmentTotal ?? 0;
+  const current = transaction.installmentCurrent ?? 0;
+  const remaining = Math.max(0, total - current + 1);
+
+  const options: { value: DeleteScope; label: string; hint: string }[] = [
+    {
+      value: "single",
+      label: `Somente esta parcela (${current}/${total})`,
+      hint: "As outras parcelas continuam ativas.",
+    },
+    {
+      value: "this_and_future",
+      label: `Esta e as próximas (${remaining} parcelas)`,
+      hint: "Mantém as parcelas já passadas.",
+    },
+    {
+      value: "all",
+      label: `Todas as ${total} parcelas`,
+      hint: "Remove o lançamento inteiro, incluindo as já pagas.",
+    },
+  ];
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-fade-in"
+      onClick={() => !loading && onCancel()}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6">
+          <h2 className="text-base font-semibold text-slate-900">Excluir parcelamento</h2>
+          <p className="text-sm text-slate-500 mt-1">
+            &quot;{transaction.description}&quot; faz parte de um parcelamento de {total} parcelas. O que você quer excluir?
+          </p>
+          <div className="mt-4 space-y-2">
+            {options.map((opt) => (
+              <label
+                key={opt.value}
+                className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
+                  scope === opt.value
+                    ? "border-brand-500 bg-brand-50"
+                    : "border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="delete-scope"
+                  value={opt.value}
+                  checked={scope === opt.value}
+                  onChange={() => setScope(opt.value)}
+                  className="mt-1 accent-brand-600"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-800">{opt.label}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{opt.hint}</p>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center justify-end gap-2 px-6 py-4 bg-slate-50 border-t border-slate-100">
+          <button
+            onClick={onCancel}
+            disabled={loading}
+            className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={() => onConfirm(scope)}
+            disabled={loading}
+            className="px-4 py-2 text-sm font-medium text-white bg-expense hover:bg-expense-dark rounded-lg transition disabled:opacity-50"
+          >
+            {loading ? "Excluindo..." : "Excluir"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
