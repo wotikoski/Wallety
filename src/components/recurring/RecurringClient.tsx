@@ -191,6 +191,12 @@ export function RecurringClient() {
             setShowForm(false);
             queryClient.invalidateQueries({ queryKey: ["recurring"] });
             toast({ title: "Recorrência criada" });
+            // Clear throttle and trigger materialize so new occurrences show up
+            // in Lançamentos/Dashboard immediately.
+            if (typeof window !== "undefined") {
+              sessionStorage.removeItem("recurring_materialized_at");
+            }
+            materializeMutation.mutate();
           }}
           onError={(msg) => toast({ title: "Erro", description: msg, variant: "destructive" })}
         />
