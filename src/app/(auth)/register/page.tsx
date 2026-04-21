@@ -14,6 +14,17 @@ export default function RegisterPage() {
           Entrar
         </Link>
       </p>
+      <p style={{ textAlign: "center", fontSize: "12px", color: "#64748b", marginTop: "16px" }}>
+        Ao criar sua conta, você concorda com os{" "}
+        <Link href="/termos" style={{ color: "#3b82f6", textDecoration: "none" }}>
+          Termos de Uso
+        </Link>
+        {" "}e a{" "}
+        <Link href="/privacidade" style={{ color: "#3b82f6", textDecoration: "none" }}>
+          Política de Privacidade
+        </Link>
+        .
+      </p>
     </div>
   );
 }

@@ -14,6 +14,15 @@ export default function LoginPage() {
           Cadastre-se
         </Link>
       </p>
+      <p style={{ textAlign: "center", fontSize: "12px", color: "#64748b", marginTop: "16px" }}>
+        <Link href="/termos" style={{ color: "#64748b", textDecoration: "none" }}>
+          Termos de Uso
+        </Link>
+        {" · "}
+        <Link href="/privacidade" style={{ color: "#64748b", textDecoration: "none" }}>
+          Privacidade
+        </Link>
+      </p>
     </div>
   );
 }

@@ -3,6 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
+import { FileText, ShieldCheck } from "lucide-react";
 
 interface User {
   id: string;
@@ -86,6 +88,38 @@ export function ProfileClient() {
             {updateMutation.isPending ? "Salvando..." : "Salvar alterações"}
           </button>
         </form>
+      </div>
+      {/* Legal */}
+      <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-3.5 border-b border-slate-100">
+          <h2 className="text-sm font-semibold text-slate-700">Legal</h2>
+        </div>
+        <div className="divide-y divide-slate-50">
+          <Link
+            href="/termos"
+            target="_blank"
+            className="flex items-center gap-3 px-6 py-4 hover:bg-slate-50 transition group"
+          >
+            <FileText size={16} className="text-slate-400 group-hover:text-brand-600 transition shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-slate-700">Termos de Uso</p>
+              <p className="text-xs text-slate-400">Última atualização: 21 de abril de 2026</p>
+            </div>
+            <span className="text-xs text-slate-400 group-hover:text-brand-600 transition">↗</span>
+          </Link>
+          <Link
+            href="/privacidade"
+            target="_blank"
+            className="flex items-center gap-3 px-6 py-4 hover:bg-slate-50 transition group"
+          >
+            <ShieldCheck size={16} className="text-slate-400 group-hover:text-brand-600 transition shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-slate-700">Política de Privacidade</p>
+              <p className="text-xs text-slate-400">Conforme a LGPD – Lei nº 13.709/2018</p>
+            </div>
+            <span className="text-xs text-slate-400 group-hover:text-brand-600 transition">↗</span>
+          </Link>
+        </div>
       </div>
     </div>
   );
