@@ -16,7 +16,17 @@ interface PaymentMethod {
   name: string;
   type: string;
   bankId: string | null;
+  closingDay: number | null;
+  dueDay: number | null;
   isDefault: boolean;
+}
+
+interface FormData {
+  name: string;
+  type: string;
+  bankId: string;
+  closingDay: string;
+  dueDay: string;
 }
 
 export function PaymentMethodsClient() {
@@ -41,16 +51,27 @@ export function PaymentMethodsClient() {
     queryFn: () => fetch(`/api/banks?${params}`).then((r) => r.json()),
   });
 
-  const { register, handleSubmit, reset } = useForm<{ name: string; type: string; bankId: string }>();
+  const { register, handleSubmit, reset, watch } = useForm<FormData>({
+    defaultValues: { type: "bank_account" },
+  });
+  const watchedType = watch("type");
 
   const saveMutation = useMutation({
-    mutationFn: async (d: { name: string; type: string; bankId: string }) => {
+    mutationFn: async (d: FormData) => {
       const url = editing ? `/api/payment-methods/${editing.id}` : "/api/payment-methods";
       const method = editing ? "PUT" : "POST";
+      const isCredit = d.type === "credit_card";
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...d, bankId: d.bankId || null, groupId: activeGroupId }),
+        body: JSON.stringify({
+          name: d.name,
+          type: d.type,
+          bankId: d.bankId || null,
+          closingDay: isCredit && d.closingDay ? parseInt(d.closingDay) : null,
+          dueDay: isCredit && d.dueDay ? parseInt(d.dueDay) : null,
+          groupId: activeGroupId,
+        }),
       });
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
@@ -128,6 +149,34 @@ export function PaymentMethodsClient() {
                 {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
             </div>
+            {watchedType === "credit_card" && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Dia de fechamento</label>
+                  <input
+                    {...register("closingDay")}
+                    type="number"
+                    min={1}
+                    max={31}
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    placeholder="25"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">Dia em que a fatura fecha (1–31)</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Dia de vencimento</label>
+                  <input
+                    {...register("dueDay")}
+                    type="number"
+                    min={1}
+                    max={31}
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    placeholder="5"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">Dia em que a fatura deve ser paga (1–31)</p>
+                </div>
+              </>
+            )}
             <button
               type="button"
               onClick={() => { setShowForm(false); setEditing(null); }}
@@ -158,14 +207,25 @@ export function PaymentMethodsClient() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-800">{pm.name}</p>
-                <p className="text-xs text-slate-400">{getPaymentMethodLabel(pm.type)}</p>
+                <p className="text-xs text-slate-400">
+                  {getPaymentMethodLabel(pm.type)}
+                  {pm.type === "credit_card" && pm.closingDay && pm.dueDay && (
+                    <span> · fecha dia {pm.closingDay}, vence dia {pm.dueDay}</span>
+                  )}
+                </p>
               </div>
               {pm.isDefault && <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Padrão</span>}
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => {
                     setEditing(pm);
-                    reset({ name: pm.name, type: pm.type, bankId: pm.bankId ?? "" });
+                    reset({
+                      name: pm.name,
+                      type: pm.type,
+                      bankId: pm.bankId ?? "",
+                      closingDay: pm.closingDay?.toString() ?? "",
+                      dueDay: pm.dueDay?.toString() ?? "",
+                    });
                     setShowForm(true);
                   }}
                   className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"

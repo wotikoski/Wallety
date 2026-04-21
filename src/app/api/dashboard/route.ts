@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
 import { transactions, categories } from "@/lib/db/schema";
-import { and, eq, gte, lte, isNull, inArray, desc } from "drizzle-orm";
+import { and, eq, gte, lte, isNull, inArray, desc, sql } from "drizzle-orm";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 
 export async function GET(req: NextRequest) {
@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
       ? eq(transactions.groupId, groupId)
       : eq(transactions.userId, auth.sub);
 
-    // Single query pulling the whole window (6 months). We bucket in JS.
+    // Single query pulling the whole window (6 months). Filter by
+    // effective_date (falls back to purchase date) so credit-card invoices
+    // land in the correct cash-flow month.
+    const effDate = sql<string>`COALESCE(${transactions.effectiveDate}, ${transactions.date})`;
     const windowTxns = await db
       .select()
       .from(transactions)
@@ -32,14 +35,20 @@ export async function GET(req: NextRequest) {
         and(
           scopeCondition,
           isNull(transactions.deletedAt),
-          gte(transactions.date, trendStart),
-          lte(transactions.date, end),
+          gte(effDate, trendStart),
+          lte(effDate, end),
         ),
       )
       .orderBy(desc(transactions.date));
 
+    // Bucket helper: uses effectiveDate when present, else the purchase date.
+    const bucketDate = (t: typeof windowTxns[number]) => t.effectiveDate ?? t.date;
+
     // Current month subset (drives totals + recent list + category breakdown).
-    const currentMonthTxns = windowTxns.filter((t) => t.date >= start && t.date <= end);
+    const currentMonthTxns = windowTxns.filter((t) => {
+      const d = bucketDate(t);
+      return d >= start && d <= end;
+    });
 
     const totalIncome = currentMonthTxns
       .filter((t) => t.type === "income")
@@ -87,7 +96,10 @@ export async function GET(req: NextRequest) {
       const d = subMonths(refDate, i);
       const ms = format(startOfMonth(d), "yyyy-MM-dd");
       const me = format(endOfMonth(d), "yyyy-MM-dd");
-      const monthTxns = windowTxns.filter((t) => t.date >= ms && t.date <= me);
+      const monthTxns = windowTxns.filter((t) => {
+        const bd = bucketDate(t);
+        return bd >= ms && bd <= me;
+      });
       monthlyTrend.push({
         month: format(d, "MMM/yy"),
         income: monthTxns.filter((t) => t.type === "income").reduce((acc, t) => acc + parseFloat(t.value), 0),

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
-import { transactions } from "@/lib/db/schema";
+import { transactions, paymentMethods } from "@/lib/db/schema";
 import { transactionSchema } from "@/lib/validations/transaction";
 import { generateInstallments } from "@/lib/utils/installments";
+import { computeEffectiveDate } from "@/lib/utils/invoice";
 import { and, eq, gte, lte, isNull, desc, or } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
@@ -61,6 +62,17 @@ export async function POST(req: NextRequest) {
 
     const isInstallment = (input.installmentTotal ?? 1) > 1;
 
+    // Resolve payment method for credit-card invoice date calculation.
+    let pm: { type: string; closingDay: number | null; dueDay: number | null } | null = null;
+    if (input.paymentMethodId) {
+      const [row] = await db
+        .select({ type: paymentMethods.type, closingDay: paymentMethods.closingDay, dueDay: paymentMethods.dueDay })
+        .from(paymentMethods)
+        .where(eq(paymentMethods.id, input.paymentMethodId))
+        .limit(1);
+      if (row) pm = row;
+    }
+
     if (isInstallment) {
       const installments = generateInstallments(
         input.date,
@@ -75,6 +87,7 @@ export async function POST(req: NextRequest) {
             userId: auth.sub,
             groupId: input.groupId ?? null,
             date: inst.date,
+            effectiveDate: computeEffectiveDate(inst.date, pm),
             type: input.type,
             categoryId: input.categoryId ?? null,
             description: input.description,
@@ -100,6 +113,7 @@ export async function POST(req: NextRequest) {
           userId: auth.sub,
           groupId: input.groupId ?? null,
           date: input.date,
+          effectiveDate: computeEffectiveDate(input.date, pm),
           type: input.type,
           categoryId: input.categoryId ?? null,
           description: input.description,

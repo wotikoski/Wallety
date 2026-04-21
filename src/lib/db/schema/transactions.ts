@@ -14,7 +14,11 @@ export const transactions = pgTable(
     groupId: uuid("group_id").references(() => groups.id, { onDelete: "cascade" }),
     userId: uuid("user_id").notNull().references(() => users.id),
 
-    date: date("date").notNull(),
+    date: date("date").notNull(), // purchase / accrual date
+    // Cash-flow date: when the money actually leaves. For credit-card
+    // purchases this is the invoice due date; for everything else, null (= date).
+    // Dashboard / budgets aggregate by COALESCE(effective_date, date).
+    effectiveDate: date("effective_date"),
     type: text("type").notNull(), // 'income' | 'expense'
     categoryId: uuid("category_id").references(() => categories.id),
     description: text("description").notNull(),

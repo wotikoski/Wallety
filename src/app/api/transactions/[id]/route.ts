@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
-import { transactions } from "@/lib/db/schema";
+import { transactions, paymentMethods } from "@/lib/db/schema";
+import { computeEffectiveDate } from "@/lib/utils/invoice";
 import { eq, and, isNull, gte } from "drizzle-orm";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -40,10 +41,24 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (!existing) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
     if (existing.userId !== auth.sub) return NextResponse.json({ error: "Sem permissão" }, { status: 403 });
 
-    const updateData = {
+    const updateData: Record<string, unknown> = {
       ...data,
       updatedAt: new Date(),
     };
+
+    // Recompute effectiveDate if date or paymentMethod changed.
+    const newDate = (data.date as string | undefined) ?? existing.date;
+    const newPmId = (data.paymentMethodId as string | undefined | null) ?? existing.paymentMethodId;
+    if (newPmId) {
+      const [pm] = await db
+        .select({ type: paymentMethods.type, closingDay: paymentMethods.closingDay, dueDay: paymentMethods.dueDay })
+        .from(paymentMethods)
+        .where(eq(paymentMethods.id, newPmId))
+        .limit(1);
+      updateData.effectiveDate = computeEffectiveDate(newDate, pm ?? null);
+    } else {
+      updateData.effectiveDate = null;
+    }
 
     if (scope === "single" || !existing.installmentGroupId) {
       const [updated] = await db
