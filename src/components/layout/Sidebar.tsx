@@ -19,20 +19,23 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
+// Ordered by daily-use frequency: entry/overview first, then data entry,
+// then planning, then retrospective analysis.
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/lancamentos", label: "Lançamentos", icon: ArrowLeftRight },
-  { href: "/calendario", label: "Calendário", icon: Calendar },
-  { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
-  { href: "/limite-diario", label: "Limite Diário", icon: Target },
-  { href: "/orcamentos", label: "Orçamentos", icon: Wallet },
   { href: "/recorrencias", label: "Recorrências", icon: RefreshCcw },
+  { href: "/calendario", label: "Calendário", icon: Calendar },
+  { href: "/orcamentos", label: "Orçamentos", icon: Wallet },
+  { href: "/limite-diario", label: "Limite Diário", icon: Target },
+  { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
 ];
 
+// Setup-flow order: taxonomies first, then financial rails, then account-level.
 const configItems = [
   { href: "/categorias", label: "Categorias", icon: Tag },
-  { href: "/bancos", label: "Bancos", icon: Building2 },
   { href: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard },
+  { href: "/bancos", label: "Bancos", icon: Building2 },
   { href: "/grupos", label: "Grupos", icon: Users },
   { href: "/perfil", label: "Meu Perfil", icon: User },
 ];
