@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import Link from "next/link";
 import {
@@ -38,6 +38,27 @@ export function TransactionsClient() {
   const [type, setType] = useState<string>("");
   const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
+
+  // Lazy-materialize recurring transactions when opening Lançamentos.
+  // Throttled to once per hour per session (shared with Dashboard).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const key = "recurring_materialized_at";
+    const last = sessionStorage.getItem(key);
+    const ONE_HOUR = 60 * 60 * 1000;
+    if (last && Date.now() - parseInt(last) < ONE_HOUR) return;
+    sessionStorage.setItem(key, String(Date.now()));
+
+    fetch("/api/recurring/materialize", { method: "POST" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((res) => {
+        if (res && res.created > 0) {
+          queryClient.invalidateQueries({ queryKey: ["transactions"] });
+          queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+        }
+      })
+      .catch(() => { /* silent */ });
+  }, [queryClient]);
 
   const params = new URLSearchParams({ page: String(page), limit: "30" });
   if (activeGroupId) params.set("groupId", activeGroupId);
