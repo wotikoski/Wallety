@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
 import { transactions, categories, banks, users } from "@/lib/db/schema";
-import { and, eq, gte, lte, isNull } from "drizzle-orm";
+import { and, eq, gte, lte, isNull, sql } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,6 +17,10 @@ export async function GET(req: NextRequest) {
       ? eq(transactions.groupId, groupId)
       : eq(transactions.userId, auth.sub);
 
+    // Use effectiveDate when set (credit-card billing month), else purchase date.
+    // Mirrors the dashboard logic so report totals match dashboard totals.
+    const effDate = sql<string>`COALESCE(${transactions.effectiveDate}, ${transactions.date})`;
+
     const txns = await db
       .select()
       .from(transactions)
@@ -25,8 +29,8 @@ export async function GET(req: NextRequest) {
           scopeCondition,
           isNull(transactions.deletedAt),
           eq(transactions.type, "income"),
-          startDate ? gte(transactions.date, startDate) : undefined,
-          endDate ? lte(transactions.date, endDate) : undefined,
+          startDate ? gte(effDate, startDate) : undefined,
+          endDate ? lte(effDate, endDate) : undefined,
         ),
       );
 
