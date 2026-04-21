@@ -23,16 +23,6 @@ export default function LoginPage() {
           Privacidade
         </Link>
       </p>
-      <p style={{ textAlign: "center", fontSize: "11px", color: "#475569", marginTop: "24px" }}>
-        Feito por <span style={{ color: "#94a3b8" }}>Leonardo Schneider</span>
-      </p>
-      <p style={{ textAlign: "center", fontSize: "11px", marginTop: "4px" }}>
-        <a href="mailto:leonardoschneider@outlook.pt" style={{ color: "#475569", textDecoration: "none" }}>E-mail</a>
-        <span style={{ color: "#334155", margin: "0 6px" }}>·</span>
-        <a href="https://t.me/leonardoschneider" target="_blank" rel="noopener noreferrer" style={{ color: "#475569", textDecoration: "none" }}>Telegram</a>
-        <span style={{ color: "#334155", margin: "0 6px" }}>·</span>
-        <a href="https://www.linkedin.com/in/wotikoski/" target="_blank" rel="noopener noreferrer" style={{ color: "#475569", textDecoration: "none" }}>LinkedIn</a>
-      </p>
     </div>
   );
 }
