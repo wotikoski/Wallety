@@ -47,6 +47,31 @@ export function BudgetsClient() {
     queryFn: () => fetch(`/api/budgets?${budgetParams}`).then((r) => r.json()),
   });
 
+  // Projected recurring expenses for this month. We bucket by the invoice
+  // effective date (credit cards) to match how /api/budgets computes spent.
+  const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
+  const monthEndDay = new Date(year, month, 0).getDate();
+  const monthEnd = `${year}-${String(month).padStart(2, "0")}-${String(monthEndDay).padStart(2, "0")}`;
+  const projParams = new URLSearchParams({ from: monthStart, to: monthEnd });
+  if (activeGroupId) projParams.set("groupId", activeGroupId);
+
+  const { data: projData } = useQuery<{
+    projected: { categoryId: string | null; type: string; value: string; date: string; effectiveDate: string | null }[];
+  }>({
+    queryKey: ["recurring-projected-budgets", year, month, activeGroupId],
+    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => r.json()),
+  });
+
+  // Sum projected expenses per category for the visible month (bucketed by
+  // effective date so invoices land in the right month).
+  const projectedByCat = new Map<string, number>();
+  for (const p of projData?.projected ?? []) {
+    if (p.type !== "expense" || !p.categoryId) continue;
+    const bucket = p.effectiveDate ?? p.date;
+    if (bucket < monthStart || bucket > monthEnd) continue;
+    projectedByCat.set(p.categoryId, (projectedByCat.get(p.categoryId) ?? 0) + parseFloat(p.value));
+  }
+
   const catParams = new URLSearchParams();
   if (activeGroupId) catParams.set("groupId", activeGroupId);
   const { data: catsData } = useQuery<{ categories: Category[] }>({
@@ -96,6 +121,7 @@ export function BudgetsClient() {
 
   const totalPlanned = budgets.reduce((acc, b) => acc + parseFloat(b.amount), 0);
   const totalSpent = budgets.reduce((acc, b) => acc + b.spent, 0);
+  const totalProjected = budgets.reduce((acc, b) => acc + (projectedByCat.get(b.categoryId) ?? 0), 0);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -138,6 +164,11 @@ export function BudgetsClient() {
           <p className={`text-xl font-bold font-mono ${totalSpent > totalPlanned && totalPlanned > 0 ? "text-expense" : "text-slate-900"}`}>
             {formatCurrency(totalSpent)}
           </p>
+          {totalProjected > 0 && (
+            <p className="text-xs text-slate-400 mt-1">
+              + <span className="font-mono font-medium text-slate-500">{formatCurrency(totalProjected)}</span> previsto
+            </p>
+          )}
         </div>
       </div>
 
@@ -152,6 +183,7 @@ export function BudgetsClient() {
                 key={category.id}
                 category={category}
                 budget={budget}
+                projected={projectedByCat.get(category.id) ?? 0}
                 onSave={(amount) => saveMutation.mutate({ categoryId: category.id, amount })}
                 onDelete={budget ? () => deleteMutation.mutate(budget.id) : undefined}
               />
@@ -164,16 +196,18 @@ export function BudgetsClient() {
 }
 
 function BudgetRow({
-  category, budget, onSave, onDelete,
+  category, budget, projected, onSave, onDelete,
 }: {
   category: Category;
   budget?: Budget;
+  projected: number;
   onSave: (amount: number) => void;
   onDelete?: () => void;
 }) {
   const planned = budget ? parseFloat(budget.amount) : 0;
   const spent = budget?.spent ?? 0;
   const pct = planned > 0 ? (spent / planned) * 100 : 0;
+  const projectedPct = planned > 0 ? ((spent + projected) / planned) * 100 : 0;
   const state = pct >= 100 ? "over" : pct >= 80 ? "warn" : "ok";
 
   const [editing, setEditing] = useState(false);
@@ -200,6 +234,9 @@ function BudgetRow({
           {budget && (
             <p className="text-xs text-slate-400 mt-0.5">
               Gasto: <span className="font-mono text-slate-600">{formatCurrency(spent)}</span>
+              {projected > 0 && (
+                <> {" · "}<span className="font-mono text-slate-500">+{formatCurrency(projected)}</span> previsto</>
+              )}
               {" · "}
               <span className={state === "over" ? "text-expense" : state === "warn" ? "text-amber-600" : "text-slate-400"}>
                 {pct.toFixed(0)}% do orçamento
@@ -243,9 +280,17 @@ function BudgetRow({
       </div>
 
       {budget && planned > 0 && (
-        <div className="mt-2 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+        <div className="mt-2 h-1.5 rounded-full bg-slate-100 overflow-hidden relative">
+          {/* Projected extension: shown behind the actual bar as a lighter stripe */}
+          {projected > 0 && (
+            <div
+              className="absolute inset-y-0 left-0 bg-slate-300/60"
+              style={{ width: `${Math.min(100, projectedPct)}%` }}
+              title={`Projetado: ${projectedPct.toFixed(0)}% se as recorrências previstas acontecerem`}
+            />
+          )}
           <div
-            className={`h-full transition-all ${
+            className={`relative h-full transition-all ${
               state === "over" ? "bg-expense" : state === "warn" ? "bg-amber-500" : "bg-income"
             }`}
             style={{ width: `${Math.min(100, pct)}%` }}

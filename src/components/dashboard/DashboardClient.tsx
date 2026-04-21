@@ -80,6 +80,35 @@ export function DashboardClient() {
     queryFn: () => fetch(`/api/dashboard?${params}`).then((r) => r.json()),
   });
 
+  // Projected (not-yet-materialized) recurring occurrences for the visible
+  // month — shown separately so they never inflate "realized" totals.
+  const projParams = new URLSearchParams();
+  const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
+  const monthEnd = new Date(year, month, 0);
+  const monthEndStr = `${year}-${String(month).padStart(2, "0")}-${String(monthEnd.getDate()).padStart(2, "0")}`;
+  projParams.set("from", monthStart);
+  projParams.set("to", monthEndStr);
+  if (activeGroupId) projParams.set("groupId", activeGroupId);
+
+  const { data: projData } = useQuery<{ projected: { date: string; effectiveDate: string | null; type: string; value: string }[] }>({
+    queryKey: ["recurring-projected", month, year, activeGroupId],
+    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => r.json()),
+  });
+
+  const projected = projData?.projected ?? [];
+  // Bucket by invoice month when present — an April credit-card recurrence
+  // with effective_date in May belongs to May's projected totals.
+  const inCurrentMonth = (p: { date: string; effectiveDate: string | null }) => {
+    const bucket = p.effectiveDate ?? p.date;
+    return bucket >= monthStart && bucket <= monthEndStr;
+  };
+  const projectedIncome = projected
+    .filter((p) => p.type === "income" && inCurrentMonth(p))
+    .reduce((acc, p) => acc + parseFloat(p.value), 0);
+  const projectedExpenses = projected
+    .filter((p) => p.type === "expense" && inCurrentMonth(p))
+    .reduce((acc, p) => acc + parseFloat(p.value), 0);
+
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-6">
@@ -132,6 +161,7 @@ export function DashboardClient() {
           value={totalIncome}
           icon={<TrendingUp size={20} />}
           color="income"
+          projected={projectedIncome}
         />
         <SummaryCard
           label="Despesas"
@@ -140,12 +170,18 @@ export function DashboardClient() {
           color="expense"
           paid={data?.paidExpenses ?? 0}
           pending={data?.pendingExpenses ?? 0}
+          projected={projectedExpenses}
         />
         <SummaryCard
           label="Saldo"
           value={balance}
           icon={<Wallet size={20} />}
           color={balance >= 0 ? "income" : "expense"}
+          projectedBalance={
+            projectedIncome || projectedExpenses
+              ? balance + projectedIncome - projectedExpenses
+              : undefined
+          }
         />
       </div>
 
@@ -245,6 +281,8 @@ function SummaryCard({
   color,
   paid,
   pending,
+  projected,
+  projectedBalance,
 }: {
   label: string;
   value: number;
@@ -252,6 +290,8 @@ function SummaryCard({
   color: "income" | "expense";
   paid?: number;
   pending?: number;
+  projected?: number;
+  projectedBalance?: number;
 }) {
   const showProgress = paid !== undefined && pending !== undefined && value > 0;
   const pct = showProgress ? Math.min(100, Math.round((paid! / value) * 100)) : 0;
@@ -282,6 +322,19 @@ function SummaryCard({
             )}
           </p>
         </div>
+      )}
+      {projected !== undefined && projected > 0 && (
+        <p className="text-xs text-slate-400 mt-2 border-t border-dashed border-slate-200 pt-2">
+          <span className="font-medium text-slate-500">+ {formatCurrency(projected)}</span> previsto
+        </p>
+      )}
+      {projectedBalance !== undefined && (
+        <p className="text-xs text-slate-400 mt-2 border-t border-dashed border-slate-200 pt-2">
+          Previsto fim do mês:{" "}
+          <span className={`font-mono font-medium ${projectedBalance >= 0 ? "text-income" : "text-expense"}`}>
+            {formatCurrency(projectedBalance)}
+          </span>
+        </p>
       )}
     </div>
   );

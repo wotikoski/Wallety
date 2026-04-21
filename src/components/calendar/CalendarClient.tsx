@@ -26,6 +26,15 @@ interface Transaction {
   description: string;
   value: string;
   isPaid: boolean;
+  projected?: boolean;
+}
+
+interface ProjectedOccurrence {
+  ruleId: string;
+  date: string;
+  type: string;
+  description: string;
+  value: string;
 }
 
 const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -46,7 +55,27 @@ export function CalendarClient() {
     queryFn: () => fetch(`/api/transactions?${params}`).then((r) => r.json()),
   });
 
-  const transactions = data?.transactions ?? [];
+  const projParams = new URLSearchParams({ from: start, to: end });
+  if (activeGroupId) projParams.set("groupId", activeGroupId);
+
+  const { data: projData } = useQuery<{ projected: ProjectedOccurrence[] }>({
+    queryKey: ["recurring-projected-calendar", start, end, activeGroupId],
+    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => r.json()),
+  });
+
+  // Merge real transactions with projected occurrences. Projected rows are
+  // flagged so the UI can render them with a distinct (dashed) style and
+  // they never mix with "Pago/Pendente" semantics.
+  const projectedAsTxns: Transaction[] = (projData?.projected ?? []).map((p) => ({
+    id: `proj-${p.ruleId}-${p.date}`,
+    date: p.date,
+    type: p.type as "income" | "expense",
+    description: p.description,
+    value: p.value,
+    isPaid: false,
+    projected: true,
+  }));
+  const transactions = [...(data?.transactions ?? []), ...projectedAsTxns];
 
   const days = eachDayOfInterval({
     start: startOfMonth(currentDate),
@@ -122,19 +151,23 @@ export function CalendarClient() {
                   </span>
                   <div className="space-y-0.5 hidden md:block">
                     {incomes.length > 0 && (
-                      <div className="text-xs text-income truncate">
+                      <div className={`text-xs truncate ${incomes.every((t) => t.projected) ? "text-income/60 italic" : "text-income"}`}>
                         +{formatCurrency(incomes.reduce((a, t) => a + parseFloat(t.value), 0))}
                       </div>
                     )}
                     {expenses.length > 0 && (
-                      <div className="text-xs text-expense truncate">
+                      <div className={`text-xs truncate ${expenses.every((t) => t.projected) ? "text-expense/60 italic" : "text-expense"}`}>
                         -{formatCurrency(expenses.reduce((a, t) => a + parseFloat(t.value), 0))}
                       </div>
                     )}
                   </div>
                   <div className="flex gap-0.5 md:hidden">
-                    {incomes.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-income" />}
-                    {expenses.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-expense" />}
+                    {incomes.length > 0 && (
+                      <div className={`w-1.5 h-1.5 rounded-full ${incomes.every((t) => t.projected) ? "bg-income/50" : "bg-income"}`} />
+                    )}
+                    {expenses.length > 0 && (
+                      <div className={`w-1.5 h-1.5 rounded-full ${expenses.every((t) => t.projected) ? "bg-expense/50" : "bg-expense"}`} />
+                    )}
                   </div>
                 </button>
               );
@@ -155,14 +188,27 @@ export function CalendarClient() {
               ) : (
                 <div className="space-y-2">
                   {selectedTxns.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50">
+                    <div
+                      key={t.id}
+                      className={`flex items-center justify-between p-2.5 rounded-lg ${
+                        t.projected
+                          ? "bg-white border border-dashed border-slate-300"
+                          : "bg-slate-50"
+                      }`}
+                    >
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-slate-800 truncate">{t.description}</p>
-                        <span className={`text-xs ${t.isPaid ? "text-income" : "text-slate-400"}`}>
-                          {t.isPaid ? "Pago" : "Pendente"}
+                        <p className={`text-sm font-medium truncate ${t.projected ? "text-slate-500 italic" : "text-slate-800"}`}>
+                          {t.description}
+                        </p>
+                        <span className={`text-xs ${t.projected ? "text-slate-400" : t.isPaid ? "text-income" : "text-slate-400"}`}>
+                          {t.projected ? "Previsto" : t.isPaid ? "Pago" : "Pendente"}
                         </span>
                       </div>
-                      <span className={`text-sm font-semibold font-mono ml-2 ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                      <span className={`text-sm font-semibold font-mono ml-2 ${
+                        t.projected
+                          ? t.type === "income" ? "text-income/60" : "text-expense/60"
+                          : t.type === "income" ? "text-income" : "text-expense"
+                      }`}>
                         {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
                       </span>
                     </div>
