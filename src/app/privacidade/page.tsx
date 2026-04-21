@@ -1,0 +1,111 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Política de Privacidade – Wallety",
+  description: "Política de Privacidade da plataforma Wallety.",
+};
+
+const sections = [
+  {
+    number: "1",
+    title: "Dados Coletados",
+    body: "Coletamos nome, endereço de e-mail, dados financeiros inseridos voluntariamente pelo usuário (receitas, despesas, categorias etc.) e dados técnicos de acesso, como endereço IP, tipo de dispositivo e navegador.",
+  },
+  {
+    number: "2",
+    title: "Finalidade",
+    body: "Os dados são utilizados exclusivamente para: (a) operar e disponibilizar a plataforma; (b) garantir a segurança das contas; e (c) melhorar a experiência do usuário com base em padrões de uso agregados e anônimos.",
+  },
+  {
+    number: "3",
+    title: "Base Legal",
+    body: "O tratamento dos dados é fundamentado em: execução de contrato (necessário para fornecer o serviço), consentimento do titular (para comunicações opcionais) e legítimo interesse do controlador (segurança e melhoria do serviço), conforme a Lei Geral de Proteção de Dados (LGPD – Lei nº 13.709/2018).",
+  },
+  {
+    number: "4",
+    title: "Compartilhamento de Dados",
+    body: "Seus dados não são vendidos, alugados ou cedidos a terceiros para fins comerciais. O compartilhamento ocorre apenas quando necessário para a operação do serviço (ex.: infraestrutura de hospedagem) ou por obrigação legal.",
+  },
+  {
+    number: "5",
+    title: "Direitos do Usuário",
+    body: "Você tem direito a: (a) acessar os dados que mantemos sobre você; (b) corrigir dados incorretos ou desatualizados; (c) solicitar a exclusão da sua conta e dados pessoais; e (d) revogar o consentimento a qualquer momento. Para exercer esses direitos, entre em contato pelo e-mail abaixo.",
+  },
+  {
+    number: "6",
+    title: "Contato e Controlador dos Dados",
+    body: null,
+    contact: true,
+  },
+];
+
+export default function PrivacidadePage() {
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-100 sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center gap-3">
+          <Link href="/login" className="flex items-center gap-2.5 group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Wallety" className="w-8 h-8 rounded-lg" />
+            <span className="font-brand text-xl font-bold text-slate-900 tracking-tight">Wallety</span>
+          </Link>
+          <span className="text-slate-300 text-lg font-light select-none">/</span>
+          <span className="text-sm font-medium text-slate-500">Política de Privacidade</span>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-6 py-10 space-y-6">
+        {/* Title block */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
+          <h1 className="text-2xl font-bold text-slate-900 mb-1">Política de Privacidade</h1>
+          <p className="text-sm text-slate-400">Última atualização: 21 de abril de 2026</p>
+          <p className="mt-4 text-sm text-slate-600 leading-relaxed">
+            Esta política descreve como o Wallety coleta, usa e protege os dados pessoais dos
+            usuários, em conformidade com a Lei Geral de Proteção de Dados (LGPD – Lei nº 13.709/2018).
+          </p>
+        </div>
+
+        {/* Sections */}
+        {sections.map((s) => (
+          <div key={s.number} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
+            <div className="flex items-start gap-4">
+              <span className="shrink-0 w-8 h-8 rounded-lg bg-brand-50 text-brand-600 text-sm font-bold flex items-center justify-center">
+                {s.number}
+              </span>
+              <div className="flex-1">
+                <h2 className="text-base font-semibold text-slate-900 mb-2">{s.title}</h2>
+                {s.contact ? (
+                  <div className="text-sm text-slate-600 space-y-1">
+                    <p><span className="font-medium text-slate-700">Controlador:</span> Leonardo Schneider</p>
+                    <p>
+                      <span className="font-medium text-slate-700">E-mail:</span>{" "}
+                      <a href="mailto:leonardoschneider@outlook.pt" className="text-brand-600 hover:underline">
+                        leonardoschneider@outlook.pt
+                      </a>
+                    </p>
+                    <p><span className="font-medium text-slate-700">Localização:</span> Colatina – ES, Brasil</p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-600 leading-relaxed">{s.body}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Footer links */}
+        <div className="text-center py-4 space-x-4 text-sm text-slate-400">
+          <Link href="/termos" className="hover:text-brand-600 transition">
+            Termos de Uso
+          </Link>
+          <span>·</span>
+          <Link href="/login" className="hover:text-brand-600 transition">
+            Voltar ao login
+          </Link>
+        </div>
+      </main>
+    </div>
+  );
+}
