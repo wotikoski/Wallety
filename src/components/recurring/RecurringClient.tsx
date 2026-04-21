@@ -199,9 +199,10 @@ export function RecurringClient() {
                   {/* Edit */}
                   <button
                     onClick={() => openEdit(r)}
-                    className="shrink-0 px-2 py-1 text-xs font-medium text-brand-600 bg-brand-50 border border-brand-200 rounded-lg hover:bg-brand-100 transition"
+                    className="shrink-0 p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
+                    title="Editar"
                   >
-                    Editar
+                    <Pencil size={14} />
                   </button>
 
                   {/* Delete */}
