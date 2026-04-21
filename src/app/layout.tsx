@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Patrick_Hand_SC } from "next/font/google";
+import { Inter, Capriola } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
@@ -10,7 +10,7 @@ const inter = Inter({
   display: "swap",
 });
 
-const brandFont = Patrick_Hand_SC({
+const brandFont = Capriola({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-brand",
