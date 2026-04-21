@@ -20,10 +20,14 @@ const COLOR_PALETTE = [
   "#ec4899", // pink
   "#14b8a6", // teal
   "#f97316", // orange
-  "#06b6d4", // cyan
-  "#84cc16", // lime
-  "#a855f7", // purple
-  "#facc15", // yellow
+];
+
+/** Common category emojis, grouped visually. Covers most finance use cases. */
+const EMOJI_SUGGESTIONS = [
+  "🍽️", "🛒", "🏠", "🚗", "⛽", "🚌",
+  "💊", "🏥", "🎓", "📚", "💼", "💰",
+  "👕", "💡", "📱", "🎬", "🎮", "✈️",
+  "🐶", "🎁", "💳", "🏦", "📈", "🔧",
 ];
 
 /** Pick the first palette color not yet used by categories of the same type. */
@@ -138,6 +142,8 @@ export function CategoriesClient() {
   // When user switches type in the form (for a new category), refresh suggested color.
   const watchedType = watch("type");
   const watchedColor = watch("color");
+  const watchedIcon = watch("icon");
+  const [showCustomColor, setShowCustomColor] = useState(false);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -176,21 +182,53 @@ export function CategoriesClient() {
                 <option value="both">Ambos</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Ícone (emoji)</label>
-              <input
-                {...register("icon")}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder="🍽️"
-              />
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Ícone</label>
+              <div className="flex items-start gap-3">
+                {/* Preview */}
+                <div
+                  className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0 border border-slate-200"
+                  style={{ backgroundColor: (watchedColor ?? "#6173f4") + "22" }}
+                >
+                  {watchedIcon || "💳"}
+                </div>
+                {/* Emoji grid */}
+                <div className="flex-1 grid grid-cols-8 gap-1.5">
+                  {EMOJI_SUGGESTIONS.map((e) => (
+                    <button
+                      key={e}
+                      type="button"
+                      onClick={() => setValue("icon", e)}
+                      className={`h-9 rounded-lg text-lg flex items-center justify-center transition ${
+                        watchedIcon === e
+                          ? "bg-brand-50 ring-2 ring-brand-500"
+                          : "hover:bg-slate-100"
+                      }`}
+                    >
+                      {e}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Custom emoji fallback, collapsed by default */}
+              <details className="mt-2">
+                <summary className="text-xs text-slate-400 cursor-pointer hover:text-slate-600 select-none inline-block">
+                  Usar outro emoji
+                </summary>
+                <input
+                  {...register("icon")}
+                  className="mt-1.5 w-32 px-3 py-1.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  placeholder="Cole aqui"
+                />
+              </details>
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
+            <div className="col-span-2">
+              <div className="flex items-center justify-between mb-2">
                 <label className="text-sm font-medium text-slate-700">Cor</label>
                 {!editing && (
                   <button
                     type="button"
-                    onClick={() => setValue("color", suggestColor(watchedType, categories.filter((c) => c.color !== watchedColor)))}
+                    onClick={() => setValue("color", suggestColor(watchedType, [...categories, { color: watchedColor } as Category]))}
                     className="text-xs text-slate-400 hover:text-brand-600 inline-flex items-center gap-1"
                     title="Sugerir outra cor"
                   >
@@ -200,24 +238,35 @@ export function CategoriesClient() {
                 )}
               </div>
               <div className="flex items-center gap-2">
+                {COLOR_PALETTE.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => { setValue("color", c); setShowCustomColor(false); }}
+                    className={`w-9 h-9 rounded-full border-2 transition shrink-0 ${
+                      watchedColor?.toLowerCase() === c.toLowerCase()
+                        ? "border-slate-900 scale-110 shadow-md"
+                        : "border-transparent hover:scale-105"
+                    }`}
+                    style={{ backgroundColor: c }}
+                    title={c}
+                  />
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setShowCustomColor((v) => !v)}
+                  className="text-xs text-slate-400 hover:text-brand-600 ml-auto"
+                >
+                  {showCustomColor ? "Fechar" : "Personalizada"}
+                </button>
+              </div>
+              {showCustomColor && (
                 <input
                   {...register("color")}
                   type="color"
-                  className="w-12 h-10 rounded-lg border border-slate-200 cursor-pointer shrink-0"
+                  className="mt-2 w-20 h-9 rounded-lg border border-slate-200 cursor-pointer"
                 />
-                <div className="flex-1 flex flex-wrap gap-1.5">
-                  {COLOR_PALETTE.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setValue("color", c)}
-                      className={`w-6 h-6 rounded-md border transition ${watchedColor?.toLowerCase() === c.toLowerCase() ? "border-slate-900 ring-2 ring-slate-900/20" : "border-slate-200 hover:scale-110"}`}
-                      style={{ backgroundColor: c }}
-                      title={c}
-                    />
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
             <div className="col-span-2 flex gap-3">
               <button
