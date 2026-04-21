@@ -118,3 +118,57 @@
 .font-brand {
   font-family: var(--font-brand), system-ui, sans-serif;
 }
+
+/* ---------------------------------------------------------------------------
+   Form control normalization
+   ---------------------------------------------------------------------------
+   iOS Safari renders <select>, <input type="date"/time/datetime-local>,
+   and some <input type="number"> with its own native chrome (rounded gray
+   pills) that ignores CSS border/background. This forces every form field
+   to share the same visual footprint across platforms.
+
+   Height is defined as a MIN (42px) so textareas and wrapped content can
+   grow, but compact controls stay aligned with text inputs on the same row.
+   -------------------------------------------------------------------------*/
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+  select,
+  textarea {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    min-height: 42px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    font-size: 0.875rem; /* 14px — matches text-sm */
+    line-height: 1.35;
+    font-family: inherit;
+    color: inherit;
+  }
+
+  /* Selects need a custom chevron since appearance:none hides the native one. */
+  select {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem !important;
+  }
+
+  /* Date/time pickers on iOS keep a small chevron-less layout; nudge their
+     text so they visually align with text inputs of the same height. */
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
+  input[type="month"],
+  input[type="week"] {
+    min-height: 42px;
+  }
+
+  /* Textareas should grow from the same baseline but still feel like a block.
+     Zoom-on-focus is already prevented by the root viewport meta
+     (maximumScale=1), so we keep the 14px size for visual consistency. */
+  textarea {
+    min-height: 64px;
+    line-height: 1.45;
+  }
+}
