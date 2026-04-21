@@ -9,7 +9,8 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, Building2 } from "lucide-react";
-import { COLOR_PALETTE, ColorPicker, suggestPaletteColor } from "@/components/ui/ColorPicker";
+import { COLOR_PALETTE, ColorPicker, suggestPaletteColor, rotatePaletteColor } from "@/components/ui/ColorPicker";
+import { getBankBrandColor } from "@/lib/utils/bank-colors";
 
 interface Bank {
   id: string;
@@ -40,6 +41,7 @@ export function BanksClient() {
     defaultValues: { color: COLOR_PALETTE[0] },
   });
   const watchedColor = watch("color");
+  const nameReg = register("name", { required: true });
 
   const saveMutation = useMutation({
     mutationFn: async (d: { name: string; code: string; color: string }) => {
@@ -112,7 +114,15 @@ export function BanksClient() {
             <div className="col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome do banco</label>
               <input
-                {...register("name", { required: true })}
+                {...nameReg}
+                onChange={(e) => {
+                  nameReg.onChange(e);
+                  // Auto-match brand color as the user types (only for new banks).
+                  if (!editing) {
+                    const brand = getBankBrandColor(e.target.value);
+                    if (brand) setValue("color", brand);
+                  }
+                }}
                 className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Ex: Nubank"
               />
@@ -130,7 +140,7 @@ export function BanksClient() {
                 value={watchedColor ?? COLOR_PALETTE[0]}
                 onChange={(c) => setValue("color", c)}
                 showSuggest={!editing}
-                onSuggest={() => setValue("color", suggestPaletteColor(banks.map((b) => b.color), watchedColor))}
+                onSuggest={() => setValue("color", rotatePaletteColor(watchedColor))}
               />
             </div>
             <div className="col-span-3 flex gap-3 items-end">
