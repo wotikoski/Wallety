@@ -23,6 +23,8 @@ import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from "
 interface DashboardData {
   totalIncome: number;
   totalExpenses: number;
+  paidExpenses: number;
+  pendingExpenses: number;
   balance: number;
   expensesByCategory: { name: string; total: number; color: string }[];
   monthlyTrend: { month: string; income: number; expenses: number }[];
@@ -136,6 +138,8 @@ export function DashboardClient() {
           value={totalExpenses}
           icon={<TrendingDown size={20} />}
           color="expense"
+          paid={data?.paidExpenses ?? 0}
+          pending={data?.pendingExpenses ?? 0}
         />
         <SummaryCard
           label="Saldo"
@@ -244,7 +248,12 @@ function SummaryCard({
   value: number;
   icon: React.ReactNode;
   color: "income" | "expense";
+  paid?: number;
+  pending?: number;
 }) {
+  const showProgress = paid !== undefined && pending !== undefined && value > 0;
+  const pct = showProgress ? Math.min(100, Math.round((paid! / value) * 100)) : 0;
+
   return (
     <div className="bg-white rounded-xl border border-slate-100 p-6 shadow-sm">
       <div className="flex items-center justify-between mb-3">
@@ -256,6 +265,22 @@ function SummaryCard({
       <p className={`text-2xl font-bold font-mono ${color === "income" ? "text-income-dark" : "text-expense-dark"}`}>
         {formatCurrency(value)}
       </p>
+      {showProgress && (
+        <div className="mt-3">
+          <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+            <div
+              className="h-full bg-expense transition-all"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <p className="text-xs text-slate-400 mt-1.5 font-medium">
+            {pct}% pago
+            {pending! > 0 && (
+              <span className="text-slate-400"> · {formatCurrency(pending!)} pendente</span>
+            )}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
