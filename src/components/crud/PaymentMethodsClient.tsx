@@ -116,7 +116,7 @@ export function PaymentMethodsClient() {
         <button
           onClick={() => { setShowForm(!showForm); setEditing(null); reset(); }}
           title="Nova Forma de Pagamento"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Nova Forma</span>
@@ -131,13 +131,13 @@ export function PaymentMethodsClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome</label>
               <input
                 {...register("name", { required: true })}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Ex: Nubank Crédito"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo</label>
-              <select {...register("type")} className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <select {...register("type")} className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 {PAYMENT_METHOD_TYPES.map((t) => (
                   <option key={t.value} value={t.value}>{t.label}</option>
                 ))}
@@ -145,7 +145,7 @@ export function PaymentMethodsClient() {
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Banco vinculado (opcional)</label>
-              <select {...register("bankId")} className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <select {...register("bankId")} className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <option value="">Sem banco vinculado</option>
                 {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
@@ -159,7 +159,7 @@ export function PaymentMethodsClient() {
                     type="number"
                     min={1}
                     max={31}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     placeholder="25"
                   />
                   <p className="text-xs text-slate-400 mt-1">Dia em que a fatura fecha (1–31)</p>
@@ -171,7 +171,7 @@ export function PaymentMethodsClient() {
                     type="number"
                     min={1}
                     max={31}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     placeholder="5"
                   />
                   <p className="text-xs text-slate-400 mt-1">Dia em que a fatura deve ser paga (1–31)</p>
