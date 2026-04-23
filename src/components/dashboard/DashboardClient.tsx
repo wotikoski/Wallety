@@ -155,7 +155,7 @@ export function DashboardClient() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+      <div className="grid grid-cols-3 gap-2 md:gap-3.5">
         <SummaryCard
           label="Receitas"
           value={totalIncome}
@@ -310,39 +310,41 @@ function SummaryCard({
   const pct = showProgress ? Math.min(100, Math.round((paid! / value) * 100)) : 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-app-border p-5 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.03)] flex-1 min-w-0">
-      <div className="flex items-start justify-between mb-3.5">
-        <span className="text-[11px] font-bold text-app-muted uppercase tracking-[0.06em]">{label}</span>
-        <div className={`w-[34px] h-[34px] rounded-[10px] flex items-center justify-center shrink-0 ${color === "income" ? "bg-income-light text-income" : "bg-expense-light text-expense"}`}>
+    <div className="bg-white rounded-2xl border border-app-border p-3 md:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.03)] flex-1 min-w-0">
+      {/* Header: label + icon (icon hidden on mobile) */}
+      <div className="flex items-start justify-between mb-2 md:mb-3.5">
+        <span className="text-[9px] md:text-[11px] font-bold text-app-muted uppercase tracking-[0.06em]">{label}</span>
+        <div className={`hidden md:flex w-[34px] h-[34px] rounded-[10px] items-center justify-center shrink-0 ${color === "income" ? "bg-income-light text-income" : "bg-expense-light text-expense"}`}>
           {icon}
         </div>
       </div>
-      <p className={`text-[26px] font-extrabold tracking-tight leading-none ${color === "income" ? "text-income" : "text-expense"}`}>
+
+      {/* Value */}
+      <p className={`text-base md:text-[26px] font-extrabold tracking-tight leading-none truncate ${color === "income" ? "text-income" : "text-expense"}`}>
         {formatCurrency(value)}
       </p>
+
+      {/* Progress bar — desktop only */}
       {showProgress && (
-        <div className="mt-3">
+        <div className="hidden md:block mt-3">
           <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
-            <div
-              className="h-full bg-expense transition-all"
-              style={{ width: `${pct}%` }}
-            />
+            <div className="h-full bg-expense transition-all" style={{ width: `${pct}%` }} />
           </div>
           <p className="text-xs text-slate-400 mt-1.5 font-medium">
             {pct}% pago
-            {pending! > 0 && (
-              <span className="text-slate-400"> · {formatCurrency(pending!)} pendente</span>
-            )}
+            {pending! > 0 && <span> · {formatCurrency(pending!)} pendente</span>}
           </p>
         </div>
       )}
+
+      {/* Projections — desktop only */}
       {projected !== undefined && projected > 0 && (
-        <p className="text-xs text-slate-400 mt-2 border-t border-dashed border-slate-200 pt-2">
+        <p className="hidden md:block text-xs text-slate-400 mt-2 border-t border-dashed border-slate-200 pt-2">
           <span className="font-medium text-slate-500">+ {formatCurrency(projected)}</span> previsto
         </p>
       )}
       {projectedBalance !== undefined && (
-        <p className="text-xs text-slate-400 mt-2 border-t border-dashed border-slate-200 pt-2">
+        <p className="hidden md:block text-xs text-slate-400 mt-2 border-t border-dashed border-slate-200 pt-2">
           Previsto fim do mês:{" "}
           <span className={`font-mono font-medium ${projectedBalance >= 0 ? "text-income" : "text-expense"}`}>
             {formatCurrency(projectedBalance)}
