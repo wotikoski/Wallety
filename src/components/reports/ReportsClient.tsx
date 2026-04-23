@@ -15,8 +15,8 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { TrendingUp, TrendingDown, ArrowLeft, CheckCircle2, Circle } from "lucide-react";
-import { format, startOfMonth, endOfMonth } from "date-fns";
+import { TrendingUp, TrendingDown, ArrowLeft, CheckCircle2, Circle, ChevronLeft, ChevronRight } from "lucide-react";
+import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 
 interface ReportItem {
   label: string;
@@ -108,6 +108,16 @@ export function ReportsClient() {
     fn();
   }
 
+  // Month navigation: move one month back/forward, correctly clamping end-of-month.
+  function navigateMonth(delta: -1 | 1) {
+    const ref = startDate ? parseISO(startDate) : now;
+    const next = addMonths(ref, delta);
+    handleFilterChange(() => {
+      setStartDate(format(startOfMonth(next), "yyyy-MM-dd"));
+      setEndDate(format(endOfMonth(next), "yyyy-MM-dd"));
+    });
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="no-print">
@@ -163,6 +173,23 @@ export function ReportsClient() {
             <option value="bank">Banco</option>
             {activeGroupId && <option value="user">Usuário</option>}
           </select>
+        </div>
+        {/* Month shortcuts */}
+        <div className="flex items-center gap-1 h-[38px] self-end">
+          <button
+            onClick={() => navigateMonth(-1)}
+            title="Mês anterior"
+            className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+          >
+            <ChevronLeft size={15} />
+          </button>
+          <button
+            onClick={() => navigateMonth(1)}
+            title="Próximo mês"
+            className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+          >
+            <ChevronRight size={15} />
+          </button>
         </div>
       </div>
 

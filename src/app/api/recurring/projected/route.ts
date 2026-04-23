@@ -5,7 +5,7 @@ import { recurringTransactions, paymentMethods } from "@/lib/db/schema";
 import { and, eq, isNull, inArray } from "drizzle-orm";
 import { computeOccurrences } from "@/lib/utils/recurrence";
 import { computeEffectiveDate } from "@/lib/utils/invoice";
-import { parseISO, format } from "date-fns";
+import { parseISO, format, endOfMonth } from "date-fns";
 
 /**
  * GET /api/recurring/projected?from=YYYY-MM-DD&to=YYYY-MM-DD&groupId=
@@ -65,7 +65,10 @@ export async function GET(req: NextRequest) {
       pms.forEach((p) => pmMap.set(p.id, { type: p.type, closingDay: p.closingDay, dueDay: p.dueDay }));
     }
 
-    const todayStr = format(new Date(), "yyyy-MM-dd");
+    const now = new Date();
+    // materialize() now covers through end-of-current-month, so projected
+    // only needs to show dates strictly after that horizon to avoid duplicates.
+    const materializeHorizon = format(endOfMonth(now), "yyyy-MM-dd");
     const toDate = parseISO(to);
 
     const projected: Array<{
@@ -94,8 +97,10 @@ export async function GET(req: NextRequest) {
       const pm = rule.paymentMethodId ? pmMap.get(rule.paymentMethodId) ?? null : null;
 
       for (const d of dates) {
-        // Skip past/today — those are handled by materialize().
-        if (d <= todayStr) continue;
+        // Skip anything within the current month — materialize() covers
+        // through end-of-month, so those rows exist (or will exist) as real
+        // transactions and should not appear again as projections.
+        if (d <= materializeHorizon) continue;
         // Skip anything before the requested window.
         if (d < from) continue;
         projected.push({
