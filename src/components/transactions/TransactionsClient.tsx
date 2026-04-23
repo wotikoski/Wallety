@@ -28,6 +28,8 @@ interface Transaction {
   value: string;
   isPaid: boolean;
   categoryId: string | null;
+  categoryName: string | null;
+  categoryColor: string | null;
   bankId: string | null;
   installmentCurrent: number | null;
   installmentTotal: number | null;
@@ -398,8 +400,19 @@ export function TransactionsClient() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-800 truncate">{t.description}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
+                      <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                         <p className="text-xs text-slate-400">{formatDate(t.date)}</p>
+                        {t.categoryName && (
+                          <span
+                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                            style={{
+                              backgroundColor: t.categoryColor ? `${t.categoryColor}22` : "#6173f422",
+                              color: t.categoryColor ?? "#6173f4",
+                            }}
+                          >
+                            {t.categoryName}
+                          </span>
+                        )}
                         {t.installmentTotal && t.installmentTotal > 1 && (
                           <span className="text-xs text-slate-400 flex items-center gap-0.5">
                             <Layers size={10} />{t.installmentCurrent}/{t.installmentTotal}
@@ -471,7 +484,22 @@ export function TransactionsClient() {
                             : <ArrowDownRight size={12} className="text-expense" />
                           }
                         </div>
-                        <span className="text-sm font-medium text-slate-800">{t.description}</span>
+                        <div>
+                          <span className="text-sm font-medium text-slate-800">{t.description}</span>
+                          {t.categoryName && (
+                            <div className="mt-0.5">
+                              <span
+                                className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                                style={{
+                                  backgroundColor: t.categoryColor ? `${t.categoryColor}22` : "#6173f422",
+                                  color: t.categoryColor ?? "#6173f4",
+                                }}
+                              >
+                                {t.categoryName}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-3.5 text-sm text-slate-400">

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
-import { transactions, paymentMethods } from "@/lib/db/schema";
+import { transactions, paymentMethods, categories } from "@/lib/db/schema";
 import { transactionSchema } from "@/lib/validations/transaction";
 import { generateInstallments } from "@/lib/utils/installments";
 import { computeEffectiveDate } from "@/lib/utils/invoice";
@@ -56,8 +56,26 @@ export async function GET(req: NextRequest) {
     }
 
     const rows = await db
-      .select()
+      .select({
+        id: transactions.id,
+        date: transactions.date,
+        effectiveDate: transactions.effectiveDate,
+        type: transactions.type,
+        description: transactions.description,
+        value: transactions.value,
+        isPaid: transactions.isPaid,
+        categoryId: transactions.categoryId,
+        bankId: transactions.bankId,
+        installmentCurrent: transactions.installmentCurrent,
+        installmentTotal: transactions.installmentTotal,
+        installmentGroupId: transactions.installmentGroupId,
+        userId: transactions.userId,
+        groupId: transactions.groupId,
+        categoryName: categories.name,
+        categoryColor: categories.color,
+      })
       .from(transactions)
+      .leftJoin(categories, eq(transactions.categoryId, categories.id))
       .where(and(...conditions))
       .orderBy(desc(transactions.date), desc(transactions.createdAt))
       .limit(limit)

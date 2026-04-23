@@ -35,6 +35,8 @@ interface DashboardData {
     type: string;
     value: string;
     isPaid: boolean;
+    categoryName: string | null;
+    categoryColor: string | null;
   }[];
 }
 
@@ -268,7 +270,23 @@ export function DashboardClient() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-semibold text-app-text truncate">{t.description}</p>
-                  <p className="text-[11px] text-app-muted mt-0.5">{formatDate(t.date)}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[11px] text-app-muted">{formatDate(t.date)}</span>
+                    {t.categoryName && (
+                      <>
+                        <span className="text-app-muted/40 text-[10px]">·</span>
+                        <span
+                          className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                          style={{
+                            backgroundColor: t.categoryColor ? `${t.categoryColor}22` : "#6173f422",
+                            color: t.categoryColor ?? "#6173f4",
+                          }}
+                        >
+                          {t.categoryName}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <div className="text-right shrink-0">
                   <p className={`text-[14px] font-bold tabular-nums ${t.type === "income" ? "text-income" : "text-expense"}`}>
