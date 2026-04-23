@@ -50,7 +50,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="px-5 py-[22px] border-b border-white/[0.06]">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="Wallety" className="w-9 h-9 rounded-xl block shrink-0" />
+          <img src="/logo-white.png" alt="Wallety" className="w-9 h-9 rounded-xl block shrink-0" />
           <span className="font-brand text-white font-bold text-xl leading-none tracking-tight">Wallety</span>
         </div>
       </div>
