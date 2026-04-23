@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Capriola } from "next/font/google";
+import { Plus_Jakarta_Sans, Capriola } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-inter", // keeps the same CSS var so Tailwind picks it up
   display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const brandFont = Capriola({
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.variable} ${brandFont.variable} font-sans antialiased`}>
+      <body className={`${plusJakarta.variable} ${brandFont.variable} font-sans antialiased`}>
         <Providers>
           {children}
           <Toaster />

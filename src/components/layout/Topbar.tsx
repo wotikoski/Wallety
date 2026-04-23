@@ -24,11 +24,11 @@ export function Topbar() {
   const activeGroup = groups.find((g) => g.id === activeGroupId);
 
   return (
-    <header className="h-14 bg-white border-b border-slate-100 flex items-center px-6 gap-4 no-print">
+    <header className="h-14 bg-white border-b border-app-border flex items-center px-5 gap-4 no-print">
       <div className="relative">
         <button
           onClick={() => setShowGroupMenu(!showGroupMenu)}
-          className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition"
+          className="flex items-center gap-2 text-[13px] font-medium text-slate-700 hover:text-slate-900 bg-[#f7f8fc] hover:bg-[#f0f2f8] px-3 py-1.5 rounded-[10px] border border-app-border transition"
         >
           <Users size={14} className="text-slate-400" />
           <span>{activeGroup ? activeGroup.name : "Pessoal"}</span>
@@ -58,7 +58,7 @@ export function Topbar() {
 
       <div className="flex-1" />
 
-      <span className="text-xs text-slate-400">
+      <span className="text-xs text-app-muted font-medium">
         {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
       </span>
     </header>

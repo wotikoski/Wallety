@@ -19,8 +19,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-// Ordered by daily-use frequency: entry/overview first, then data entry,
-// then planning, then retrospective analysis.
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/lancamentos", label: "Lançamentos", icon: ArrowLeftRight },
@@ -31,7 +29,6 @@ const navItems = [
   { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
 ];
 
-// Setup-flow order: taxonomies first, then financial rails, then account-level.
 const configItems = [
   { href: "/categorias", label: "Categorias", icon: Tag },
   { href: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard },
@@ -49,53 +46,60 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex w-64 bg-slate-950 flex-col h-screen sticky top-0 shrink-0">
+    <aside className="hidden md:flex w-60 bg-sidebar-bg flex-col h-screen sticky top-0 shrink-0">
       {/* Logo */}
-      <div className="p-6 border-b border-slate-800">
+      <div className="px-5 py-[22px] border-b border-white/[0.06]">
         <div className="flex items-center gap-3">
           <img src="/logo.png" alt="Wallety" className="w-9 h-9 rounded-xl block shrink-0" />
-          <div>
-            <div className="font-brand text-white font-bold text-xl leading-none">Wallety</div>
-            <div className="text-slate-400 text-xs mt-0.5">Finanças simplificadas</div>
-          </div>
+          <span className="font-brand text-white font-bold text-xl leading-none tracking-tight">Wallety</span>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        <div className="mb-4">
+      <nav className="flex-1 px-3 pt-3 pb-2 overflow-y-auto">
+        <div className="mb-2">
           {navItems.map((item) => (
-            <NavItem key={item.href} {...item} active={pathname === item.href || pathname.startsWith(item.href + "/")} />
+            <NavItem
+              key={item.href}
+              {...item}
+              active={pathname === item.href || pathname.startsWith(item.href + "/")}
+            />
           ))}
         </div>
 
-        <div className="pt-4 border-t border-slate-800">
-          <p className="text-slate-500 text-xs font-medium px-3 mb-2 uppercase tracking-wider">Configurações</p>
+        <div className="pt-4 border-t border-white/[0.06]">
+          <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.1em] px-2.5 pb-2">
+            Configurações
+          </p>
           {configItems.map((item) => (
-            <NavItem key={item.href} {...item} active={pathname === item.href || pathname.startsWith(item.href + "/")} />
+            <NavItem
+              key={item.href}
+              {...item}
+              active={pathname === item.href || pathname.startsWith(item.href + "/")}
+            />
           ))}
         </div>
       </nav>
 
       {/* Author */}
-      <div className="px-5 py-3 border-t border-slate-800/60">
-        <p className="text-slate-600 text-[10px] mb-1">
-          Feito por <span className="text-slate-500 font-medium">Leonardo Schneider</span>
+      <div className="px-5 py-3 border-t border-white/[0.06]">
+        <p className="text-white/25 text-[10px] mb-1">
+          Feito por <span className="text-white/35 font-medium">Leonardo Schneider</span>
         </p>
         <div className="flex items-center gap-2 text-[10px]">
-          <a href="mailto:leonardoschneider@outlook.pt" className="text-slate-600 hover:text-slate-400 transition">E-mail</a>
-          <span className="text-slate-700">·</span>
-          <a href="https://t.me/leonardoschneider" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-slate-400 transition">Telegram</a>
+          <a href="mailto:leonardoschneider@outlook.pt" className="text-white/25 hover:text-white/50 transition">E-mail</a>
+          <span className="text-white/20">·</span>
+          <a href="https://t.me/leonardoschneider" target="_blank" rel="noopener noreferrer" className="text-white/25 hover:text-white/50 transition">Telegram</a>
         </div>
       </div>
 
       {/* Logout */}
-      <div className="p-4 border-t border-slate-800">
+      <div className="px-3 pb-3 border-t border-white/[0.06] pt-3">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition text-sm"
+          className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition text-[13px] font-medium"
         >
-          <LogOut size={16} />
+          <LogOut size={15} />
           <span>Sair</span>
         </button>
       </div>
@@ -111,20 +115,24 @@ function NavItem({
 }: {
   href: string;
   label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
   active: boolean;
 }) {
   return (
     <Link
       href={href}
       className={cn(
-        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+        "relative flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-[13px] transition-all mb-0.5",
         active
-          ? "bg-brand-600/20 text-brand-400 font-medium"
-          : "text-slate-400 hover:text-white hover:bg-slate-800/60",
+          ? "bg-[rgba(97,115,244,0.18)] text-[#818cf8] font-semibold"
+          : "text-white/40 hover:text-white/70 hover:bg-white/[0.05] font-medium",
       )}
     >
-      <Icon size={16} className={active ? "text-brand-400" : ""} />
+      {/* Active left indicator bar */}
+      {active && (
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] bg-[#818cf8] rounded-r-[3px]" />
+      )}
+      <Icon size={15} strokeWidth={active ? 2 : 1.75} />
       <span>{label}</span>
     </Link>
   );
