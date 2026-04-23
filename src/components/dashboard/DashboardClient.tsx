@@ -125,7 +125,7 @@ export function DashboardClient() {
   const balance = data?.balance ?? 0;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
@@ -155,7 +155,7 @@ export function DashboardClient() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-2 md:gap-3.5">
+      <div className="grid grid-cols-3 gap-2 md:gap-3">
         <SummaryCard
           label="Receitas"
           value={totalIncome}
@@ -186,10 +186,10 @@ export function DashboardClient() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Monthly Trend */}
-        <div className="bg-white rounded-2xl border border-app-border p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-white rounded-2xl border border-app-border p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center justify-between mb-3">
             <h2 className="text-[14px] font-bold text-app-text">Receitas vs Despesas</h2>
             <div className="flex items-center gap-3">
               {[["#0d9f6a", "Receitas"], ["#e05252", "Despesas"]].map(([c, l]) => (
@@ -213,8 +213,8 @@ export function DashboardClient() {
         </div>
 
         {/* Expenses by Category */}
-        <div className="bg-white rounded-2xl border border-app-border p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-          <h2 className="text-[14px] font-bold text-app-text mb-4">Despesas por Categoria</h2>
+        <div className="bg-white rounded-2xl border border-app-border p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <h2 className="text-[14px] font-bold text-app-text mb-3">Despesas por Categoria</h2>
           {(data?.expensesByCategory?.length ?? 0) > 0 ? (
             <div className="flex items-center gap-4">
               <div className="w-[150px] h-[150px] shrink-0">
@@ -310,7 +310,7 @@ function SummaryCard({
   const pct = showProgress ? Math.min(100, Math.round((paid! / value) * 100)) : 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-app-border p-3 md:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.03)] flex-1 min-w-0">
+    <div className="bg-white rounded-2xl border border-app-border p-3 md:p-4 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.03)] flex-1 min-w-0">
       {/* Header: label + icon (icon hidden on mobile) */}
       <div className="flex items-start justify-between mb-2 md:mb-3.5">
         <span className="text-[9px] md:text-[11px] font-bold text-app-muted uppercase tracking-[0.06em]">{label}</span>
