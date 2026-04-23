@@ -333,17 +333,17 @@ export function TransactionsClient() {
       {txns.length > 0 && (
         <div className="sticky top-0 z-10 py-2 bg-app-bg/95 backdrop-blur-sm md:static md:bg-transparent md:py-0 md:backdrop-blur-none">
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-income-light rounded-xl px-2.5 py-2 text-center">
-              <p className="text-[10px] text-income-dark font-semibold uppercase tracking-wide mb-0.5">Receitas</p>
-              <p className="text-sm font-bold font-mono text-income-dark truncate">{formatCurrency(totalIncome)}</p>
+            <div className="bg-income rounded-xl px-2.5 py-2 text-center">
+              <p className="text-[10px] text-white/70 font-semibold uppercase tracking-wide mb-0.5">Receitas</p>
+              <p className="text-sm font-bold font-mono text-white truncate">{formatCurrency(totalIncome)}</p>
             </div>
-            <div className="bg-expense-light rounded-xl px-2.5 py-2 text-center">
-              <p className="text-[10px] text-expense-dark font-semibold uppercase tracking-wide mb-0.5">Despesas</p>
-              <p className="text-sm font-bold font-mono text-expense-dark truncate">{formatCurrency(totalExpense)}</p>
+            <div className="bg-expense rounded-xl px-2.5 py-2 text-center">
+              <p className="text-[10px] text-white/70 font-semibold uppercase tracking-wide mb-0.5">Despesas</p>
+              <p className="text-sm font-bold font-mono text-white truncate">{formatCurrency(totalExpense)}</p>
             </div>
-            <div className={`rounded-xl px-2.5 py-2 text-center ${totalIncome - totalExpense >= 0 ? "bg-income-light" : "bg-expense-light"}`}>
-              <p className="text-[10px] font-semibold uppercase tracking-wide mb-0.5 text-slate-500">Saldo</p>
-              <p className={`text-sm font-bold font-mono truncate ${totalIncome - totalExpense >= 0 ? "text-income-dark" : "text-expense-dark"}`}>
+            <div className={`rounded-xl px-2.5 py-2 text-center ${totalIncome - totalExpense >= 0 ? "bg-income" : "bg-expense"}`}>
+              <p className="text-[10px] text-white/70 font-semibold uppercase tracking-wide mb-0.5">Saldo</p>
+              <p className="text-sm font-bold font-mono text-white truncate">
                 {formatCurrency(totalIncome - totalExpense)}
               </p>
             </div>
