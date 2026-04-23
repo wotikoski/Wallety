@@ -113,8 +113,19 @@ export async function GET(req: NextRequest) {
     // a credit-card purchase on Apr 20 belongs in April's recent list even
     // though its invoice lands in May.
     const recentTxns = await db
-      .select()
+      .select({
+        id: transactions.id,
+        date: transactions.date,
+        description: transactions.description,
+        type: transactions.type,
+        value: transactions.value,
+        isPaid: transactions.isPaid,
+        categoryId: transactions.categoryId,
+        categoryName: categories.name,
+        categoryColor: categories.color,
+      })
       .from(transactions)
+      .leftJoin(categories, eq(transactions.categoryId, categories.id))
       .where(
         and(
           scopeCondition,
@@ -124,7 +135,7 @@ export async function GET(req: NextRequest) {
         ),
       )
       .orderBy(desc(transactions.date), desc(transactions.createdAt))
-      .limit(10);
+      .limit(5);
 
     return NextResponse.json({
       totalIncome,
