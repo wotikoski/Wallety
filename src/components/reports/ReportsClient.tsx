@@ -263,8 +263,48 @@ export function ReportsClient() {
               </ResponsiveContainer>
             </div>
 
-            {/* Summary table */}
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-x-auto">
+            {/* Summary — mobile cards */}
+            <div className="md:hidden bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+              {items.map((item, index) => {
+                const isSelected = drilldown?.groupKey === item.groupKey;
+                return (
+                  <button
+                    key={index}
+                    onClick={() => isSelected ? closeDrilldown() : openDrilldown(item, index)}
+                    className={`w-full flex items-center gap-3 px-4 py-3.5 border-b border-slate-50 last:border-0 transition text-left ${isSelected ? "bg-brand-50" : "hover:bg-slate-50/60"}`}
+                  >
+                    <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium truncate ${isSelected ? "text-brand-700" : "text-slate-800"}`}>{item.label}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex-1 bg-slate-100 rounded-full h-1.5">
+                          <div
+                            className={`h-1.5 rounded-full ${reportType === "income" ? "bg-income" : "bg-expense"}`}
+                            style={{ width: `${item.percentage}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-slate-400 shrink-0">{item.percentage.toFixed(1)}%</span>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className={`text-sm font-bold font-mono ${reportType === "income" ? "text-income" : "text-expense"}`}>
+                        {formatCurrency(item.total)}
+                      </p>
+                      <p className="text-xs text-slate-400">{item.count} lanç.</p>
+                    </div>
+                  </button>
+                );
+              })}
+              <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-t border-slate-200">
+                <span className="text-sm font-semibold text-slate-700">Total</span>
+                <span className={`text-sm font-bold font-mono ${reportType === "income" ? "text-income" : "text-expense"}`}>
+                  {formatCurrency(data?.grandTotal ?? 0)}
+                </span>
+              </div>
+            </div>
+
+            {/* Summary table — desktop */}
+            <div className="hidden md:block bg-white rounded-xl border border-slate-100 shadow-sm overflow-x-auto">
               <table className="w-full min-w-[500px]">
                 <thead className="bg-slate-50 border-b border-slate-100">
                   <tr>
