@@ -5,7 +5,7 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
 import { useEffect, useState } from "react";
-import { format, startOfMonth, endOfMonth } from "date-fns";
+import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 import Link from "next/link";
 import {
   Plus, Filter, ArrowUpRight, ArrowDownRight, CheckCircle2, Circle,
@@ -49,6 +49,16 @@ export function TransactionsClient() {
   const [type, setType] = useState<string>("");
   const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
+
+  // Month navigation: move one month back/forward and update start+end dates.
+  // endOfMonth handles short months (Feb, Apr, Jun…) automatically.
+  const navigateMonth = (delta: -1 | 1) => {
+    const ref = startDate ? parseISO(startDate) : now;
+    const next = addMonths(ref, delta);
+    setStartDate(format(startOfMonth(next), "yyyy-MM-dd"));
+    setEndDate(format(endOfMonth(next), "yyyy-MM-dd"));
+    setPage(1);
+  };
 
   // Lazy-materialize recurring transactions when opening Lançamentos.
   // Throttled to once per hour per session (shared with Dashboard).
@@ -236,6 +246,23 @@ export function TransactionsClient() {
             onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
             className="w-[155px] h-[38px] text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           />
+        </div>
+        {/* Month shortcuts */}
+        <div className="flex items-center gap-1 h-[38px]">
+          <button
+            onClick={() => navigateMonth(-1)}
+            title="Mês anterior"
+            className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+          >
+            <ChevronLeft size={15} />
+          </button>
+          <button
+            onClick={() => navigateMonth(1)}
+            title="Próximo mês"
+            className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+          >
+            <ChevronRight size={15} />
+          </button>
         </div>
         {(type || startDate || endDate) && (
           <button

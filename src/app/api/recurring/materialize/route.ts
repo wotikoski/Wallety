@@ -5,20 +5,27 @@ import { recurringTransactions, transactions, paymentMethods } from "@/lib/db/sc
 import { and, eq, isNull, inArray, sql } from "drizzle-orm";
 import { computeOccurrences } from "@/lib/utils/recurrence";
 import { computeEffectiveDate } from "@/lib/utils/invoice";
-import { format } from "date-fns";
+import { format, endOfMonth } from "date-fns";
 
 /**
  * POST /api/recurring/materialize
  * Walks every active recurring template for the caller and inserts concrete
- * transaction rows for any occurrences due up to today that haven't been
- * generated yet. Intended to be called lazily (e.g. on dashboard load) or
- * by a cron.
+ * transaction rows for any occurrences due up to the end of the current month
+ * that haven't been generated yet. Materializing through end-of-month ensures
+ * rules set to day 30 or 31 get a row in months with fewer days (e.g. April
+ * produces April 30 from a day-31 rule, February produces Feb 28/29), making
+ * them visible in the transactions list and calendar without waiting for the
+ * exact date to arrive. Intended to be called lazily (e.g. on dashboard load)
+ * or by a cron.
  */
 export async function POST(req: NextRequest) {
   try {
     const auth = await requireAuth(req);
     const today = new Date();
     const todayStr = format(today, "yyyy-MM-dd");
+    // Materialize through the last day of the current month so occurrences
+    // like "day 31" in April (→ Apr 30) are created even when today < Apr 30.
+    const horizon = endOfMonth(today);
 
     const rules = await db
       .select()
@@ -61,7 +68,7 @@ export async function POST(req: NextRequest) {
           endDate: rule.endDate,
           lastGeneratedDate: rule.lastGeneratedDate,
         },
-        today,
+        horizon,
       );
       if (dates.length === 0) continue;
 

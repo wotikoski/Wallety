@@ -350,6 +350,15 @@ function RecurringForm({
     editing?.dayOfMonth ?? String(new Date().getDate()),
   );
   const [startDate, setStartDate] = useState(editing?.startDate ?? today);
+  // When startDate changes on a NEW rule (not editing), sync dayOfMonth to the
+  // chosen day so the user doesn't have to update two fields manually.
+  const handleStartDateChange = (val: string) => {
+    setStartDate(val);
+    if (!editing && val) {
+      const day = parseInt(val.split("-")[2], 10);
+      if (!isNaN(day)) setDayOfMonth(String(day));
+    }
+  };
   const [endDate, setEndDate] = useState(editing?.endDate ?? "");
   const [saving, setSaving] = useState(false);
 
@@ -494,6 +503,11 @@ function RecurringForm({
                 ))}
                 <option value="last">Último</option>
               </select>
+              {(parseInt(dayOfMonth) >= 29 || dayOfMonth === "last") && (
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Em meses com menos dias, usa o último dia do mês.
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -504,7 +518,7 @@ function RecurringForm({
             <input
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => handleStartDateChange(e.target.value)}
               className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
