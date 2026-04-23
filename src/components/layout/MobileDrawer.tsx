@@ -49,13 +49,13 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
         className="fixed inset-0 bg-black/60 z-50 md:hidden"
         onClick={onClose}
       />
-      <div className="fixed bottom-0 left-0 right-0 bg-slate-950 rounded-t-2xl z-50 md:hidden pb-safe max-h-[85vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 sticky top-0 bg-slate-950">
+      <div className="fixed bottom-0 left-0 right-0 bg-sidebar-bg rounded-t-2xl z-50 md:hidden pb-safe max-h-[85vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] sticky top-0 bg-sidebar-bg">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Wallety" className="w-8 h-8 rounded-xl block shrink-0" />
             <span className="font-brand text-white font-bold text-lg">Wallety</span>
           </div>
-          <button onClick={onClose} className="text-slate-400 p-1">
+          <button onClick={onClose} className="text-white/40 p-1">
             <X size={20} />
           </button>
         </div>
@@ -66,7 +66,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
           ))}
         </nav>
 
-        <div className="px-4 pb-2 pt-3 border-t border-slate-800">
+        <div className="px-4 pb-2 pt-3 border-t border-white/[0.06]">
           <p className="text-slate-500 text-xs font-medium px-3 mb-2 uppercase tracking-wider">
             Configurações
           </p>
@@ -77,10 +77,10 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
           </nav>
         </div>
 
-        <div className="px-4 pb-6 border-t border-slate-800 pt-3 mt-2">
+        <div className="px-4 pb-6 border-t border-white/[0.06] pt-3 mt-2">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-3 rounded-lg text-slate-400 text-sm"
+            className="flex items-center gap-3 w-full px-3 py-3 rounded-lg text-white/40 text-sm"
           >
             <LogOut size={18} />
             <span>Sair</span>
@@ -107,7 +107,7 @@ function DrawerItem({
       onClick={onClose}
       className={cn(
         "flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition",
-        active ? "bg-brand-600/20 text-brand-400 font-medium" : "text-slate-400",
+        active ? "bg-[rgba(97,115,244,0.18)] text-[#818cf8] font-semibold" : "text-white/40",
       )}
     >
       <item.icon size={18} />

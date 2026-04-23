@@ -129,14 +129,14 @@ export function DashboardClient() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Visão geral das suas finanças</p>
+          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Dashboard</h1>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Visão geral das suas finanças</p>
         </div>
         <div className="flex items-center gap-2">
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="flex-1 sm:flex-none text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="flex-1 sm:flex-none text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 py-[7px] bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             {MONTHS.map((m, i) => (
               <option key={i} value={i + 1}>{m}</option>
@@ -145,7 +145,7 @@ export function DashboardClient() {
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 py-[7px] bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             {[2023, 2024, 2025, 2026].map((y) => (
               <option key={y} value={y}>{y}</option>
@@ -155,7 +155,7 @@ export function DashboardClient() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
         <SummaryCard
           label="Receitas"
           value={totalIncome}
@@ -186,48 +186,61 @@ export function DashboardClient() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
         {/* Monthly Trend */}
-        <div className="bg-white rounded-xl border border-slate-100 p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-800 mb-4">Receitas vs Despesas (6 meses)</h2>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={data?.monthlyTrend ?? []}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#94a3b8" }} />
-              <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} />
-              <Tooltip formatter={(v: number) => formatCurrency(v)} />
-              <Bar dataKey="income" name="Receitas" fill="#16a34a" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="expenses" name="Despesas" fill="#dc2626" radius={[4, 4, 0, 0]} />
+        <div className="bg-white rounded-2xl border border-app-border p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[14px] font-bold text-app-text">Receitas vs Despesas</h2>
+            <div className="flex items-center gap-3">
+              {[["#0d9f6a", "Receitas"], ["#e05252", "Despesas"]].map(([c, l]) => (
+                <div key={l} className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-[3px]" style={{ background: c }} />
+                  <span className="text-[11px] text-app-muted font-medium">{l}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="30%">
+              <CartesianGrid vertical={false} stroke="#f3f4f6" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ba3af" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "#9ba3af" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
+              <Tooltip formatter={(v: number) => formatCurrency(v)} contentStyle={{ background: "#fff", border: "1px solid #e8eaf2", borderRadius: 10, fontSize: 12 }} />
+              <Bar dataKey="income" name="Receitas" fill="#0d9f6a" radius={[6, 6, 6, 6]} />
+              <Bar dataKey="expenses" name="Despesas" fill="#e05252" radius={[6, 6, 6, 6]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Expenses by Category */}
-        <div className="bg-white rounded-xl border border-slate-100 p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-800 mb-4">Despesas por Categoria</h2>
+        <div className="bg-white rounded-2xl border border-app-border p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <h2 className="text-[14px] font-bold text-app-text mb-4">Despesas por Categoria</h2>
           {(data?.expensesByCategory?.length ?? 0) > 0 ? (
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie
-                  data={data?.expensesByCategory ?? []}
-                  dataKey="total"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
-                  paddingAngle={2}
-                >
-                  {(data?.expensesByCategory ?? []).map((entry, index) => (
-                    <Cell key={index} fill={entry.color || `hsl(${index * 37}, 70%, 50%)`} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v: number) => formatCurrency(v)} />
-                <Legend iconSize={10} iconType="circle" formatter={(v) => <span className="text-xs text-slate-600">{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="flex items-center gap-4">
+              <div className="w-[150px] h-[150px] shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={data?.expensesByCategory ?? []} dataKey="total" nameKey="name" cx="50%" cy="50%" innerRadius={46} outerRadius={68} paddingAngle={2}>
+                      {(data?.expensesByCategory ?? []).map((entry, index) => (
+                        <Cell key={index} fill={entry.color || `hsl(${index * 37}, 70%, 50%)`} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(v: number) => formatCurrency(v)} contentStyle={{ background: "#fff", border: "1px solid #e8eaf2", borderRadius: 10, fontSize: 12 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex-1 min-w-0 space-y-1.5">
+                {(data?.expensesByCategory ?? []).map((cat) => (
+                  <div key={cat.name} className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
+                    <span className="text-[11px] text-slate-500 font-medium flex-1 truncate">{cat.name}</span>
+                    <span className="text-[11px] font-bold text-slate-700 tabular-nums">{formatCurrency(cat.total)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : (
-            <div className="flex items-center justify-center h-52 text-slate-400 text-sm">
+            <div className="flex items-center justify-center h-52 text-app-muted text-sm">
               Nenhuma despesa no período
             </div>
           )}
@@ -235,34 +248,34 @@ export function DashboardClient() {
       </div>
 
       {/* Recent Transactions */}
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
-        <div className="p-6 border-b border-slate-50">
-          <h2 className="text-base font-semibold text-slate-800">Lançamentos Recentes</h2>
+      <div className="bg-white rounded-2xl border border-app-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-50 flex items-center justify-between">
+          <h2 className="text-[14px] font-bold text-app-text">Lançamentos Recentes</h2>
         </div>
-        <div className="divide-y divide-slate-50">
+        <div className="divide-y divide-[#f7f8fc]">
           {(data?.recentTransactions ?? []).length === 0 ? (
-            <div className="p-12 text-center text-slate-400 text-sm">
+            <div className="p-12 text-center text-app-muted text-sm">
               Nenhum lançamento no período
             </div>
           ) : (
             (data?.recentTransactions ?? []).map((t) => (
-              <div key={t.id} className="flex items-center px-6 py-3.5 gap-4 hover:bg-slate-50/50 transition">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+              <div key={t.id} className="flex items-center px-5 py-3 gap-3 hover:bg-[#f9fafc] transition cursor-pointer">
+                <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
                   {t.type === "income"
-                    ? <ArrowUpRight size={14} className="text-income" />
-                    : <ArrowDownRight size={14} className="text-expense" />
+                    ? <ArrowUpRight size={16} className="text-income" strokeWidth={2.5} />
+                    : <ArrowDownRight size={16} className="text-expense" strokeWidth={2.5} />
                   }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800 truncate">{t.description}</p>
-                  <p className="text-xs text-slate-400">{formatDate(t.date)}</p>
+                  <p className="text-[13px] font-semibold text-app-text truncate">{t.description}</p>
+                  <p className="text-[11px] text-app-muted mt-0.5">{formatDate(t.date)}</p>
                 </div>
-                <div className="text-right">
-                  <p className={`text-sm font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
-                    {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
+                <div className="text-right shrink-0">
+                  <p className={`text-[14px] font-bold tabular-nums ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                    {t.type === "income" ? "+" : "−"}{formatCurrency(t.value)}
                   </p>
-                  <span className={`text-xs ${t.isPaid ? "text-income" : "text-slate-400"}`}>
-                    {t.isPaid ? "Pago" : "Pendente"}
+                  <span className={`text-[10px] font-semibold ${t.isPaid ? "text-income" : "text-amber-500"}`}>
+                    {t.isPaid ? "✓ Pago" : "● Pendente"}
                   </span>
                 </div>
               </div>
@@ -297,14 +310,14 @@ function SummaryCard({
   const pct = showProgress ? Math.min(100, Math.round((paid! / value) * 100)) : 0;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-100 p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-slate-500 font-medium">{label}</span>
-        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${color === "income" ? "bg-income-light text-income" : "bg-expense-light text-expense"}`}>
+    <div className="bg-white rounded-2xl border border-app-border p-5 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.03)] flex-1 min-w-0">
+      <div className="flex items-start justify-between mb-3.5">
+        <span className="text-[11px] font-bold text-app-muted uppercase tracking-[0.06em]">{label}</span>
+        <div className={`w-[34px] h-[34px] rounded-[10px] flex items-center justify-center shrink-0 ${color === "income" ? "bg-income-light text-income" : "bg-expense-light text-expense"}`}>
           {icon}
         </div>
       </div>
-      <p className={`text-2xl font-bold font-mono ${color === "income" ? "text-income-dark" : "text-expense-dark"}`}>
+      <p className={`text-[26px] font-extrabold tracking-tight leading-none ${color === "income" ? "text-income" : "text-expense"}`}>
         {formatCurrency(value)}
       </p>
       {showProgress && (
