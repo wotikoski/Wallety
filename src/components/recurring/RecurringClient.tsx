@@ -143,17 +143,16 @@ export function RecurringClient() {
             className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-60"
           >
             <Play size={14} />
-            <span className="hidden sm:inline">
-              {materializeMutation.isPending ? "Gerando..." : "Gerar pendentes"}
-            </span>
+            {materializeMutation.isPending ? "Gerando..." : "Gerar pendentes"}
           </button>
+          {/* "Nova recorrência" button — hidden on mobile (FAB is used instead) */}
           <button
             onClick={openNew}
             title="Nova recorrência"
-            className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700"
+            className="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700"
           >
             <Plus size={14} />
-            <span className="hidden sm:inline">Nova recorrência</span>
+            Nova recorrência
           </button>
         </div>
       </div>
@@ -327,6 +326,16 @@ export function RecurringClient() {
       )}
 
       <ConfirmDialog {...dialogProps} />
+
+      {/* FAB — mobile only, above the bottom nav */}
+      <button
+        onClick={openNew}
+        title="Nova recorrência"
+        aria-label="Nova recorrência"
+        className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-lg transition"
+      >
+        <Plus size={24} />
+      </button>
     </div>
   );
 }
