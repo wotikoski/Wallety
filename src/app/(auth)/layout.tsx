@@ -52,12 +52,9 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       <div style={{ position: "relative", zIndex: 2, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
         <div style={{ width: "100%", maxWidth: "400px" }}>
           {/* Logo */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px", justifyContent: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "32px" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-white.png" alt="Wallety" style={{ width: "38px", height: "38px", borderRadius: "10px", display: "block" }} />
-            <span className="font-brand" style={{ fontSize: "26px", fontWeight: 700, color: "#e2e8f0", letterSpacing: "-0.02em" }}>
-              Wallety
-            </span>
+            <img src="/logo-white.png" alt="Wallety" style={{ height: "40px", width: "auto", display: "block" }} />
           </div>
 
           {/* Card */}
