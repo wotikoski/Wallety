@@ -8,8 +8,8 @@ import { useEffect, useState } from "react";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 import Link from "next/link";
 import {
-  Plus, Filter, ArrowUpRight, ArrowDownRight, CheckCircle2, Circle,
-  Trash2, Edit, ChevronLeft, ChevronRight, Layers, Download,
+  Plus, ArrowUpRight, ArrowDownRight, CheckCircle2, Circle,
+  Trash2, Edit, ChevronLeft, ChevronRight, Layers, Download, Clock,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -45,10 +45,12 @@ export function TransactionsClient() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const now = new Date();
+  const todayStr = format(now, "yyyy-MM-dd");
   const [page, setPage] = useState(1);
   const [type, setType] = useState<string>("");
   const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
+  const [showFuture, setShowFuture] = useState(false);
 
   // Month navigation: move one month back/forward and update start+end dates.
   // endOfMonth handles short months (Feb, Apr, Jun…) automatically.
@@ -86,9 +88,10 @@ export function TransactionsClient() {
   if (type) params.set("type", type);
   if (startDate) params.set("startDate", startDate);
   if (endDate) params.set("endDate", endDate);
+  if (!showFuture) params.set("hideFuture", "true");
 
   const { data, isLoading } = useQuery<{ transactions: Transaction[] }>({
-    queryKey: ["transactions", page, type, startDate, endDate, activeGroupId],
+    queryKey: ["transactions", page, type, startDate, endDate, activeGroupId, showFuture],
     queryFn: () => fetch(`/api/transactions?${params}`).then((r) => r.json()),
     placeholderData: (prev) => prev,
   });
@@ -264,6 +267,19 @@ export function TransactionsClient() {
             <ChevronRight size={15} />
           </button>
         </div>
+        {/* Toggle: mostrar lançamentos agendados (data > hoje) */}
+        <button
+          onClick={() => { setShowFuture((v) => !v); setPage(1); }}
+          className={`h-[38px] flex items-center gap-1.5 text-sm px-3 rounded-lg border transition ${
+            showFuture
+              ? "border-brand-400 bg-brand-50 text-brand-600 font-medium"
+              : "border-slate-200 text-slate-500 hover:bg-slate-50"
+          }`}
+          title={showFuture ? "Ocultar lançamentos futuros" : "Mostrar lançamentos agendados"}
+        >
+          <Clock size={14} />
+          <span className="hidden sm:inline">Agendados</span>
+        </button>
         {(type || startDate || endDate) && (
           <button
             onClick={() => { setType(""); setStartDate(""); setEndDate(""); setPage(1); }}
@@ -332,6 +348,11 @@ export function TransactionsClient() {
                           Fatura {formatInvoiceMonth(t.effectiveDate)}
                         </span>
                       )}
+                      {t.date > todayStr && (
+                        <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                          <Clock size={9} /> Agendado
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -382,6 +403,11 @@ export function TransactionsClient() {
                       {t.effectiveDate && t.effectiveDate !== t.date && (
                         <div className="text-[10px] font-medium text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded inline-block mt-1">
                           Fatura {formatInvoiceMonth(t.effectiveDate)}
+                        </div>
+                      )}
+                      {t.date > todayStr && (
+                        <div className="text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded inline-flex items-center gap-0.5 mt-1">
+                          <Clock size={9} /> Agendado
                         </div>
                       )}
                     </td>

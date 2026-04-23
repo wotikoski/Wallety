@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
     const categoryId = searchParams.get("categoryId"); // "__none__" → NULL
     const bankId = searchParams.get("bankId");         // "__none__" → NULL
     const isPaid = searchParams.get("isPaid");
+    const hideFuture = searchParams.get("hideFuture") === "true";
     const page = parseInt(searchParams.get("page") ?? "1");
     const limit = parseInt(searchParams.get("limit") ?? "50");
     const offset = (page - 1) * limit;
@@ -48,6 +49,10 @@ export async function GET(req: NextRequest) {
     else if (bankId) conditions.push(eq(transactions.bankId, bankId));
     if (isPaid !== null && isPaid !== undefined) {
       conditions.push(eq(transactions.isPaid, isPaid === "true"));
+    }
+    if (hideFuture) {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      conditions.push(lte(transactions.date, todayStr));
     }
 
     const rows = await db
