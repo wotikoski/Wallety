@@ -10,6 +10,12 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Plus, RefreshCcw, Trash2, Play, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useState } from "react";
 
+// "2026-02-17" → "17/02/2026"
+function fmtDate(iso: string) {
+  const [y, m, d] = iso.split("-");
+  return `${d}/${m}/${y}`;
+}
+
 interface Category {
   id: string;
   name: string;
@@ -249,8 +255,8 @@ export function RecurringClient() {
                       </td>
                       {/* Início */}
                       <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">
-                        {r.startDate}
-                        {r.endDate && <p className="text-xs text-slate-400">até {r.endDate}</p>}
+                        {fmtDate(r.startDate)}
+                        {r.endDate && <p className="text-xs text-slate-400">até {fmtDate(r.endDate)}</p>}
                       </td>
                       {/* Valor */}
                       <td className="px-6 py-3.5 text-right">
