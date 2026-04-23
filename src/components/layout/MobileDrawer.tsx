@@ -51,10 +51,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
       />
       <div className="fixed bottom-0 left-0 right-0 bg-sidebar-bg rounded-t-2xl z-50 md:hidden pb-safe max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] sticky top-0 bg-sidebar-bg">
-          <div className="flex items-center gap-3">
-            <img src="/logo-white.png" alt="Wallety" className="w-8 h-8 rounded-xl block shrink-0" />
-            <span className="font-brand text-white font-bold text-lg">Wallety</span>
-          </div>
+          <img src="/logo-white.png" alt="Wallety" className="h-7 w-auto block" />
           <button onClick={onClose} className="text-white/40 p-1">
             <X size={20} />
           </button>
