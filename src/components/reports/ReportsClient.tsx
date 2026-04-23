@@ -16,6 +16,7 @@ import {
   Cell,
 } from "recharts";
 import { TrendingUp, TrendingDown, ArrowLeft, CheckCircle2, Circle, ChevronLeft, ChevronRight } from "lucide-react";
+import { ReportFilterSheet } from "./ReportFilterSheet";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 
 interface ReportItem {
@@ -120,13 +121,28 @@ export function ReportsClient() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="no-print">
-        <h1 className="text-2xl font-semibold text-slate-900">Relatórios</h1>
-        <p className="text-slate-500 text-sm mt-0.5">Analise suas finanças por período</p>
+      <div className="no-print flex items-start justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">Relatórios</h1>
+          <p className="text-slate-500 text-sm mt-0.5">Analise suas finanças por período</p>
+        </div>
+        <ReportFilterSheet
+          reportType={reportType}
+          setReportType={setReportType}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+          groupBy={groupBy}
+          setGroupBy={setGroupBy}
+          navigateMonth={navigateMonth}
+          activeGroupId={activeGroupId ?? null}
+          onFilterChange={handleFilterChange}
+        />
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-wrap gap-4 items-end no-print">
+      {/* Filters — desktop only */}
+      <div className="hidden md:flex bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex-wrap gap-4 items-end no-print">
         <div>
           <label className="block text-xs font-medium text-slate-500 mb-1">Tipo de relatório</label>
           <div className="flex rounded-lg border border-slate-200 overflow-hidden h-[38px]">
