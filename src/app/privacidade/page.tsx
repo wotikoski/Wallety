@@ -46,10 +46,9 @@ export default function PrivacidadePage() {
       {/* Header */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center gap-3">
-          <Link href="/login" className="flex items-center gap-2.5 group">
+          <Link href="/login" className="flex items-center group">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Wallety" className="w-8 h-8 rounded-lg" />
-            <span className="font-brand text-xl font-bold text-slate-900 tracking-tight">Wallety</span>
+            <img src="/logo-blue.png" alt="Wallety" className="h-8 w-auto" />
           </Link>
           <span className="text-slate-300 text-lg font-light select-none">/</span>
           <span className="text-sm font-medium text-slate-500">Política de Privacidade</span>
