@@ -6,9 +6,11 @@ const PUBLIC_PATHS = [
   "/api/auth/register",
   "/api/auth/refresh",
   "/opengraph-image",
+  "/termos",
+  "/privacidade",
 ];
 
-const AUTH_PATHS = ["/login", "/register", "/termos", "/privacidade"];
+const AUTH_PATHS = ["/login", "/register"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
