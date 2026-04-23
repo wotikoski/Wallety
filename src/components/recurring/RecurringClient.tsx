@@ -143,7 +143,9 @@ export function RecurringClient() {
             className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-60"
           >
             <Play size={14} />
-            {materializeMutation.isPending ? "Gerando..." : "Gerar pendentes"}
+            <span className="hidden sm:inline">
+              {materializeMutation.isPending ? "Gerando..." : "Gerar pendentes"}
+            </span>
           </button>
           {/* "Nova recorrência" button — hidden on mobile (FAB is used instead) */}
           <button
