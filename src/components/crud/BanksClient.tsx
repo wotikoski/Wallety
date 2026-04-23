@@ -100,7 +100,7 @@ export function BanksClient() {
               setShowForm(true);
             }
           }}
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Novo Banco</span>
@@ -123,7 +123,7 @@ export function BanksClient() {
                     if (brand) setValue("color", brand);
                   }
                 }}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Ex: Nubank"
               />
             </div>
@@ -131,7 +131,7 @@ export function BanksClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Código COMPE</label>
               <input
                 {...register("code")}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="260"
               />
             </div>

@@ -121,7 +121,7 @@ export function GroupsClient() {
         <button
           onClick={() => setShowForm(!showForm)}
           title="Novo Grupo"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Novo Grupo</span>
@@ -136,7 +136,7 @@ export function GroupsClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome do grupo</label>
               <input
                 {...register("name", { required: true })}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Ex: Família Silva"
               />
             </div>
@@ -144,7 +144,7 @@ export function GroupsClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Descrição (opcional)</label>
               <input
                 {...register("description")}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Breve descrição do grupo"
               />
             </div>
@@ -200,7 +200,7 @@ export function GroupsClient() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveGroupId(activeGroupId === selectedGroup ? null : selectedGroup)}
-                    className={`text-xs px-3 py-1.5 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-brand-600 text-white" : "border border-brand-300 text-brand-600 hover:bg-brand-50"}`}
+                    className={`text-xs px-3 py-2 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-brand-600 text-white" : "border border-brand-300 text-brand-600 hover:bg-brand-50"}`}
                   >
                     {activeGroupId === selectedGroup ? "Ativo" : "Ativar"}
                   </button>
@@ -246,7 +246,7 @@ export function GroupsClient() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="email@exemplo.com"
-                  className="flex-1 px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex-1 px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 <button
                   onClick={() => inviteMutation.mutate()}

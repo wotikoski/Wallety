@@ -46,7 +46,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex w-52 bg-sidebar-bg flex-col h-screen sticky top-0 shrink-0 overflow-x-hidden">
+    <aside className="hidden md:flex w-60 bg-sidebar-bg flex-col h-screen sticky top-0 shrink-0 overflow-x-hidden">
       {/* Logo */}
       <div className="px-5 py-4 border-b border-white/[0.06]">
         <img src="/logo-white.png" alt="Wallety" className="h-8 w-auto block" />
