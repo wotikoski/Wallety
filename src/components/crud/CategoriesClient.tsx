@@ -141,10 +141,11 @@ export function CategoriesClient() {
         </div>
         <button
           onClick={() => { if (showForm) { setShowForm(false); setEditing(null); reset(); } else startNew(); }}
+          title="Nova Categoria"
           className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
         >
           <Plus size={16} />
-          Nova Categoria
+          <span className="hidden sm:inline">Nova Categoria</span>
         </button>
       </div>
 

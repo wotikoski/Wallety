@@ -120,10 +120,11 @@ export function GroupsClient() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
+          title="Novo Grupo"
           className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
         >
           <Plus size={16} />
-          Novo Grupo
+          <span className="hidden sm:inline">Novo Grupo</span>
         </button>
       </div>
 
