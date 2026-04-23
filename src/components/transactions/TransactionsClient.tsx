@@ -210,10 +210,11 @@ export function TransactionsClient() {
           </a>
           <Link
             href="/lancamentos/novo"
+            title="Novo Lançamento"
             className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
           >
             <Plus size={16} />
-            Novo Lançamento
+            <span className="hidden sm:inline">Novo Lançamento</span>
           </Link>
         </div>
       </div>

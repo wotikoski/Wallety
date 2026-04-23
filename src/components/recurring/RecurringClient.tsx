@@ -139,17 +139,21 @@ export function RecurringClient() {
           <button
             onClick={() => materializeMutation.mutate()}
             disabled={materializeMutation.isPending}
+            title="Gerar pendentes"
             className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-60"
           >
             <Play size={14} />
-            {materializeMutation.isPending ? "Gerando..." : "Gerar pendentes"}
+            <span className="hidden sm:inline">
+              {materializeMutation.isPending ? "Gerando..." : "Gerar pendentes"}
+            </span>
           </button>
           <button
             onClick={openNew}
+            title="Nova recorrência"
             className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700"
           >
             <Plus size={14} />
-            Nova recorrência
+            <span className="hidden sm:inline">Nova recorrência</span>
           </button>
         </div>
       </div>
