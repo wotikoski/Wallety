@@ -92,6 +92,13 @@ export async function POST(req: NextRequest) {
         input.installmentTotal!,
       );
 
+      // For installment purchases the date of each installment already encodes
+      // which month the payment falls in (March → April → May, etc.).  Applying
+      // computeEffectiveDate to each installment separately would add an extra
+      // billing-cycle shift on top of that, pushing installment 2 (already in
+      // April) into May, installment 3 into June, and so on.  effectiveDate is
+      // therefore left null for all installments — the installment date itself
+      // is the effective date for cash-flow purposes.
       const rows = await db
         .insert(transactions)
         .values(
@@ -99,7 +106,7 @@ export async function POST(req: NextRequest) {
             userId: auth.sub,
             groupId: input.groupId ?? null,
             date: inst.date,
-            effectiveDate: computeEffectiveDate(inst.date, pm),
+            effectiveDate: null,
             type: input.type,
             categoryId: input.categoryId ?? null,
             description: input.description,
