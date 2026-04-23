@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 import Link from "next/link";
 import {
@@ -15,6 +15,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
+import { FilterSheet } from "./FilterSheet";
+import { SwipeableRow } from "./SwipeableRow";
+import { usePullToRefresh } from "@/lib/hooks/usePullToRefresh";
 
 interface Transaction {
   id: string;
@@ -51,6 +54,13 @@ export function TransactionsClient() {
   const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
   const [showFuture, setShowFuture] = useState(false);
+
+  // Pull-to-refresh: ref on the mobile card list container
+  const listRef = useRef<HTMLDivElement>(null);
+  const handleRefresh = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["transactions"] });
+  }, [queryClient]);
+  usePullToRefresh(handleRefresh, listRef as React.RefObject<HTMLElement>);
 
   // Month navigation: move one month back/forward and update start+end dates.
   // endOfMonth handles short months (Feb, Apr, Jun…) automatically.
@@ -113,6 +123,10 @@ export function TransactionsClient() {
     // Optimistic update: flip isPaid locally before the request returns,
     // so the UI feels instant. Roll back if the request fails.
     onMutate: async (t: Transaction) => {
+      // Haptic feedback on mobile devices that support it
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate(50);
+      }
       await queryClient.cancelQueries({ queryKey: ["transactions"] });
       const previous = queryClient.getQueriesData<{ transactions: Transaction[] }>({ queryKey: ["transactions"] });
       queryClient.setQueriesData<{ transactions: Transaction[] }>(
@@ -192,7 +206,7 @@ export function TransactionsClient() {
   const totalExpense = txns.filter((t) => t.type === "expense").reduce((a, t) => a + parseFloat(t.value), 0);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-24 md:pb-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -208,19 +222,43 @@ export function TransactionsClient() {
             <Download size={16} />
             <span className="hidden sm:inline">Exportar CSV</span>
           </a>
+          {/* FilterSheet trigger — visible only on mobile */}
+          <FilterSheet
+            type={type}
+            setType={setType}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            showFuture={showFuture}
+            setShowFuture={setShowFuture}
+            navigateMonth={navigateMonth}
+            setPage={setPage}
+          />
+          {/* "Novo Lançamento" button — hidden on mobile (FAB is used instead) */}
           <Link
             href="/lancamentos/novo"
             title="Novo Lançamento"
-            className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
+            className="hidden md:flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
           >
             <Plus size={16} />
-            <span className="hidden sm:inline">Novo Lançamento</span>
+            Novo Lançamento
           </Link>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-wrap gap-3 items-end">
+      {/* FAB — mobile only, above the bottom nav */}
+      <Link
+        href="/lancamentos/novo"
+        title="Novo Lançamento"
+        className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-lg transition"
+        aria-label="Novo Lançamento"
+      >
+        <Plus size={24} />
+      </Link>
+
+      {/* Filters — desktop only (mobile uses FilterSheet) */}
+      <div className="hidden md:flex bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex-wrap gap-3 items-end">
         <div>
           <label className="block text-xs font-medium text-slate-500 mb-1">Tipo</label>
           <select
@@ -291,22 +329,24 @@ export function TransactionsClient() {
         )}
       </div>
 
-      {/* Summary mini */}
+      {/* Summary mini — sticky on mobile so it stays visible while scrolling */}
       {txns.length > 0 && (
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-income-light rounded-xl p-3 text-center">
-            <p className="text-xs text-income-dark font-medium mb-0.5">Receitas</p>
-            <p className="text-base font-bold font-mono text-income-dark">{formatCurrency(totalIncome)}</p>
-          </div>
-          <div className="bg-expense-light rounded-xl p-3 text-center">
-            <p className="text-xs text-expense-dark font-medium mb-0.5">Despesas</p>
-            <p className="text-base font-bold font-mono text-expense-dark">{formatCurrency(totalExpense)}</p>
-          </div>
-          <div className={`rounded-xl p-3 text-center ${totalIncome - totalExpense >= 0 ? "bg-income-light" : "bg-expense-light"}`}>
-            <p className="text-xs font-medium mb-0.5 text-slate-600">Saldo</p>
-            <p className={`text-base font-bold font-mono ${totalIncome - totalExpense >= 0 ? "text-income-dark" : "text-expense-dark"}`}>
-              {formatCurrency(totalIncome - totalExpense)}
-            </p>
+        <div className="sticky top-0 z-10 pt-1 pb-2 bg-white/95 backdrop-blur-sm md:static md:bg-transparent md:pt-0 md:pb-0 md:backdrop-blur-none">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-income-light rounded-xl p-3 text-center">
+              <p className="text-xs text-income-dark font-medium mb-0.5">Receitas</p>
+              <p className="text-base font-bold font-mono text-income-dark">{formatCurrency(totalIncome)}</p>
+            </div>
+            <div className="bg-expense-light rounded-xl p-3 text-center">
+              <p className="text-xs text-expense-dark font-medium mb-0.5">Despesas</p>
+              <p className="text-base font-bold font-mono text-expense-dark">{formatCurrency(totalExpense)}</p>
+            </div>
+            <div className={`rounded-xl p-3 text-center ${totalIncome - totalExpense >= 0 ? "bg-income-light" : "bg-expense-light"}`}>
+              <p className="text-xs font-medium mb-0.5 text-slate-600">Saldo</p>
+              <p className={`text-base font-bold font-mono ${totalIncome - totalExpense >= 0 ? "text-income-dark" : "text-expense-dark"}`}>
+                {formatCurrency(totalIncome - totalExpense)}
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -326,61 +366,72 @@ export function TransactionsClient() {
         ) : (
           <>
             {/* Mobile card view */}
-            <div className="md:hidden divide-y divide-slate-50">
+            <div ref={listRef} className="md:hidden divide-y divide-slate-50">
               {txns.map((t) => (
-                <div key={t.id} className="px-4 py-3.5 flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
-                    {t.type === "income"
-                      ? <ArrowUpRight size={14} className="text-income" />
-                      : <ArrowDownRight size={14} className="text-expense" />
-                    }
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{t.description}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <p className="text-xs text-slate-400">{formatDate(t.date)}</p>
-                      {t.installmentTotal && t.installmentTotal > 1 && (
-                        <span className="text-xs text-slate-400 flex items-center gap-0.5">
-                          <Layers size={10} />{t.installmentCurrent}/{t.installmentTotal}
-                        </span>
-                      )}
-                      {t.effectiveDate && t.effectiveDate !== t.date && (
-                        <span className="text-[10px] font-medium text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
-                          Fatura {formatInvoiceMonth(t.effectiveDate)}
-                        </span>
-                      )}
-                      {t.date > todayStr && (
-                        <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                          <Clock size={9} /> Agendado
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <div className="text-right">
-                      <p className={`text-sm font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
-                        {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
-                      </p>
-                      <span className={`text-xs ${t.isPaid ? "text-income" : "text-slate-400"}`}>
-                        {t.isPaid ? "Pago" : "Pendente"}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <button onClick={() => togglePaid.mutate(t)} className="text-slate-400 hover:text-income transition">
-                        {t.isPaid ? <CheckCircle2 size={16} className="text-income" /> : <Circle size={16} />}
-                      </button>
-                      <Link href={`/lancamentos/${t.id}`} className="text-slate-400 hover:text-brand-600 transition">
-                        <Edit size={14} />
+                <SwipeableRow
+                  key={t.id}
+                  actions={
+                    <div className="flex h-full w-full">
+                      <Link
+                        href={`/lancamentos/${t.id}`}
+                        className="flex-1 flex flex-col items-center justify-center gap-1 bg-brand-600 text-white text-xs font-medium"
+                      >
+                        <Edit size={16} />
+                        Editar
                       </Link>
                       <button
                         onClick={() => askDelete(t)}
-                        className="text-slate-400 hover:text-expense transition"
+                        className="flex-1 flex flex-col items-center justify-center gap-1 bg-expense text-white text-xs font-medium"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={16} />
+                        Excluir
+                      </button>
+                    </div>
+                  }
+                >
+                  <div className="px-4 py-3.5 flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                      {t.type === "income"
+                        ? <ArrowUpRight size={14} className="text-income" />
+                        : <ArrowDownRight size={14} className="text-expense" />
+                      }
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-800 truncate">{t.description}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-xs text-slate-400">{formatDate(t.date)}</p>
+                        {t.installmentTotal && t.installmentTotal > 1 && (
+                          <span className="text-xs text-slate-400 flex items-center gap-0.5">
+                            <Layers size={10} />{t.installmentCurrent}/{t.installmentTotal}
+                          </span>
+                        )}
+                        {t.effectiveDate && t.effectiveDate !== t.date && (
+                          <span className="text-[10px] font-medium text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
+                            Fatura {formatInvoiceMonth(t.effectiveDate)}
+                          </span>
+                        )}
+                        {t.date > todayStr && (
+                          <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                            <Clock size={9} /> Agendado
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="text-right">
+                        <p className={`text-sm font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                          {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
+                        </p>
+                        <span className={`text-xs ${t.isPaid ? "text-income" : "text-slate-400"}`}>
+                          {t.isPaid ? "Pago" : "Pendente"}
+                        </span>
+                      </div>
+                      <button onClick={() => togglePaid.mutate(t)} className="text-slate-400 hover:text-income transition">
+                        {t.isPaid ? <CheckCircle2 size={16} className="text-income" /> : <Circle size={16} />}
                       </button>
                     </div>
                   </div>
-                </div>
+                </SwipeableRow>
               ))}
             </div>
 
