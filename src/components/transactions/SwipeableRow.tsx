@@ -4,38 +4,50 @@ import { useRef, useState } from "react";
 export function SwipeableRow({
   children,
   actions,
+  actionWidth = 128,
 }: {
   children: React.ReactNode;
   actions: React.ReactNode;
+  actionWidth?: number;
 }) {
   const [offset, setOffset] = useState(0);
+  const [snapping, setSnapping] = useState(false);
   const startX = useRef(0);
-  const THRESHOLD = 60;
-  const ACTION_WIDTH = 120;
+  const startOffset = useRef(0);
 
   const onTouchStart = (e: React.TouchEvent) => {
     startX.current = e.touches[0].clientX;
+    startOffset.current = offset;
+    setSnapping(false);
   };
+
   const onTouchMove = (e: React.TouchEvent) => {
     const dx = e.touches[0].clientX - startX.current;
-    if (dx < 0) setOffset(Math.max(dx, -ACTION_WIDTH));
+    // Allow moving left (negative) from current position and right back to 0.
+    // Clamp so the content never slides past the action panel or past 0.
+    const next = Math.min(0, Math.max(-actionWidth, startOffset.current + dx));
+    setOffset(next);
   };
+
   const onTouchEnd = () => {
-    setOffset(offset < -THRESHOLD ? -ACTION_WIDTH : 0);
+    setSnapping(true);
+    // Snap open when past half the action width, otherwise snap closed.
+    setOffset(offset < -(actionWidth / 2) ? -actionWidth : 0);
   };
 
   return (
     <div className="relative overflow-hidden">
-      {/* Action buttons revealed on swipe */}
+      {/* Hidden action buttons, revealed from the right */}
       <div
-        className="absolute right-0 top-0 bottom-0 flex items-center"
-        style={{ width: ACTION_WIDTH }}
+        className="absolute right-0 top-0 bottom-0 flex"
+        style={{ width: actionWidth }}
       >
         {actions}
       </div>
-      {/* Content that slides */}
+
+      {/* Sliding content */}
       <div
-        className="relative bg-white transition-transform duration-200"
+        className={`relative bg-white${snapping ? " transition-transform duration-200 ease-out" : ""}`}
         style={{ transform: `translateX(${offset}px)` }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}

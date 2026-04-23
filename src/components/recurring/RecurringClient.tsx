@@ -9,6 +9,7 @@ import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Plus, RefreshCcw, Trash2, Play, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useState } from "react";
+import { SwipeableRow } from "@/components/transactions/SwipeableRow";
 
 // "2026-02-17" → "17/02/2026"
 function fmtDate(iso: string) {
@@ -177,45 +178,59 @@ export function RecurringClient() {
               {rows.map((r) => {
                 const cat = r.categoryId ? catMap.get(r.categoryId) : null;
                 return (
-                  <div key={r.id} className="px-4 py-3.5 flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${r.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
-                      {r.type === "income"
-                        ? <ArrowUpRight size={14} className="text-income" />
-                        : <ArrowDownRight size={14} className="text-expense" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-800 truncate">{r.description}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        {FREQ_LABEL[r.frequency]}
-                        {r.frequency === "monthly" && r.dayOfMonth && ` · dia ${r.dayOfMonth === "last" ? "último" : r.dayOfMonth}`}
-                        {cat && ` · ${cat.name}`}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <div className="text-right">
-                        <p className={`text-sm font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
-                          {r.type === "income" ? "+" : "-"}{formatCurrency(r.value)}
-                        </p>
-                        <span className={`text-xs ${r.isActive ? "text-income" : "text-slate-400"}`}>
-                          {r.isActive ? "Ativa" : "Pausada"}
-                        </span>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <button onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })} className="text-slate-400 hover:text-income transition">
-                          {r.isActive ? <CheckCircle2 size={16} className="text-income" /> : <Circle size={16} />}
-                        </button>
-                        <button onClick={() => openEdit(r)} className="text-slate-400 hover:text-brand-600 transition">
-                          <Edit size={14} />
+                  <SwipeableRow
+                    key={r.id}
+                    actions={
+                      <div className="flex h-full w-full">
+                        <button
+                          onClick={() => openEdit(r)}
+                          className="flex-1 flex flex-col items-center justify-center gap-1 bg-brand-600 text-white text-xs font-medium"
+                        >
+                          <Edit size={16} />
+                          Editar
                         </button>
                         <button
                           onClick={() => confirm(() => deleteMutation.mutate(r.id), { title: "Remover recorrência?", description: "A regra e todos os lançamentos gerados por ela serão removidos.", variant: "danger" })}
-                          className="text-slate-400 hover:text-expense transition"
+                          className="flex-1 flex flex-col items-center justify-center gap-1 bg-expense text-white text-xs font-medium"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={16} />
+                          Excluir
+                        </button>
+                      </div>
+                    }
+                  >
+                    <div className="px-4 py-3.5 flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${r.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                        {r.type === "income"
+                          ? <ArrowUpRight size={14} className="text-income" />
+                          : <ArrowDownRight size={14} className="text-expense" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-800 truncate">{r.description}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          {FREQ_LABEL[r.frequency]}
+                          {r.frequency === "monthly" && r.dayOfMonth && ` · dia ${r.dayOfMonth === "last" ? "último" : r.dayOfMonth}`}
+                          {cat && ` · ${cat.name}`}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="text-right">
+                          <p className={`text-sm font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
+                            {r.type === "income" ? "+" : "-"}{formatCurrency(r.value)}
+                          </p>
+                          <span className={`text-xs ${r.isActive ? "text-income" : "text-slate-400"}`}>
+                            {r.isActive ? "Ativa" : "Pausada"}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
+                          className="text-slate-400 hover:text-income transition"
+                        >
+                          {r.isActive ? <CheckCircle2 size={18} className="text-income" /> : <Circle size={18} />}
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </SwipeableRow>
                 );
               })}
             </div>
