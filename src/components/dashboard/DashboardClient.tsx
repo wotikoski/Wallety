@@ -229,7 +229,7 @@ export function DashboardClient() {
         <div className="bg-white rounded-[14px] border border-app-border p-4 shadow-card">
           <h2 className="text-[14px] font-bold text-app-text mb-4">Despesas por Categoria</h2>
           {(data?.expensesByCategory?.length ?? 0) > 0 ? (
-            <div className="flex items-start gap-5">
+            <div className="flex items-center gap-5">
               <div className="w-[140px] h-[140px] shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
