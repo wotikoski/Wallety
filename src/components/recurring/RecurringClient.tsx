@@ -283,14 +283,6 @@ export function RecurringClient() {
                             {FREQ_LABEL[r.frequency]}
                             {r.frequency === "monthly" && r.dayOfMonth && ` · dia ${r.dayOfMonth === "last" ? "último" : r.dayOfMonth}`}
                           </span>
-                          {cat && (
-                            <span
-                              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap"
-                              style={{ background: `${cat.color ?? "#6366f1"}20`, color: cat.color ?? "#6366f1" }}
-                            >
-                              {cat.name}
-                            </span>
-                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
@@ -344,14 +336,6 @@ export function RecurringClient() {
                           </div>
                           <div className="min-w-0">
                             <p className="text-[13px] font-semibold text-app-text truncate">{r.description}</p>
-                            {cat && (
-                              <span
-                                className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                                style={{ background: `${cat.color ?? "#6366f1"}20`, color: cat.color ?? "#6366f1" }}
-                              >
-                                {cat.name}
-                              </span>
-                            )}
                           </div>
                         </div>
                       </td>
