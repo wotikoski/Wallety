@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
 import {
@@ -102,6 +102,13 @@ export function ReportsClient() {
   function closeDrilldown() {
     setDrilldown(null);
   }
+
+  const drilldownRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (drilldown && drilldownRef.current) {
+      setTimeout(() => drilldownRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    }
+  }, [drilldown?.groupKey]);
 
   // Reset drilldown when filters change
   function handleFilterChange(fn: () => void) {
@@ -280,7 +287,7 @@ export function ReportsClient() {
 
               {/* Inline drilldown panel — desktop */}
               {drilldown && (
-                <div className="mt-4 border-t border-[#f1f3f9] pt-4 animate-fade-in">
+                <div ref={drilldownRef} className="mt-4 border-t border-[#f1f3f9] pt-4 animate-fade-in">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: drilldown.color }} />
                     <h3 className="text-[13px] font-semibold text-app-text">{drilldown.label}</h3>
