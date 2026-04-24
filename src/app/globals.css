@@ -137,7 +137,7 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    min-height: 42px;
+    min-height: 0;
     background-color: #ffffff;
     box-sizing: border-box;
     font-size: 0.875rem; /* 14px — matches text-sm */
@@ -154,14 +154,14 @@
     padding-right: 2rem !important;
   }
 
-  /* Date/time pickers on iOS keep a small chevron-less layout; nudge their
-     text so they visually align with text inputs of the same height. */
+  /* Date/time pickers: remove any browser-imposed min-height so that
+     our h-9 (36px) class takes full effect. */
   input[type="date"],
   input[type="datetime-local"],
   input[type="time"],
   input[type="month"],
   input[type="week"] {
-    min-height: 42px;
+    min-height: 0;
   }
 
   /* Textareas should grow from the same baseline but still feel like a block.
