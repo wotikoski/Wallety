@@ -62,6 +62,7 @@ export function ReportsClient() {
   const [groupBy, setGroupBy] = useState<"category" | "bank" | "user">("category");
   const [reportType, setReportType] = useState<"income" | "expense">("expense");
   const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const params = new URLSearchParams({ startDate, endDate, groupBy });
   if (activeGroupId) params.set("groupId", activeGroupId);
@@ -106,7 +107,12 @@ export function ReportsClient() {
   const drilldownRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (drilldown && drilldownRef.current) {
-      setTimeout(() => drilldownRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      // Double RAF: wait for React to finish painting before scrolling
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          drilldownRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      });
     }
   }, [drilldown?.groupKey]);
 
@@ -256,13 +262,15 @@ export function ReportsClient() {
                   <Tooltip
                     formatter={(v: number) => formatCurrency(v)}
                     contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}
-                    cursor={{ fill: "rgba(99,102,241,0.06)", strokeWidth: 0 }}
+                    cursor={false}
                   />
                   <Bar
                     dataKey="total"
                     radius={[0, 5, 5, 0]}
                     cursor="pointer"
                     onClick={(barData, index) => openDrilldown(barData as ReportItem, index)}
+                    onMouseEnter={(_, index) => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
                     label={({ x, y, width, height, value, index: i }: { x: number; y: number; width: number; height: number; value: number; index: number }) => {
                       const item = items[i];
                       if (!item) return <g />;
@@ -274,13 +282,20 @@ export function ReportsClient() {
                       );
                     }}
                   >
-                    {items.map((item, index) => (
-                      <Cell
-                        key={index}
-                        fill={COLORS[index % COLORS.length]}
-                        opacity={drilldown && drilldown.groupKey !== item.groupKey ? 0.25 : 1}
-                      />
-                    ))}
+                    {items.map((item, index) => {
+                      const isSelected = drilldown?.groupKey === item.groupKey;
+                      const isHovered = hoveredIndex === index;
+                      let opacity = 1;
+                      if (drilldown && !isSelected) opacity = 0.25;
+                      else if (!drilldown && hoveredIndex !== null && !isHovered) opacity = 0.6;
+                      return (
+                        <Cell
+                          key={index}
+                          fill={COLORS[index % COLORS.length]}
+                          opacity={opacity}
+                        />
+                      );
+                    })}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
