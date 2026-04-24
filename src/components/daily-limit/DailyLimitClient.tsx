@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
 import { useState } from "react";
-import { Target, AlertTriangle, CalendarClock, Info, ChevronLeft, ChevronRight } from "lucide-react";
+import { Target, AlertTriangle, CalendarClock, Info } from "lucide-react";
 import type { DailyLimitResult } from "@/lib/utils/daily-limit";
 
 const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -28,34 +28,30 @@ export function DailyLimitClient() {
   const isOverBudget = (data?.adjustedAvailable ?? 0) <= 0;
   const nextMonthName = MONTHS[month % 12];
 
-  const prevMonth = () => { if (month === 1) { setMonth(12); setYear(year - 1); } else setMonth(month - 1); };
-  const nextMonth = () => { if (month === 12) { setMonth(1); setYear(year + 1); } else setMonth(month + 1); };
-
   return (
     <div className="space-y-6 animate-fade-in max-w-3xl">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Limite Diário</h1>
           <p className="text-app-muted text-[13px] mt-0.5 font-medium">
             Quanto você pode gastar por dia, considerando compromissos do próximo mês
           </p>
         </div>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={prevMonth}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+        <div className="flex items-center gap-2">
+          <select
+            value={month}
+            onChange={(e) => setMonth(Number(e.target.value))}
+            className="flex-1 sm:flex-none text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
-            <ChevronLeft size={15} />
-          </button>
-          <span className="text-[13px] font-semibold text-app-text px-3 whitespace-nowrap">
-            {MONTHS[month - 1]} {year}
-          </span>
-          <button
-            onClick={nextMonth}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+            {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+          </select>
+          <select
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
-            <ChevronRight size={15} />
-          </button>
+            {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
+          </select>
         </div>
       </div>
 
