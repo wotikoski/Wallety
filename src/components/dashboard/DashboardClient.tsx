@@ -210,33 +210,30 @@ export function DashboardClient() {
               ))}
             </div>
           </div>
-          <div className="flex justify-center">
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="35%" margin={{ left: 0, right: 0, top: 4, bottom: 0 }}>
-                <CartesianGrid vertical={false} stroke="#f1f3f9" />
-                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} interval={0} />
-                <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
-                <Tooltip
-                  formatter={(v: number) => formatCurrency(v)}
-                  contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}
-                />
-                <Bar dataKey="income" name="Receitas" fill="#10b981" radius={[5, 5, 5, 5]} />
-                <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[5, 5, 5, 5]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="35%">
+              <CartesianGrid vertical={false} stroke="#f1f3f9" />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} interval={0} />
+              <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
+              <Tooltip
+                formatter={(v: number) => formatCurrency(v)}
+                contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}
+              />
+              <Bar dataKey="income" name="Receitas" fill="#10b981" radius={[5, 5, 5, 5]} />
+              <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[5, 5, 5, 5]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
         {/* Expenses by Category */}
         <div className="bg-white rounded-[14px] border border-app-border p-4 shadow-card">
           <h2 className="text-[14px] font-bold text-app-text mb-4">Despesas por Categoria</h2>
           {(data?.expensesByCategory?.length ?? 0) > 0 ? (
-            <div className="flex flex-col items-center gap-4">
-              {/* Donut chart — centred */}
-              <div className="w-[160px] h-[160px]">
+            <div className="flex items-start gap-5">
+              <div className="w-[140px] h-[140px] shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={data?.expensesByCategory ?? []} dataKey="total" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={74} paddingAngle={2}>
+                    <Pie data={data?.expensesByCategory ?? []} dataKey="total" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={66} paddingAngle={2}>
                       {(data?.expensesByCategory ?? []).map((entry, index) => (
                         <Cell key={index} fill={entry.color || `hsl(${index * 37}, 70%, 50%)`} />
                       ))}
@@ -248,18 +245,19 @@ export function DashboardClient() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              {/* Legend list — full width below */}
-              <div className="w-full space-y-2.5">
+              <div className="flex-1 min-w-0 space-y-2.5">
                 {(data?.expensesByCategory ?? []).map((cat) => {
                   const total = (data?.expensesByCategory ?? []).reduce((s, c) => s + c.total, 0);
                   const pct = total > 0 ? Math.round((cat.total / total) * 100) : 0;
                   return (
                     <div key={cat.name}>
+                      {/* Line 1: bullet + name + pct */}
                       <div className="flex items-center gap-1.5 mb-1">
                         <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
                         <span className="text-[12px] font-semibold text-app-text truncate flex-1 min-w-0">{cat.name}</span>
                         <span className="text-[11px] text-app-muted shrink-0">{pct}%</span>
                       </div>
+                      {/* Line 2: progress bar + value */}
                       <div className="flex items-center gap-2">
                         <div className="prog-track flex-1" style={{ height: 4 }}>
                           <div className="prog-fill" style={{ width: `${pct}%`, background: cat.color }} />
