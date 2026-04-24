@@ -419,6 +419,8 @@ export function ReportsClient() {
               })}
             </div>
 
+            {/* Extra breathing room on mobile so the last card clears the nav */}
+            <div className="h-6 md:hidden" />
 
           </>
         )}
