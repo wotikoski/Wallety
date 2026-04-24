@@ -213,7 +213,7 @@ export function TransactionForm({ transaction }: Props) {
           <input
             {...register("date")}
             type="date"
-            className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
           {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>}
         </div>
@@ -229,7 +229,7 @@ export function TransactionForm({ transaction }: Props) {
                 value={field.value ?? ""}
                 onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
                 onBlur={field.onBlur}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="">Sem categoria</option>
                 {categories.map((c: { id: string; name: string; icon: string }) => (
@@ -247,7 +247,7 @@ export function TransactionForm({ transaction }: Props) {
           {...register("description")}
           type="text"
           placeholder="Ex: Supermercado Pão de Açúcar"
-          className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
       </div>
@@ -261,7 +261,7 @@ export function TransactionForm({ transaction }: Props) {
             step="0.01"
             min="0"
             placeholder="0,00"
-            className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
+            className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
           />
           {errors.value && <p className="text-red-500 text-xs mt-1">{errors.value.message}</p>}
         </div>
@@ -275,7 +275,7 @@ export function TransactionForm({ transaction }: Props) {
                 value={field.value ?? ""}
                 onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
                 onBlur={field.onBlur}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="">Selecionar...</option>
                 {paymentMethods.map((pm: { id: string; name: string; type: string }) => (
@@ -297,7 +297,7 @@ export function TransactionForm({ transaction }: Props) {
               value={field.value ?? ""}
               onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
               onBlur={field.onBlur}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <option value="">Sem banco</option>
               {banks.map((b: { id: string; name: string }) => (
@@ -320,7 +320,7 @@ export function TransactionForm({ transaction }: Props) {
               min="1"
               max="120"
               placeholder="1 = à vista"
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div>
@@ -331,7 +331,7 @@ export function TransactionForm({ transaction }: Props) {
               step="0.01"
               placeholder="Calculado automaticamente"
               readOnly={!!installmentTotal && installmentTotal > 1}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono bg-slate-100"
+              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono bg-slate-100"
             />
           </div>
         </div>
@@ -368,7 +368,7 @@ export function TransactionForm({ transaction }: Props) {
           {...register("notes")}
           rows={2}
           placeholder="Alguma observação..."
-          className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+          className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
         />
       </div>
 
@@ -376,14 +376,14 @@ export function TransactionForm({ transaction }: Props) {
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition"
+          className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition"
         >
           Cancelar
         </button>
         <button
           type="submit"
           disabled={saveMutation.isPending}
-          className="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition disabled:opacity-50"
+          className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 rounded-lg text-sm transition disabled:opacity-50"
         >
           {saveMutation.isPending ? "Salvando..." : isEdit ? "Atualizar" : "Criar Lançamento"}
         </button>
