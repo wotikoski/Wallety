@@ -379,7 +379,6 @@ export function ReportsClient() {
                         <p className={`text-[13px] font-semibold font-mono ${reportType === "income" ? "text-income" : "text-expense"}`}>
                           {formatCurrency(item.total)}
                         </p>
-                        <p className="text-[11px] text-app-muted">{item.count} lanç.</p>
                       </div>
                       <ChevronDown size={14} className={`text-app-muted shrink-0 transition-transform ${isSelected ? "rotate-180" : ""}`} />
                     </button>
