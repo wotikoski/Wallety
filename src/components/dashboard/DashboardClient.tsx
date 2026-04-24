@@ -382,14 +382,13 @@ function SummaryCard({
         </div>
       </div>
 
-      {/* Value — abbreviated on mobile, full on desktop; tap for full value tooltip */}
-      <div className="relative">
+      {/* Mobile: abbreviated value + tap-to-reveal tooltip */}
+      <div className="relative md:hidden">
         <button
           onClick={() => setTooltip((v) => !v)}
-          className={`font-bold font-mono tracking-tight leading-none text-left ${color === "income" ? "text-income" : "text-expense"}`}
+          className={`text-[14px] font-bold font-mono tracking-tight leading-none text-left ${color === "income" ? "text-income" : "text-expense"}`}
         >
-          <span className="text-[14px] md:hidden">{formatCurrencyShort(value)}</span>
-          <span className="hidden md:inline text-[24px]">{formatCurrency(value)}</span>
+          {formatCurrencyShort(value)}
         </button>
         {tooltip && (
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] font-mono font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
@@ -398,6 +397,10 @@ function SummaryCard({
           </div>
         )}
       </div>
+      {/* Desktop: full value, no interaction */}
+      <p className={`hidden md:block text-[24px] font-bold font-mono tracking-tight leading-none ${color === "income" ? "text-income" : "text-expense"}`}>
+        {formatCurrency(value)}
+      </p>
 
       {/* Progress bar — desktop only */}
       {showProgress && (

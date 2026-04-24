@@ -27,19 +27,24 @@ function SummaryChip({
   return (
     <div className="relative rounded-[12px] px-3 py-2.5 text-center" style={{ background: bg }}>
       <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: labelColor }}>{label}</p>
+      {/* Mobile: abbreviated + tap-to-reveal tooltip */}
       <button
         onClick={() => setTooltip((v) => !v)}
-        className="text-sm font-semibold font-mono block w-full text-center"
+        className="md:hidden text-sm font-semibold font-mono block w-full text-center"
         style={{ color: valueColor }}
       >
         {formatCurrencyShort(value)}
       </button>
       {tooltip && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] font-mono font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
+        <div className="md:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] font-mono font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
           {formatCurrency(value)}
           <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#0f172a]" />
         </div>
       )}
+      {/* Desktop: full value, no interaction */}
+      <p className="hidden md:block text-sm font-semibold font-mono" style={{ color: valueColor }}>
+        {formatCurrency(value)}
+      </p>
     </div>
   );
 }
