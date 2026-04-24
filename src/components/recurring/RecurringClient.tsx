@@ -131,9 +131,11 @@ export function RecurringClient() {
 
   const active = rows.filter((r) => r.isActive);
   const inactive = rows.filter((r) => !r.isActive);
+  // r.value comes from the DB as a plain decimal string ("1500.00"), so use
+  // parseFloat directly — parseCurrency strips the decimal point and gives wrong results.
   const monthlyCommitted = active
     .filter((r) => r.type === "expense" && r.frequency === "monthly")
-    .reduce((s, r) => s + parseCurrency(r.value), 0);
+    .reduce((s, r) => s + parseFloat(r.value), 0);
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -167,15 +169,17 @@ export function RecurringClient() {
 
       {/* Stats */}
       {rows.length > 0 && (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2.5">
           {[
-            { label: "Comprometido/mês", value: formatCurrency(monthlyCommitted), color: "text-expense" },
-            { label: "Recorrências ativas", value: String(active.length), color: "text-app-text" },
-            { label: "Pausadas", value: String(inactive.length), color: "text-app-muted" },
+            { label: "Comprometido", sublabel: "/mês", value: formatCurrency(monthlyCommitted), color: "text-expense" },
+            { label: "Ativas", sublabel: "", value: String(active.length), color: "text-app-text" },
+            { label: "Pausadas", sublabel: "", value: String(inactive.length), color: "text-app-muted" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-[14px] border border-app-border shadow-card p-4">
-              <p className="text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] mb-2">{s.label}</p>
-              <p className={`text-[20px] font-bold font-mono ${s.color}`}>{s.value}</p>
+            <div key={s.label} className="bg-white rounded-[14px] border border-app-border shadow-card p-3">
+              <p className="text-[10px] font-bold text-app-muted uppercase tracking-[0.06em] mb-1.5 leading-tight">
+                {s.label}<span className="normal-case font-medium">{s.sublabel}</span>
+              </p>
+              <p className={`text-[15px] font-bold font-mono leading-tight truncate ${s.color}`}>{s.value}</p>
             </div>
           ))}
         </div>
@@ -231,14 +235,14 @@ export function RecurringClient() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-semibold text-app-text truncate">{r.description}</p>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className="text-[11px] text-app-muted">
+                        <div className="flex items-center flex-wrap gap-x-1.5 gap-y-0.5 mt-0.5">
+                          <span className="text-[11px] text-app-muted whitespace-nowrap">
                             {FREQ_LABEL[r.frequency]}
                             {r.frequency === "monthly" && r.dayOfMonth && ` · dia ${r.dayOfMonth === "last" ? "último" : r.dayOfMonth}`}
                           </span>
                           {cat && (
                             <span
-                              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap"
                               style={{ background: `${cat.color ?? "#6366f1"}20`, color: cat.color ?? "#6366f1" }}
                             >
                               {cat.name}
@@ -246,9 +250,9 @@ export function RecurringClient() {
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-2 shrink-0 ml-2">
                         <div className="text-right">
-                          <p className={`text-[13px] font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
+                          <p className={`text-[13px] font-semibold font-mono whitespace-nowrap ${r.type === "income" ? "text-income" : "text-expense"}`}>
                             {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
                           </p>
                           <span className={`text-[10px] font-semibold ${r.isActive ? "text-income" : "text-app-muted"}`}>
