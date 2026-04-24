@@ -284,11 +284,6 @@ export function ReportsClient() {
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: drilldown.color }} />
                     <h3 className="text-[13px] font-semibold text-app-text">{drilldown.label}</h3>
-                    {!drillLoading && (
-                      <span className="text-[11px] text-app-muted ml-1">
-                        {drillTxns.length} lançamento(s) · {formatCurrency(drillTxns.reduce((a, t) => a + parseFloat(t.value), 0))}
-                      </span>
-                    )}
                   </div>
                   {drillLoading ? (
                     <p className="text-[12px] text-app-muted py-3 text-center">Carregando lançamentos...</p>
@@ -300,8 +295,7 @@ export function ReportsClient() {
                         <tr className="border-b border-[#f1f3f9]">
                           <th className="text-left pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Data</th>
                           <th className="text-left pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Descrição</th>
-                          <th className="text-right pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Valor</th>
-                          <th className="text-center pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] w-8">Pago</th>
+                          <th className="text-right pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Pago</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#f8f9fd]">
@@ -313,12 +307,12 @@ export function ReportsClient() {
                               {t.notes && <p className="text-[11px] text-app-muted font-normal mt-0.5">{t.notes}</p>}
                             </td>
                             <td className="py-2.5 text-right">
-                              <span className={`text-[13px] font-mono font-semibold ${reportType === "income" ? "text-income" : "text-expense"}`}>
-                                {reportType === "income" ? "+" : "−"}{formatCurrency(t.value)}
-                              </span>
-                            </td>
-                            <td className="py-2.5 text-center">
-                              {t.isPaid ? <CheckCircle2 size={14} className="text-income mx-auto" /> : <Circle size={14} className="text-slate-300 mx-auto" />}
+                              <div className="flex items-center justify-end gap-2">
+                                <span className={`text-[13px] font-mono font-semibold ${reportType === "income" ? "text-income" : "text-expense"}`}>
+                                  {reportType === "income" ? "+" : "−"}{formatCurrency(t.value)}
+                                </span>
+                                {t.isPaid ? <CheckCircle2 size={13} className="text-income shrink-0" /> : <Circle size={13} className="text-slate-300 shrink-0" />}
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -331,7 +325,6 @@ export function ReportsClient() {
                               {formatCurrency(drillTxns.reduce((a, t) => a + parseFloat(t.value), 0))}
                             </span>
                           </td>
-                          <td />
                         </tr>
                       </tfoot>
                     </table>
