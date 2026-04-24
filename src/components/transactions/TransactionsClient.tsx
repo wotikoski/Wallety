@@ -260,73 +260,64 @@ export function TransactionsClient() {
       </Link>
 
       {/* Filters — desktop only (mobile uses FilterSheet) */}
-      <div className="hidden md:flex bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex-wrap gap-3 items-end">
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">Tipo</label>
-          <select
-            value={type}
-            onChange={(e) => { setType(e.target.value); setPage(1); }}
-            className="h-9 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+      <div className="hidden md:flex flex-wrap gap-2 items-center">
+        {/* Chip type filters */}
+        {(["", "income", "expense"] as const).map((v) => (
+          <button
+            key={v}
+            onClick={() => { setType(v); setPage(1); }}
+            className={`chip-filter${type === v ? " active" : ""}`}
           >
-            <option value="">Todos</option>
-            <option value="income">Receitas</option>
-            <option value="expense">Despesas</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">Data inicial</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            className="w-[155px] h-9 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">Data final</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            className="w-[155px] h-9 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
-          />
-        </div>
-        {/* Month shortcuts */}
+            {v === "" ? "Todos" : v === "income" ? "Receitas" : "Despesas"}
+          </button>
+        ))}
+        <div className="w-px h-5 bg-app-border mx-1" />
+        {/* Date range */}
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+          className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
+        />
+        <span className="text-app-muted text-sm">→</span>
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+          className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
+        />
+        {/* Month nav */}
         <div className="flex items-center gap-1">
           <button
             onClick={() => navigateMonth(-1)}
             title="Mês anterior"
-            className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
           >
-            <ChevronLeft size={15} />
+            <ChevronLeft size={14} />
           </button>
           <button
             onClick={() => navigateMonth(1)}
             title="Próximo mês"
-            className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
           >
-            <ChevronRight size={15} />
+            <ChevronRight size={14} />
           </button>
         </div>
-        {/* Toggle: mostrar lançamentos agendados (data > hoje) */}
+        {/* Agendados toggle */}
         <button
           onClick={() => { setShowFuture((v) => !v); setPage(1); }}
-          className={`h-9 flex items-center gap-1.5 text-sm px-3 rounded-lg border transition ${
-            showFuture
-              ? "border-brand-400 bg-brand-50 text-brand-600 font-medium"
-              : "border-slate-200 text-slate-500 hover:bg-slate-50"
-          }`}
+          className={`chip-filter${showFuture ? " active" : ""}`}
           title={showFuture ? "Ocultar lançamentos futuros" : "Mostrar lançamentos agendados"}
         >
-          <Clock size={14} />
-          <span className="hidden sm:inline">Agendados</span>
+          <Clock size={12} className="inline mr-1" />
+          Agendados
         </button>
         {(type || startDate || endDate) && (
           <button
             onClick={() => { setType(""); setStartDate(""); setEndDate(""); setPage(1); }}
-            className="h-9 text-sm text-slate-500 hover:text-slate-700 px-3 rounded-lg hover:bg-slate-50 transition"
+            className="text-[12px] text-app-muted hover:text-app-text px-2 transition"
           >
-            Limpar filtros
+            Limpar
           </button>
         )}
       </div>
@@ -335,17 +326,20 @@ export function TransactionsClient() {
       {txns.length > 0 && (
         <div className="sticky top-0 z-10 py-2 bg-app-bg/95 backdrop-blur-sm md:static md:bg-transparent md:py-0 md:backdrop-blur-none">
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-income rounded-xl px-2.5 py-2 text-center">
-              <p className="text-[10px] text-white/70 font-semibold uppercase tracking-wide mb-0.5">Receitas</p>
-              <p className="text-sm font-bold font-mono text-white truncate">{formatCurrency(totalIncome)}</p>
+            <div className="rounded-[12px] px-3 py-2.5 text-center" style={{ background: "rgba(16,185,129,.1)" }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "#059669" }}>Receitas</p>
+              <p className="text-sm font-semibold font-mono truncate" style={{ color: "#10b981" }}>{formatCurrency(totalIncome)}</p>
             </div>
-            <div className="bg-expense rounded-xl px-2.5 py-2 text-center">
-              <p className="text-[10px] text-white/70 font-semibold uppercase tracking-wide mb-0.5">Despesas</p>
-              <p className="text-sm font-bold font-mono text-white truncate">{formatCurrency(totalExpense)}</p>
+            <div className="rounded-[12px] px-3 py-2.5 text-center" style={{ background: "rgba(248,113,113,.1)" }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "#ef4444" }}>Despesas</p>
+              <p className="text-sm font-semibold font-mono truncate" style={{ color: "#f87171" }}>{formatCurrency(totalExpense)}</p>
             </div>
-            <div className={`rounded-xl px-2.5 py-2 text-center ${totalIncome - totalExpense >= 0 ? "bg-income" : "bg-expense"}`}>
-              <p className="text-[10px] text-white/70 font-semibold uppercase tracking-wide mb-0.5">Saldo</p>
-              <p className="text-sm font-bold font-mono text-white truncate">
+            <div
+              className="rounded-[12px] px-3 py-2.5 text-center"
+              style={{ background: totalIncome - totalExpense >= 0 ? "rgba(16,185,129,.1)" : "rgba(248,113,113,.1)" }}
+            >
+              <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: totalIncome - totalExpense >= 0 ? "#059669" : "#ef4444" }}>Saldo</p>
+              <p className="text-sm font-semibold font-mono truncate" style={{ color: totalIncome - totalExpense >= 0 ? "#10b981" : "#f87171" }}>
                 {formatCurrency(totalIncome - totalExpense)}
               </p>
             </div>
@@ -354,7 +348,7 @@ export function TransactionsClient() {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
         {isLoading ? (
           <ListSkeleton rows={6} />
         ) : txns.length === 0 ? (
@@ -368,7 +362,7 @@ export function TransactionsClient() {
         ) : (
           <>
             {/* Mobile card view */}
-            <div ref={listRef} className="md:hidden divide-y divide-slate-50">
+            <div ref={listRef} className="md:hidden divide-y divide-[#f1f3f9]">
               {txns.map((t) => (
                 <SwipeableRow
                   key={t.id}
@@ -376,7 +370,7 @@ export function TransactionsClient() {
                     <div className="flex h-full w-full">
                       <Link
                         href={`/lancamentos/${t.id}`}
-                        className="flex-1 flex flex-col items-center justify-center gap-1 bg-brand-600 text-white text-xs font-medium"
+                        className="flex-1 flex flex-col items-center justify-center gap-1 bg-brand-500 text-white text-xs font-medium"
                       >
                         <Edit size={16} />
                         Editar
@@ -391,30 +385,33 @@ export function TransactionsClient() {
                     </div>
                   }
                 >
-                  <div className="px-4 py-3.5 flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                  <div className="px-4 py-3.5 flex items-center gap-3 bg-white hover:bg-[#f8f9fd] transition">
+                    <div
+                      className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
+                      style={{ background: t.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                    >
                       {t.type === "income"
-                        ? <ArrowUpRight size={14} className="text-income" />
-                        : <ArrowDownRight size={14} className="text-expense" />
+                        ? <ArrowUpRight size={14} className="text-income" strokeWidth={2.5} />
+                        : <ArrowDownRight size={14} className="text-expense" strokeWidth={2.5} />
                       }
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-800 truncate">{t.description}</p>
+                      <p className="text-[13px] font-semibold text-app-text truncate">{t.description}</p>
                       <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                        <p className="text-xs text-slate-400">{formatDate(t.date)}</p>
+                        <p className="text-[11px] text-app-muted">{formatDate(t.date)}</p>
                         {t.categoryName && (
                           <span
                             className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                             style={{
-                              backgroundColor: t.categoryColor ? `${t.categoryColor}22` : "#6173f422",
-                              color: t.categoryColor ?? "#6173f4",
+                              backgroundColor: t.categoryColor ? `${t.categoryColor}20` : "#6366f120",
+                              color: t.categoryColor ?? "#6366f1",
                             }}
                           >
                             {t.categoryName}
                           </span>
                         )}
                         {t.installmentTotal && t.installmentTotal > 1 && (
-                          <span className="text-xs text-slate-400 flex items-center gap-0.5">
+                          <span className="text-[10px] text-app-muted flex items-center gap-0.5">
                             <Layers size={10} />{t.installmentCurrent}/{t.installmentTotal}
                           </span>
                         )}
@@ -432,14 +429,14 @@ export function TransactionsClient() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
-                        <p className={`text-sm font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
-                          {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
+                        <p className={`text-[13px] font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                          {t.type === "income" ? "+" : "−"}{formatCurrency(t.value)}
                         </p>
-                        <span className={`text-xs ${t.isPaid ? "text-income" : "text-slate-400"}`}>
-                          {t.isPaid ? "Pago" : "Pendente"}
+                        <span className={`text-[10px] font-semibold ${t.isPaid ? "text-income" : "text-amber-500"}`}>
+                          {t.isPaid ? "✓ Pago" : "● Pendente"}
                         </span>
                       </div>
-                      <button onClick={() => togglePaid.mutate(t)} className="text-slate-400 hover:text-income transition">
+                      <button onClick={() => togglePaid.mutate(t)} className="text-app-muted hover:text-income transition">
                         {t.isPaid ? <CheckCircle2 size={16} className="text-income" /> : <Circle size={16} />}
                       </button>
                     </div>
@@ -450,49 +447,52 @@ export function TransactionsClient() {
 
             {/* Desktop table view */}
             <table className="hidden md:table w-full">
-              <thead className="bg-slate-50 border-b border-slate-100">
+              <thead className="bg-[#f8f9fd] border-b border-[#f1f3f9]">
                 <tr>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Data</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Descrição</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Parcela</th>
-                  <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Valor</th>
-                  <th className="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Pago</th>
-                  <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Ações</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Data</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Descrição</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Parcela</th>
+                  <th className="text-right px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Valor</th>
+                  <th className="text-center px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Pago</th>
+                  <th className="text-right px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-[#f1f3f9]">
                 {txns.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-50/50 transition">
-                    <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">
+                  <tr key={t.id} className="hover:bg-[#f8f9fd] transition">
+                    <td className="px-5 py-3.5 text-[13px] text-app-muted whitespace-nowrap">
                       {formatDate(t.date)}
                       {t.effectiveDate && t.effectiveDate !== t.date && (
-                        <div className="text-[10px] font-medium text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded inline-block mt-1">
+                        <div className="text-[10px] font-semibold text-brand-500 bg-[rgba(99,102,241,.08)] px-1.5 py-0.5 rounded-full inline-block mt-1">
                           Fatura {formatInvoiceMonth(t.effectiveDate)}
                         </div>
                       )}
                       {t.date > todayStr && (
-                        <div className="text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded inline-flex items-center gap-0.5 mt-1">
+                        <div className="text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5 mt-1">
                           <Clock size={9} /> Agendado
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-3.5">
+                    <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2.5">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                        <div
+                          className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0"
+                          style={{ background: t.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                        >
                           {t.type === "income"
-                            ? <ArrowUpRight size={12} className="text-income" />
-                            : <ArrowDownRight size={12} className="text-expense" />
+                            ? <ArrowUpRight size={13} className="text-income" strokeWidth={2.5} />
+                            : <ArrowDownRight size={13} className="text-expense" strokeWidth={2.5} />
                           }
                         </div>
                         <div>
-                          <span className="text-sm font-medium text-slate-800">{t.description}</span>
+                          <span className="text-[13px] font-semibold text-app-text">{t.description}</span>
                           {t.categoryName && (
                             <div className="mt-0.5">
                               <span
                                 className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                                 style={{
-                                  backgroundColor: t.categoryColor ? `${t.categoryColor}22` : "#6173f422",
-                                  color: t.categoryColor ?? "#6173f4",
+                                  backgroundColor: t.categoryColor ? `${t.categoryColor}20` : "#6366f120",
+                                  color: t.categoryColor ?? "#6366f1",
                                 }}
                               >
                                 {t.categoryName}
@@ -502,32 +502,35 @@ export function TransactionsClient() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-3.5 text-sm text-slate-400">
+                    <td className="px-5 py-3.5 text-[11px] text-app-muted">
                       {t.installmentTotal && t.installmentTotal > 1 ? (
                         <span className="flex items-center gap-1">
-                          <Layers size={12} />
+                          <Layers size={11} />
                           {t.installmentCurrent}/{t.installmentTotal}
                         </span>
                       ) : null}
                     </td>
-                    <td className="px-6 py-3.5 text-right">
-                      <span className={`text-sm font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
-                        {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
+                    <td className="px-5 py-3.5 text-right">
+                      <span className={`text-[13px] font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                        {t.type === "income" ? "+" : "−"}{formatCurrency(t.value)}
                       </span>
                     </td>
-                    <td className="px-6 py-3.5 text-center">
-                      <button onClick={() => togglePaid.mutate(t)} className="text-slate-400 hover:text-income transition">
+                    <td className="px-5 py-3.5 text-center">
+                      <button onClick={() => togglePaid.mutate(t)} className="text-app-muted hover:text-income transition">
                         {t.isPaid ? <CheckCircle2 size={18} className="text-income" /> : <Circle size={18} />}
                       </button>
                     </td>
-                    <td className="px-6 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link href={`/lancamentos/${t.id}`} className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition">
+                    <td className="px-5 py-3.5 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link
+                          href={`/lancamentos/${t.id}`}
+                          className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
+                        >
                           <Edit size={14} />
                         </Link>
                         <button
                           onClick={() => askDelete(t)}
-                          className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                          className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -541,23 +544,23 @@ export function TransactionsClient() {
         )}
 
         {txns.length > 0 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-slate-50">
-            <span className="text-xs text-slate-400">{txns.length} lançamentos</span>
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between px-5 py-3 border-t border-[#f1f3f9]">
+            <span className="text-[12px] text-app-muted">{txns.length} lançamentos</span>
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-30 transition"
+                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-lg hover:bg-[#f1f3f9]"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={15} />
               </button>
-              <span className="text-xs text-slate-500">Página {page}</span>
+              <span className="text-[12px] text-app-muted font-medium px-1">Página {page}</span>
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={txns.length < 30}
-                className="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-30 transition"
+                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-lg hover:bg-[#f1f3f9]"
               >
-                <ChevronRight size={16} />
+                <ChevronRight size={15} />
               </button>
             </div>
           </div>
@@ -626,7 +629,7 @@ function InstallmentDeleteDialog({
       <div
         role="dialog"
         aria-modal="true"
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        className="bg-white rounded-[14px] shadow-card w-full max-w-md overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">

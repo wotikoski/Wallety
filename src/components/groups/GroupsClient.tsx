@@ -115,13 +115,13 @@ export function GroupsClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Grupos</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Compartilhe finanças com família ou parceiros</p>
+          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Grupos</h1>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Compartilhe finanças com família ou parceiros</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
           title="Novo Grupo"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Novo Grupo</span>
@@ -129,7 +129,7 @@ export function GroupsClient() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
+        <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
           <h2 className="text-base font-semibold text-slate-800 mb-4">Criar Grupo</h2>
           <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="space-y-4">
             <div>
@@ -149,8 +149,8 @@ export function GroupsClient() {
               />
             </div>
             <div className="flex gap-3">
-              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition">Cancelar</button>
-              <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
+              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-[#f8f9fd]transition">Cancelar</button>
+              <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
                 {createMutation.isPending ? "Criando..." : "Criar Grupo"}
               </button>
             </div>
@@ -163,9 +163,9 @@ export function GroupsClient() {
         <div className="space-y-3">
           <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Meus grupos</p>
           {groups.length === 0 ? (
-            <div className="bg-white rounded-xl border border-slate-100 p-8 text-center shadow-sm">
+            <div className="bg-white rounded-[14px] border border-app-border p-8 text-center shadow-card">
               <Users size={32} className="text-slate-300 mx-auto mb-2" />
-              <p className="text-sm text-slate-400">Nenhum grupo ainda</p>
+              <p className="text-[13px] text-app-muted">Nenhum grupo ainda</p>
             </div>
           ) : (
             groups.map((g) => (
@@ -180,7 +180,7 @@ export function GroupsClient() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-slate-800 truncate">{g.name}</p>
-                    <p className="text-xs text-slate-400 capitalize">{g.role === "owner" ? "Dono" : g.role}</p>
+                    <p className="text-[11px] text-app-muted capitalize">{g.role === "owner" ? "Dono" : g.role}</p>
                   </div>
                   {activeGroupId === g.id && (
                     <span className="text-xs text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full font-medium">Ativo</span>
@@ -194,7 +194,7 @@ export function GroupsClient() {
         {/* Group detail */}
         {selectedGroup && currentGroup && (
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
+            <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base font-semibold text-slate-800">{currentGroup.name}</h2>
                 <div className="flex items-center gap-2">
@@ -211,7 +211,7 @@ export function GroupsClient() {
                       description: `Tem certeza que deseja excluir o grupo "${currentGroup.name}"? Todos os lançamentos, categorias e dados compartilhados serão perdidos.`,
                       confirmLabel: "Excluir",
                     })}
-                      className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                      className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -227,18 +227,18 @@ export function GroupsClient() {
                       {m.user.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-800">{m.user.name}</p>
-                      <p className="text-xs text-slate-400">{m.user.email}</p>
+                      <p className="text-[13px] font-semibold text-app-text">{m.user.name}</p>
+                      <p className="text-[11px] text-app-muted">{m.user.email}</p>
                     </div>
                     {m.role === "owner" && <Crown size={14} className="text-amber-500" />}
-                    <span className="text-xs text-slate-400 capitalize">{m.role === "owner" ? "Dono" : m.role === "admin" ? "Admin" : "Membro"}</span>
+                    <span className="text-[11px] text-app-muted capitalize">{m.role === "owner" ? "Dono" : m.role === "admin" ? "Admin" : "Membro"}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Invite section */}
-            <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
+            <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
               <h3 className="text-sm font-semibold text-slate-800 mb-3">Convidar membro</h3>
               <div className="flex gap-2">
                 <input
@@ -251,7 +251,7 @@ export function GroupsClient() {
                 <button
                   onClick={() => inviteMutation.mutate()}
                   disabled={!inviteEmail || inviteMutation.isPending}
-                  className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 h-9 rounded-lg transition disabled:opacity-50"
+                  className="flex items-center gap-1.5 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-4 h-9 rounded-lg transition disabled:opacity-50"
                 >
                   <UserPlus size={14} />
                   Convidar

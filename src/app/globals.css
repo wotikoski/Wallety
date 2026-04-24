@@ -5,25 +5,25 @@
 @layer base {
   :root {
     --background: 225 36% 96%; /* #f0f2f8 */
-    --foreground: 228 27% 14%; /* #1a1d2e */
+    --foreground: 222 47% 6%; /* #0f172a */
     --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
+    --card-foreground: 222 47% 6%;
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 231 70% 63%;
+    --popover-foreground: 222 47% 6%;
+    --primary: 239 84% 67%; /* #6366f1 */
     --primary-foreground: 210 20% 98%;
     --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 220.9 39.3% 11%;
     --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
+    --muted-foreground: 215 16% 47%; /* #64748b */
     --accent: 220 14.3% 95.9%;
     --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 91% 71%; /* #f87171 */
     --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 231 70% 63%;
-    --radius: 0.75rem;
+    --border: 220 20% 91%; /* #e2e5ef */
+    --input: 220 20% 91%;
+    --ring: 239 84% 67%;
+    --radius: 0.875rem; /* 14px */
   }
 
   .dark {
@@ -117,6 +117,44 @@
 
 .font-brand {
   font-family: var(--font-brand), system-ui, sans-serif;
+}
+
+/* ── Chip filter buttons (Lançamentos, Relatórios, etc.) ─────────────── */
+.chip-filter {
+  padding: 5px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid #e2e5ef;
+  background: #fff;
+  color: #64748b;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  font-family: inherit;
+  line-height: 1.4;
+}
+.chip-filter:hover {
+  border-color: #a5b4fc;
+  color: #4338ca;
+}
+.chip-filter.active {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: #fff;
+}
+
+/* ── Progress track/fill ─────────────────────────────────────────────── */
+.prog-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: #f1f3f9;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width .5s cubic-bezier(.4,0,.2,1);
 }
 
 /* ---------------------------------------------------------------------------

@@ -5,7 +5,7 @@ import { Shuffle } from "lucide-react";
 /** Shared curated palette. Keep in sync with the SQL migration that remaps
  * legacy colors on the database side. */
 export const COLOR_PALETTE = [
-  "#6173f4", // brand blue
+  "#6366f1", // brand blue
   "#10b981", // emerald
   "#f59e0b", // amber
   "#ef4444", // red

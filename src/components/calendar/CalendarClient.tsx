@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
@@ -38,7 +38,7 @@ interface ProjectedOccurrence {
   value: string;
 }
 
-const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "SÃ¡b"];
 
 export function CalendarClient() {
   const { activeGroupId } = useActiveGroup();
@@ -95,8 +95,8 @@ export function CalendarClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Calendário</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Visualize seus lançamentos por data</p>
+          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">CalendÃ¡rio</h1>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Visualize seus lanÃ§amentos por data</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -119,7 +119,7 @@ export function CalendarClient() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar Grid */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="lg:col-span-2 bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
           {/* Weekday headers */}
           <div className="grid grid-cols-7 border-b border-slate-100">
             {WEEKDAYS.map((d) => (
@@ -177,15 +177,15 @@ export function CalendarClient() {
         </div>
 
         {/* Day Detail Panel */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+        <div className="bg-white rounded-[14px] border border-app-border shadow-card p-5">
           {selectedDay ? (
             <>
               <h2 className="text-base font-semibold text-slate-800 mb-1">
                 {format(selectedDay, "dd 'de' MMMM", { locale: ptBR })}
               </h2>
-              <p className="text-xs text-slate-400 mb-4">{selectedTxns.length} lançamento(s)</p>
+              <p className="text-xs text-slate-400 mb-4">{selectedTxns.length} lanÃ§amento(s)</p>
               {selectedTxns.length === 0 ? (
-                <p className="text-sm text-slate-400">Nenhum lançamento neste dia</p>
+                <p className="text-sm text-slate-400">Nenhum lanÃ§amento neste dia</p>
               ) : (
                 <div className="space-y-2">
                   {selectedTxns.map((t) => (
@@ -233,7 +233,7 @@ export function CalendarClient() {
             </>
           ) : (
             <div className="h-full flex items-center justify-center text-slate-400 text-sm py-12">
-              Clique em um dia para ver os lançamentos
+              Clique em um dia para ver os lanÃ§amentos
             </div>
           )}
         </div>
