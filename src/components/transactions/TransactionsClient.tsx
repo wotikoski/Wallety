@@ -253,7 +253,7 @@ export function TransactionsClient() {
   const totalExpense = txns.filter((t) => t.type === "expense").reduce((a, t) => a + parseFloat(t.value), 0);
 
   return (
-    <div className="space-y-6 animate-fade-in pb-24 md:pb-6">
+    <div className="space-y-5 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

@@ -109,8 +109,10 @@ export function ReportsClient() {
     if (!drilldown || !drilldownRef.current) return;
     const el = drilldownRef.current;
     const timer = setTimeout(() => {
-      const top = el.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top, behavior: "smooth" });
+      // The scrollable container is <main> with overflow-y-auto, not window
+      const scrollParent = el.closest<HTMLElement>(".overflow-y-auto") ?? document.documentElement;
+      const top = el.getBoundingClientRect().top + scrollParent.scrollTop - 80;
+      scrollParent.scrollTo({ top, behavior: "smooth" });
     }, 200);
     return () => clearTimeout(timer);
   }, [drilldown?.groupKey]);
