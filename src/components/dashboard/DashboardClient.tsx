@@ -251,18 +251,18 @@ export function DashboardClient() {
                   const pct = total > 0 ? Math.round((cat.total / total) * 100) : 0;
                   return (
                     <div key={cat.name}>
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
-                          <span className="text-[12px] font-semibold text-app-text truncate">{cat.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0 ml-1">
-                          <span className="text-[11px] text-app-muted">{pct}%</span>
-                          <span className="text-[12px] font-semibold text-app-text font-mono tabular-nums">{formatCurrency(cat.total)}</span>
-                        </div>
+                      {/* Line 1: bullet + name + pct */}
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
+                        <span className="text-[12px] font-semibold text-app-text truncate flex-1 min-w-0">{cat.name}</span>
+                        <span className="text-[11px] text-app-muted shrink-0">{pct}%</span>
                       </div>
-                      <div className="prog-track" style={{ height: 4 }}>
-                        <div className="prog-fill" style={{ width: `${pct}%`, background: cat.color }} />
+                      {/* Line 2: progress bar + value */}
+                      <div className="flex items-center gap-2">
+                        <div className="prog-track flex-1" style={{ height: 4 }}>
+                          <div className="prog-fill" style={{ width: `${pct}%`, background: cat.color }} />
+                        </div>
+                        <span className="text-[11px] font-semibold text-app-muted font-mono tabular-nums shrink-0">{formatCurrency(cat.total)}</span>
                       </div>
                     </div>
                   );
