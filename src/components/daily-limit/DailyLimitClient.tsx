@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
 import { useState } from "react";
-import { Target, AlertTriangle, CalendarClock, Info } from "lucide-react";
+import { CalendarClock, Info } from "lucide-react";
 import type { DailyLimitResult } from "@/lib/utils/daily-limit";
 
 const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -29,8 +29,9 @@ export function DailyLimitClient() {
   const nextMonthName = MONTHS[month % 12];
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-3xl">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div className="space-y-5 animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Limite Diário</h1>
           <p className="text-app-muted text-[13px] mt-0.5 font-medium">
@@ -41,7 +42,7 @@ export function DailyLimitClient() {
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="flex-1 sm:flex-none text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
           </select>
@@ -56,29 +57,26 @@ export function DailyLimitClient() {
       </div>
 
       {isLoading ? (
-        <div className="text-center text-slate-400 py-12">Calculando...</div>
+        <div className="text-center text-app-muted py-12 text-sm">Calculando...</div>
       ) : (
         <>
-          {/* Main result card */}
-          <div className={`rounded-[14px] p-8 text-white ${isOverBudget ? "bg-expense" : "bg-brand-600"}`}>
-            <div className="flex items-center gap-3 mb-4">
-              {isOverBudget
-                ? <AlertTriangle size={24} className="opacity-80" />
-                : <Target size={24} className="opacity-80" />
-              }
-              <span className="text-base font-medium opacity-80">
-                {isOverBudget ? "Saldo insuficiente" : "Limite diário real"}
-              </span>
-            </div>
-            <p className="text-5xl font-bold font-mono mb-2">
+          {/* Hero card */}
+          <div
+            className="rounded-[14px] p-5 text-white"
+            style={{ background: isOverBudget ? "#f87171" : "#6366f1" }}
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-white/80 mb-1.5">
+              {isOverBudget ? "Saldo insuficiente" : "Limite diário"}
+            </p>
+            <p className="text-[28px] font-bold font-mono text-white mb-1">
               {formatCurrency(adjustedDailyLimit)}
             </p>
-            <p className="text-sm opacity-70">
+            <p className="text-[12px] text-white/70">
               por dia · {data?.daysRemaining ?? 0} dias restantes
             </p>
             {hasReserve && (
-              <div className="mt-4 pt-4 border-t border-white/20 flex items-center gap-2 text-sm opacity-80">
-                <CalendarClock size={15} />
+              <div className="mt-3 pt-3 border-t border-white/20 flex items-center gap-2 text-[12px] text-white/80">
+                <CalendarClock size={13} />
                 <span>Inclui reserva de {formatCurrency(data?.reserveNeeded ?? 0)} para {nextMonthName}</span>
               </div>
             )}
@@ -86,17 +84,17 @@ export function DailyLimitClient() {
 
           {/* Next month alert */}
           {hasReserve && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div className="bg-amber-50 border border-amber-200 rounded-[14px] p-4">
               <div className="flex gap-3">
-                <CalendarClock size={18} className="text-amber-600 shrink-0 mt-0.5" />
+                <CalendarClock size={16} className="text-amber-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-amber-800">
+                  <p className="text-[13px] font-semibold text-amber-800">
                     Déficit previsto em {nextMonthName}: {formatCurrency(data?.nextMonthDeficit ?? 0)}
                   </p>
-                  <p className="text-xs text-amber-700 mt-0.5">
+                  <p className="text-[12px] text-amber-700 mt-0.5">
                     Receitas lançadas: {formatCurrency(data?.nextMonthIncome ?? 0)} · Despesas lançadas: {formatCurrency(data?.nextMonthExpenses ?? 0)}
                   </p>
-                  <p className="text-xs text-amber-600 mt-1">
+                  <p className="text-[12px] text-amber-600 mt-1">
                     Este valor já está sendo reservado do seu limite atual.
                   </p>
                 </div>
@@ -105,7 +103,7 @@ export function DailyLimitClient() {
           )}
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <StatCard label="Receitas" value={data?.actualIncome ?? 0} color="income" />
             <StatCard label="Despesas fixas" value={data?.actualFixedExpenses ?? 0} color="expense" />
             <StatCard label="Gastos variáveis" value={data?.spentVariable ?? 0} color="expense" />
@@ -113,27 +111,27 @@ export function DailyLimitClient() {
           </div>
 
           {/* Breakdown */}
-          <div className="bg-slate-50 rounded-xl p-5 space-y-2">
-            <div className="flex items-center gap-2 mb-3">
-              <Info size={14} className="text-slate-400" />
-              <h3 className="text-sm font-semibold text-slate-700">Como é calculado</h3>
+          <div className="bg-white rounded-[14px] border border-app-border shadow-card p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Info size={14} className="text-app-muted" />
+              <h3 className="text-[13px] font-semibold text-app-text">Como é calculado</h3>
             </div>
-            <div className="text-sm text-slate-500 space-y-1.5">
+            <div className="text-[13px] text-app-muted space-y-2">
               <Row label="Receitas do mês" value={data?.actualIncome ?? 0} type="income" />
               <Row label="(-) Despesas fixas" value={data?.actualFixedExpenses ?? 0} type="expense" />
               <Row label="(-) Gastos variáveis" value={data?.spentVariable ?? 0} type="expense" />
-              <div className="flex justify-between border-t border-slate-200 pt-1.5 font-medium text-slate-700">
+              <div className="flex justify-between border-t border-app-border pt-2 font-semibold text-app-text">
                 <span>= Saldo restante</span>
                 <span className="font-mono">{formatCurrency(data?.remainingReal ?? 0)}</span>
               </div>
               {hasReserve && (
                 <Row label={`(-) Reserva para ${nextMonthName}`} value={data?.reserveNeeded ?? 0} type="expense" />
               )}
-              <div className="flex justify-between border-t border-slate-200 pt-1.5 font-semibold text-slate-800">
+              <div className="flex justify-between border-t border-app-border pt-2 font-semibold text-app-text">
                 <span>= Disponível para gastar</span>
                 <span className="font-mono">{formatCurrency(data?.adjustedAvailable ?? 0)}</span>
               </div>
-              <div className="flex justify-between pt-1 text-brand-600 font-semibold">
+              <div className="flex justify-between pt-1 font-semibold text-brand-500">
                 <span>÷ {data?.daysRemaining ?? 0} dias restantes</span>
                 <span className="font-mono">{formatCurrency(adjustedDailyLimit)} / dia</span>
               </div>
@@ -141,7 +139,7 @@ export function DailyLimitClient() {
           </div>
 
           {(data?.actualIncome ?? 0) === 0 && (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
+            <div className="bg-blue-50 border border-blue-200 rounded-[14px] p-4 text-[13px] text-blue-700">
               Nenhuma receita lançada para {MONTHS[month - 1]} de {year}. Adicione receitas em <strong>Lançamentos</strong> para calcular seu limite diário.
             </div>
           )}
@@ -164,15 +162,15 @@ function Row({ label, value, type }: { label: string; value: number; type: "inco
 
 function StatCard({ label, value, color }: { label: string; value: number; color: "income" | "expense" | "warning" | "neutral" }) {
   const colors = {
-    income: "text-income-dark",
-    expense: "text-expense-dark",
-    warning: "text-amber-700",
-    neutral: "text-slate-400",
+    income: "text-income",
+    expense: "text-expense",
+    warning: "text-amber-600",
+    neutral: "text-app-muted",
   };
   return (
-    <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
-      <p className="text-xs text-slate-500 mb-1">{label}</p>
-      <p className={`text-base font-bold font-mono ${colors[color]}`}>
+    <div className="bg-white rounded-[14px] border border-app-border shadow-card p-4">
+      <p className="text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] mb-1.5">{label}</p>
+      <p className={`text-[16px] font-bold font-mono ${colors[color]}`}>
         {formatCurrency(value)}
       </p>
     </div>
