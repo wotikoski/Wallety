@@ -64,7 +64,7 @@ function CommittedCard({ value }: { value: number }) {
   return (
     <div className="bg-white rounded-[14px] border border-app-border shadow-card p-3">
       <p className="text-[10px] font-bold text-app-muted uppercase tracking-[0.06em] mb-1.5 leading-tight">
-        Comprometido<span className="normal-case font-medium">/mês</span>
+        Comprometido<span className="hidden md:inline normal-case font-medium">/mês</span>
       </p>
       {/* Mobile: abbreviated + tap-to-reveal tooltip */}
       <div className="relative md:hidden">
