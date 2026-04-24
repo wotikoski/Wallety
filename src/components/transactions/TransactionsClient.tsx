@@ -448,17 +448,6 @@ export function TransactionsClient() {
                       <p className="text-[13px] font-semibold text-app-text truncate">{t.description}</p>
                       <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                         <p className="text-[11px] text-app-muted">{formatDate(t.date)}</p>
-                        {t.categoryName && (
-                          <span
-                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                            style={{
-                              backgroundColor: t.categoryColor ? `${t.categoryColor}20` : "#6366f120",
-                              color: t.categoryColor ?? "#6366f1",
-                            }}
-                          >
-                            {t.categoryName}
-                          </span>
-                        )}
                         {t.installmentTotal && t.installmentTotal > 1 && (
                           <span className="text-[10px] text-app-muted flex items-center gap-0.5">
                             <Layers size={10} />{t.installmentCurrent}/{t.installmentTotal}
@@ -535,19 +524,6 @@ export function TransactionsClient() {
                         </div>
                         <div>
                           <span className="text-[13px] font-semibold text-app-text">{t.description}</span>
-                          {t.categoryName && (
-                            <div className="mt-0.5">
-                              <span
-                                className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                                style={{
-                                  backgroundColor: t.categoryColor ? `${t.categoryColor}20` : "#6366f120",
-                                  color: t.categoryColor ?? "#6366f1",
-                                }}
-                              >
-                                {t.categoryName}
-                              </span>
-                            </div>
-                          )}
                         </div>
                       </div>
                     </td>
