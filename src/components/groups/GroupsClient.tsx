@@ -121,7 +121,7 @@ export function GroupsClient() {
         <button
           onClick={() => setShowForm(!showForm)}
           title="Novo Grupo"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Novo Grupo</span>
@@ -136,7 +136,7 @@ export function GroupsClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome do grupo</label>
               <input
                 {...register("name", { required: true })}
-                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Ex: Família Silva"
               />
             </div>
@@ -144,13 +144,13 @@ export function GroupsClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Descrição (opcional)</label>
               <input
                 {...register("description")}
-                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Breve descrição do grupo"
               />
             </div>
             <div className="flex gap-3">
-              <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition">Cancelar</button>
-              <button type="submit" disabled={createMutation.isPending} className="flex-1 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition disabled:opacity-50">
+              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition">Cancelar</button>
+              <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
                 {createMutation.isPending ? "Criando..." : "Criar Grupo"}
               </button>
             </div>
@@ -200,7 +200,7 @@ export function GroupsClient() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveGroupId(activeGroupId === selectedGroup ? null : selectedGroup)}
-                    className={`text-xs px-3 py-2 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-brand-600 text-white" : "border border-brand-300 text-brand-600 hover:bg-brand-50"}`}
+                    className={`text-xs px-3 h-9 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-brand-600 text-white" : "border border-brand-300 text-brand-600 hover:bg-brand-50"}`}
                   >
                     {activeGroupId === selectedGroup ? "Ativo" : "Ativar"}
                   </button>
@@ -246,12 +246,12 @@ export function GroupsClient() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="email@exemplo.com"
-                  className="flex-1 px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex-1 h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 <button
                   onClick={() => inviteMutation.mutate()}
                   disabled={!inviteEmail || inviteMutation.isPending}
-                  className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition disabled:opacity-50"
+                  className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 h-9 rounded-lg transition disabled:opacity-50"
                 >
                   <UserPlus size={14} />
                   Convidar

@@ -100,7 +100,7 @@ export function BanksClient() {
               setShowForm(true);
             }
           }}
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Novo Banco</span>
@@ -123,7 +123,7 @@ export function BanksClient() {
                     if (brand) setValue("color", brand);
                   }
                 }}
-                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Ex: Nubank"
               />
             </div>
@@ -131,7 +131,7 @@ export function BanksClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Código COMPE</label>
               <input
                 {...register("code")}
-                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="260"
               />
             </div>
@@ -147,14 +147,14 @@ export function BanksClient() {
               <button
                 type="button"
                 onClick={() => { setShowForm(false); setEditing(null); }}
-                className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition"
+                className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="flex-1 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition disabled:opacity-50"
+                className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
               >
                 {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
               </button>
