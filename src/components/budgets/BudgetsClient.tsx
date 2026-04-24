@@ -125,7 +125,7 @@ export function BudgetsClient() {
           >
             <ChevronLeft size={15} />
           </button>
-          <span className="text-[13px] font-semibold text-app-text px-3">{MONTHS[month - 1]} {year}</span>
+          <span className="text-[13px] font-semibold text-app-text px-3 whitespace-nowrap">{MONTHS[month - 1]} {year}</span>
           <button
             onClick={() => { if (month === 12) { setMonth(1); setYear(year + 1); } else setMonth(month + 1); }}
             className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
