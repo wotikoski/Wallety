@@ -145,16 +145,16 @@ export function ReportsClient() {
       <div className="hidden md:flex bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex-wrap gap-4 items-end no-print">
         <div>
           <label className="block text-xs font-medium text-slate-500 mb-1">Tipo de relatório</label>
-          <div className="flex rounded-lg border border-slate-200 overflow-hidden">
+          <div className="flex h-9 rounded-lg border border-slate-200 overflow-hidden">
             <button
               onClick={() => handleFilterChange(() => setReportType("income"))}
-              className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition ${reportType === "income" ? "bg-income text-white" : "text-slate-500 hover:bg-slate-50"}`}
+              className={`flex items-center gap-1.5 px-3 h-full text-sm font-medium transition ${reportType === "income" ? "bg-income text-white" : "text-slate-500 hover:bg-slate-50"}`}
             >
               <TrendingUp size={14} /> Receitas
             </button>
             <button
               onClick={() => handleFilterChange(() => setReportType("expense"))}
-              className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition ${reportType === "expense" ? "bg-expense text-white" : "text-slate-500 hover:bg-slate-50"}`}
+              className={`flex items-center gap-1.5 px-3 h-full text-sm font-medium transition ${reportType === "expense" ? "bg-expense text-white" : "text-slate-500 hover:bg-slate-50"}`}
             >
               <TrendingDown size={14} /> Despesas
             </button>
@@ -166,7 +166,7 @@ export function ReportsClient() {
             type="date"
             value={startDate}
             onChange={(e) => handleFilterChange(() => setStartDate(e.target.value))}
-            className="w-[155px] py-2 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            className="w-[155px] h-9 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           />
         </div>
         <div>
@@ -175,7 +175,7 @@ export function ReportsClient() {
             type="date"
             value={endDate}
             onChange={(e) => handleFilterChange(() => setEndDate(e.target.value))}
-            className="w-[155px] py-2 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            className="w-[155px] h-9 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           />
         </div>
         <div>
@@ -183,7 +183,7 @@ export function ReportsClient() {
           <select
             value={groupBy}
             onChange={(e) => handleFilterChange(() => setGroupBy(e.target.value as "category" | "bank" | "user"))}
-            className="w-[155px] py-2 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            className="w-[155px] h-9 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           >
             <option value="category">Categoria</option>
             <option value="bank">Banco</option>
@@ -195,14 +195,14 @@ export function ReportsClient() {
           <button
             onClick={() => navigateMonth(-1)}
             title="Mês anterior"
-            className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+            className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
           >
             <ChevronLeft size={15} />
           </button>
           <button
             onClick={() => navigateMonth(1)}
             title="Próximo mês"
-            className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+            className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
           >
             <ChevronRight size={15} />
           </button>

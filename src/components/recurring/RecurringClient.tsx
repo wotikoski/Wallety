@@ -141,7 +141,7 @@ export function RecurringClient() {
             onClick={() => materializeMutation.mutate()}
             disabled={materializeMutation.isPending}
             title="Gerar pendentes"
-            className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-60"
+            className="inline-flex items-center gap-2 px-3.5 h-9 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-60"
           >
             <Play size={14} />
             <span className="hidden sm:inline">
@@ -152,7 +152,7 @@ export function RecurringClient() {
           <button
             onClick={openNew}
             title="Nova recorrência"
-            className="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700"
+            className="hidden sm:inline-flex items-center gap-2 px-3.5 h-9 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700"
           >
             <Plus size={14} />
             Nova recorrência
@@ -458,7 +458,7 @@ function RecurringForm({
               key={t}
               type="button"
               onClick={() => setType(t)}
-              className={`flex-1 px-3 py-2 text-sm rounded-lg border ${
+              className={`flex-1 h-9 px-3 text-sm rounded-lg border ${
                 type === t
                   ? t === "expense"
                     ? "bg-expense-light text-expense border-expense/30 font-medium"
@@ -477,7 +477,7 @@ function RecurringForm({
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full h-9 px-3 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             placeholder="Ex: Aluguel"
           />
         </div>
@@ -490,7 +490,7 @@ function RecurringForm({
               inputMode="decimal"
               value={valueStr}
               onChange={(e) => setValueStr(e.target.value)}
-              className="w-full px-3 py-2 text-sm font-mono border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full h-9 px-3 text-sm font-mono border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
               placeholder="0,00"
             />
           </div>
@@ -499,7 +499,7 @@ function RecurringForm({
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+              className="w-full h-9 px-3 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
             >
               <option value="">—</option>
               {filteredCats.map((c) => (
@@ -517,7 +517,7 @@ function RecurringForm({
             <select
               value={frequency}
               onChange={(e) => setFrequency(e.target.value as "monthly" | "weekly" | "yearly")}
-              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+              className="w-full h-9 px-3 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
             >
               <option value="monthly">Mensal</option>
               <option value="weekly">Semanal</option>
@@ -530,7 +530,7 @@ function RecurringForm({
               <select
                 value={dayOfMonth}
                 onChange={(e) => setDayOfMonth(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+                className="w-full h-9 px-3 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
               >
                 {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
                   <option key={d} value={String(d)}>
@@ -555,7 +555,7 @@ function RecurringForm({
               type="date"
               value={startDate}
               onChange={(e) => handleStartDateChange(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full h-9 px-3 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div>
@@ -564,7 +564,7 @@ function RecurringForm({
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full h-9 px-3 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
         </div>
@@ -573,14 +573,14 @@ function RecurringForm({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
+            className="flex-1 h-9 px-4 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-60"
+            className="flex-1 h-9 px-4 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-60"
           >
             {saving ? "Salvando..." : editing ? "Atualizar" : "Salvar"}
           </button>

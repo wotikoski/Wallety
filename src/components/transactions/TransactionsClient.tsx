@@ -218,7 +218,7 @@ export function TransactionsClient() {
         <div className="flex items-center gap-2">
           <a
             href={`/api/transactions/export?${params}`}
-            className="flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium px-3.5 py-2 rounded-lg transition"
+            className="flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium px-3.5 h-9 rounded-lg transition"
             title="Baixar CSV com os filtros atuais"
           >
             <Download size={16} />
@@ -241,7 +241,7 @@ export function TransactionsClient() {
           <Link
             href="/lancamentos/novo"
             title="Novo Lançamento"
-            className="hidden md:flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition"
+            className="hidden md:flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
           >
             <Plus size={16} />
             Novo Lançamento
@@ -266,7 +266,7 @@ export function TransactionsClient() {
           <select
             value={type}
             onChange={(e) => { setType(e.target.value); setPage(1); }}
-            className="py-2 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            className="h-9 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           >
             <option value="">Todos</option>
             <option value="income">Receitas</option>
@@ -279,7 +279,7 @@ export function TransactionsClient() {
             type="date"
             value={startDate}
             onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            className="w-[155px] py-2 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            className="w-[155px] h-9 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           />
         </div>
         <div>
@@ -288,7 +288,7 @@ export function TransactionsClient() {
             type="date"
             value={endDate}
             onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            className="w-[155px] py-2 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            className="w-[155px] h-9 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           />
         </div>
         {/* Month shortcuts */}
@@ -296,14 +296,14 @@ export function TransactionsClient() {
           <button
             onClick={() => navigateMonth(-1)}
             title="Mês anterior"
-            className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+            className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
           >
             <ChevronLeft size={15} />
           </button>
           <button
             onClick={() => navigateMonth(1)}
             title="Próximo mês"
-            className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+            className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
           >
             <ChevronRight size={15} />
           </button>
@@ -311,7 +311,7 @@ export function TransactionsClient() {
         {/* Toggle: mostrar lançamentos agendados (data > hoje) */}
         <button
           onClick={() => { setShowFuture((v) => !v); setPage(1); }}
-          className={`py-2 flex items-center gap-1.5 text-sm px-3 rounded-lg border transition ${
+          className={`h-9 flex items-center gap-1.5 text-sm px-3 rounded-lg border transition ${
             showFuture
               ? "border-brand-400 bg-brand-50 text-brand-600 font-medium"
               : "border-slate-200 text-slate-500 hover:bg-slate-50"
@@ -324,7 +324,7 @@ export function TransactionsClient() {
         {(type || startDate || endDate) && (
           <button
             onClick={() => { setType(""); setStartDate(""); setEndDate(""); setPage(1); }}
-            className="py-2 text-sm text-slate-500 hover:text-slate-700 px-3 rounded-lg hover:bg-slate-50 transition"
+            className="h-9 text-sm text-slate-500 hover:text-slate-700 px-3 rounded-lg hover:bg-slate-50 transition"
           >
             Limpar filtros
           </button>

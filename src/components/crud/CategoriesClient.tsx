@@ -142,7 +142,7 @@ export function CategoriesClient() {
         <button
           onClick={() => { if (showForm) { setShowForm(false); setEditing(null); reset(); } else startNew(); }}
           title="Nova Categoria"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Nova Categoria</span>
@@ -158,13 +158,13 @@ export function CategoriesClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome</label>
               <input
                 {...register("name", { required: true })}
-                className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Ex: Alimentação"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo</label>
-              <select {...register("type")} className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <option value="expense">Despesa</option>
                 <option value="income">Receita</option>
                 <option value="both">Ambos</option>
@@ -213,14 +213,14 @@ export function CategoriesClient() {
               <button
                 type="button"
                 onClick={() => { setShowForm(false); setEditing(null); reset(); }}
-                className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition"
+                className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="flex-1 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition disabled:opacity-50"
+                className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
               >
                 {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
               </button>
