@@ -306,7 +306,7 @@ export function RecurringClient() {
                                 className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                                 style={{ background: `${cat.color ?? "#6366f1"}20`, color: cat.color ?? "#6366f1" }}
                               >
-                                {cat.icon} {cat.name}
+                                {cat.name}
                               </span>
                             )}
                           </div>
