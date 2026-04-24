@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, AlertTriangle, Trash2 } from "lucide-react";
+import { AlertTriangle, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 
@@ -118,20 +118,21 @@ export function BudgetsClient() {
           <p className="text-app-muted text-[13px] mt-0.5 font-medium">Defina um teto mensal de gastos por categoria</p>
         </div>
         {/* Month nav */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => { if (month === 1) { setMonth(12); setYear(year - 1); } else setMonth(month - 1); }}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+        <div className="flex items-center gap-2">
+          <select
+            value={month}
+            onChange={(e) => setMonth(Number(e.target.value))}
+            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
-            <ChevronLeft size={15} />
-          </button>
-          <span className="text-[13px] font-semibold text-app-text px-3 whitespace-nowrap">{MONTHS[month - 1]} {year}</span>
-          <button
-            onClick={() => { if (month === 12) { setMonth(1); setYear(year + 1); } else setMonth(month + 1); }}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+            {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+          </select>
+          <select
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
-            <ChevronRight size={15} />
-          </button>
+            {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
+          </select>
         </div>
       </div>
 
