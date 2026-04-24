@@ -415,12 +415,6 @@ export function ReportsClient() {
                   </div>
                 );
               })}
-              <div className="flex items-center justify-between px-4 py-3 bg-[#f8f9fd] border-t border-app-border">
-                <span className="text-[13px] font-semibold text-app-text">Total</span>
-                <span className={`text-[13px] font-bold font-mono ${reportType === "income" ? "text-income" : "text-expense"}`}>
-                  {formatCurrency(data?.grandTotal ?? 0)}
-                </span>
-              </div>
             </div>
 
 
