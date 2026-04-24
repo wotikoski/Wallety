@@ -3,6 +3,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
+
+function formatCurrencyShort(value: number): string {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? "-" : "";
+  if (abs >= 1_000_000) return `${sign}R$ ${(abs / 1_000_000).toFixed(1).replace(".", ",")}M`;
+  if (abs >= 1_000) return `${sign}R$ ${(abs / 1_000).toFixed(1).replace(".", ",")}k`;
+  return formatCurrency(value);
+}
 import { formatDate } from "@/lib/utils/date";
 import { useEffect, useState } from "react";
 import {
@@ -248,7 +256,7 @@ export function DashboardClient() {
                           <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
                           <span className="text-[12px] font-semibold text-app-text truncate">{cat.name}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0 ml-1">
                           <span className="text-[11px] text-app-muted">{pct}%</span>
                           <span className="text-[12px] font-semibold text-app-text font-mono tabular-nums">{formatCurrency(cat.total)}</span>
                         </div>
@@ -367,9 +375,10 @@ function SummaryCard({
         </div>
       </div>
 
-      {/* Value */}
-      <p className={`text-[15px] md:text-[24px] font-bold font-mono tracking-tight leading-none truncate ${color === "income" ? "text-income" : "text-expense"}`}>
-        {formatCurrency(value)}
+      {/* Value — abbreviated on mobile, full on desktop */}
+      <p className={`font-bold font-mono tracking-tight leading-none ${color === "income" ? "text-income" : "text-expense"}`}>
+        <span className="text-[14px] md:hidden">{formatCurrencyShort(value)}</span>
+        <span className="hidden md:inline text-[24px] truncate">{formatCurrency(value)}</span>
       </p>
 
       {/* Progress bar — desktop only */}
