@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { transactions, categories } from "@/lib/db/schema";
 import { and, eq, gte, lte, isNull, inArray, desc, sql } from "drizzle-orm";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 export async function GET(req: NextRequest) {
   try {
@@ -101,7 +102,7 @@ export async function GET(req: NextRequest) {
         return bd >= ms && bd <= me;
       });
       monthlyTrend.push({
-        month: format(d, "MMM/yy"),
+        month: format(d, "MMM/yy", { locale: ptBR }),
         income: monthTxns.filter((t) => t.type === "income").reduce((acc, t) => acc + parseFloat(t.value), 0),
         expenses: monthTxns.filter((t) => t.type === "expense").reduce((acc, t) => acc + parseFloat(t.value), 0),
       });
