@@ -93,26 +93,26 @@ export function CalendarClient() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Calendário</h1>
           <p className="text-app-muted text-[13px] mt-0.5 font-medium">Visualize seus lançamentos por data</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-            className="p-2 rounded-lg hover:bg-slate-100 transition"
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={15} />
           </button>
-          <span className="text-sm font-semibold text-slate-800 min-w-[140px] text-center">
-            {format(currentDate, "MMMM 'de' yyyy", { locale: ptBR }).replace(/^\w/, c => c.toUpperCase())}
+          <span className="text-[13px] font-semibold text-app-text px-3 whitespace-nowrap">
+            {format(currentDate, "MMMM yyyy", { locale: ptBR }).replace(/^\w/, c => c.toUpperCase())}
           </span>
           <button
             onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-            className="p-2 rounded-lg hover:bg-slate-100 transition"
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={15} />
           </button>
         </div>
       </div>
