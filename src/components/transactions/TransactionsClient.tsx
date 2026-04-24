@@ -3,6 +3,46 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
+
+function formatCurrencyShort(value: number): string {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? "-" : "";
+  if (abs >= 1_000_000) return `${sign}R$ ${(abs / 1_000_000).toFixed(1).replace(".", ",")}M`;
+  if (abs >= 1_000) return `${sign}R$ ${(abs / 1_000).toFixed(1).replace(".", ",")}k`;
+  return formatCurrency(value);
+}
+
+function SummaryChip({
+  label, value, labelColor, valueColor, bg,
+}: {
+  label: string; value: number; labelColor: string; valueColor: string; bg: string;
+}) {
+  const [tooltip, setTooltip] = useState(false);
+  useEffect(() => {
+    if (!tooltip) return;
+    const t = setTimeout(() => setTooltip(false), 2500);
+    return () => clearTimeout(t);
+  }, [tooltip]);
+
+  return (
+    <div className="relative rounded-[12px] px-3 py-2.5 text-center" style={{ background: bg }}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: labelColor }}>{label}</p>
+      <button
+        onClick={() => setTooltip((v) => !v)}
+        className="text-sm font-semibold font-mono block w-full text-center"
+        style={{ color: valueColor }}
+      >
+        {formatCurrencyShort(value)}
+      </button>
+      {tooltip && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] font-mono font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
+          {formatCurrency(value)}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#0f172a]" />
+        </div>
+      )}
+    </div>
+  );
+}
 import { formatDate } from "@/lib/utils/date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
@@ -326,23 +366,27 @@ export function TransactionsClient() {
       {txns.length > 0 && (
         <div className="sticky top-0 z-10 py-2 bg-app-bg/95 backdrop-blur-sm md:static md:bg-transparent md:py-0 md:backdrop-blur-none">
           <div className="grid grid-cols-3 gap-2">
-            <div className="rounded-[12px] px-3 py-2.5 text-center" style={{ background: "rgba(16,185,129,.1)" }}>
-              <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "#059669" }}>Receitas</p>
-              <p className="text-sm font-semibold font-mono truncate" style={{ color: "#10b981" }}>{formatCurrency(totalIncome)}</p>
-            </div>
-            <div className="rounded-[12px] px-3 py-2.5 text-center" style={{ background: "rgba(248,113,113,.1)" }}>
-              <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "#ef4444" }}>Despesas</p>
-              <p className="text-sm font-semibold font-mono truncate" style={{ color: "#f87171" }}>{formatCurrency(totalExpense)}</p>
-            </div>
-            <div
-              className="rounded-[12px] px-3 py-2.5 text-center"
-              style={{ background: totalIncome - totalExpense >= 0 ? "rgba(16,185,129,.1)" : "rgba(248,113,113,.1)" }}
-            >
-              <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: totalIncome - totalExpense >= 0 ? "#059669" : "#ef4444" }}>Saldo</p>
-              <p className="text-sm font-semibold font-mono truncate" style={{ color: totalIncome - totalExpense >= 0 ? "#10b981" : "#f87171" }}>
-                {formatCurrency(totalIncome - totalExpense)}
-              </p>
-            </div>
+            <SummaryChip
+              label="Receitas"
+              value={totalIncome}
+              labelColor="#059669"
+              valueColor="#10b981"
+              bg="rgba(16,185,129,.1)"
+            />
+            <SummaryChip
+              label="Despesas"
+              value={totalExpense}
+              labelColor="#ef4444"
+              valueColor="#f87171"
+              bg="rgba(248,113,113,.1)"
+            />
+            <SummaryChip
+              label="Saldo"
+              value={totalIncome - totalExpense}
+              labelColor={totalIncome - totalExpense >= 0 ? "#059669" : "#ef4444"}
+              valueColor={totalIncome - totalExpense >= 0 ? "#10b981" : "#f87171"}
+              bg={totalIncome - totalExpense >= 0 ? "rgba(16,185,129,.1)" : "rgba(248,113,113,.1)"}
+            />
           </div>
         </div>
       )}
