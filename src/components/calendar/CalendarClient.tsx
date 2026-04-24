@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
@@ -38,7 +38,7 @@ interface ProjectedOccurrence {
   value: string;
 }
 
-const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "SÃ¡b"];
+const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 export function CalendarClient() {
   const { activeGroupId } = useActiveGroup();
@@ -95,8 +95,8 @@ export function CalendarClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">CalendÃ¡rio</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Visualize seus lanÃ§amentos por data</p>
+          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Calendário</h1>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Visualize seus lançamentos por data</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -183,9 +183,9 @@ export function CalendarClient() {
               <h2 className="text-base font-semibold text-slate-800 mb-1">
                 {format(selectedDay, "dd 'de' MMMM", { locale: ptBR })}
               </h2>
-              <p className="text-xs text-slate-400 mb-4">{selectedTxns.length} lanÃ§amento(s)</p>
+              <p className="text-xs text-slate-400 mb-4">{selectedTxns.length} lançamento(s)</p>
               {selectedTxns.length === 0 ? (
-                <p className="text-sm text-slate-400">Nenhum lanÃ§amento neste dia</p>
+                <p className="text-sm text-slate-400">Nenhum lançamento neste dia</p>
               ) : (
                 <div className="space-y-2">
                   {selectedTxns.map((t) => (
@@ -233,7 +233,7 @@ export function CalendarClient() {
             </>
           ) : (
             <div className="h-full flex items-center justify-center text-slate-400 text-sm py-12">
-              Clique em um dia para ver os lanÃ§amentos
+              Clique em um dia para ver os lançamentos
             </div>
           )}
         </div>
