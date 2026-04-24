@@ -249,6 +249,7 @@ export function ReportsClient() {
                   <Tooltip
                     formatter={(v: number) => formatCurrency(v)}
                     contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}
+                    cursor={{ fill: "rgba(99,102,241,0.06)", strokeWidth: 0 }}
                   />
                   <Bar
                     dataKey="total"
@@ -347,7 +348,7 @@ export function ReportsClient() {
                   <div key={index} className="border-b border-[#f1f3f9] last:border-0">
                     <button
                       onClick={() => isSelected ? closeDrilldown() : openDrilldown(item, index)}
-                      className={`w-full flex items-center gap-3 px-4 py-3.5 transition text-left ${isSelected ? "bg-[rgba(99,102,241,.06)]" : "hover:bg-[#f8f9fd]"}`}
+                      className={`w-full flex items-center gap-3 px-4 py-3.5 transition text-left ${isSelected ? "bg-[rgba(99,102,241,.06)]" : "hover:bg-[rgba(99,102,241,.03)]"}`}
                     >
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
                       <div className="flex-1 min-w-0">
