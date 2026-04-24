@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Target, AlertTriangle, CalendarClock, Info } from "lucide-react";
 import type { DailyLimitResult } from "@/lib/utils/daily-limit";
 
-const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+const MONTHS = ["Janeiro", "Fevereiro", "MarÃ§o", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 export function DailyLimitClient() {
   const { activeGroupId } = useActiveGroup();
@@ -31,9 +31,9 @@ export function DailyLimitClient() {
   return (
     <div className="space-y-6 animate-fade-in max-w-3xl">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Limite Diário</h1>
-        <p className="text-slate-500 text-sm mt-0.5">
-          Quanto você pode gastar por dia, considerando compromissos do próximo mês
+        <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Limite DiÃ¡rio</h1>
+        <p className="text-app-muted text-[13px] mt-0.5 font-medium">
+          Quanto vocÃª pode gastar por dia, considerando compromissos do prÃ³ximo mÃªs
         </p>
       </div>
 
@@ -60,21 +60,21 @@ export function DailyLimitClient() {
       ) : (
         <>
           {/* Main result card */}
-          <div className={`rounded-2xl p-8 text-white ${isOverBudget ? "bg-expense" : "bg-brand-600"}`}>
+          <div className={`rounded-[14px] p-8 text-white ${isOverBudget ? "bg-expense" : "bg-brand-600"}`}>
             <div className="flex items-center gap-3 mb-4">
               {isOverBudget
                 ? <AlertTriangle size={24} className="opacity-80" />
                 : <Target size={24} className="opacity-80" />
               }
               <span className="text-base font-medium opacity-80">
-                {isOverBudget ? "Saldo insuficiente" : "Limite diário real"}
+                {isOverBudget ? "Saldo insuficiente" : "Limite diÃ¡rio real"}
               </span>
             </div>
             <p className="text-5xl font-bold font-mono mb-2">
               {formatCurrency(adjustedDailyLimit)}
             </p>
             <p className="text-sm opacity-70">
-              por dia · {data?.daysRemaining ?? 0} dias restantes
+              por dia Â· {data?.daysRemaining ?? 0} dias restantes
             </p>
             {hasReserve && (
               <div className="mt-4 pt-4 border-t border-white/20 flex items-center gap-2 text-sm opacity-80">
@@ -91,13 +91,13 @@ export function DailyLimitClient() {
                 <CalendarClock size={18} className="text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-semibold text-amber-800">
-                    Déficit previsto em {nextMonthName}: {formatCurrency(data?.nextMonthDeficit ?? 0)}
+                    DÃ©ficit previsto em {nextMonthName}: {formatCurrency(data?.nextMonthDeficit ?? 0)}
                   </p>
                   <p className="text-xs text-amber-700 mt-0.5">
-                    Receitas lançadas: {formatCurrency(data?.nextMonthIncome ?? 0)} · Despesas lançadas: {formatCurrency(data?.nextMonthExpenses ?? 0)}
+                    Receitas lanÃ§adas: {formatCurrency(data?.nextMonthIncome ?? 0)} Â· Despesas lanÃ§adas: {formatCurrency(data?.nextMonthExpenses ?? 0)}
                   </p>
                   <p className="text-xs text-amber-600 mt-1">
-                    Este valor já está sendo reservado do seu limite atual.
+                    Este valor jÃ¡ estÃ¡ sendo reservado do seu limite atual.
                   </p>
                 </div>
               </div>
@@ -108,20 +108,20 @@ export function DailyLimitClient() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatCard label="Receitas" value={data?.actualIncome ?? 0} color="income" />
             <StatCard label="Despesas fixas" value={data?.actualFixedExpenses ?? 0} color="expense" />
-            <StatCard label="Gastos variáveis" value={data?.spentVariable ?? 0} color="expense" />
-            <StatCard label="Reserva p/ próx. mês" value={data?.reserveNeeded ?? 0} color={hasReserve ? "warning" : "neutral"} />
+            <StatCard label="Gastos variÃ¡veis" value={data?.spentVariable ?? 0} color="expense" />
+            <StatCard label="Reserva p/ prÃ³x. mÃªs" value={data?.reserveNeeded ?? 0} color={hasReserve ? "warning" : "neutral"} />
           </div>
 
           {/* Breakdown */}
           <div className="bg-slate-50 rounded-xl p-5 space-y-2">
             <div className="flex items-center gap-2 mb-3">
               <Info size={14} className="text-slate-400" />
-              <h3 className="text-sm font-semibold text-slate-700">Como é calculado</h3>
+              <h3 className="text-sm font-semibold text-slate-700">Como Ã© calculado</h3>
             </div>
             <div className="text-sm text-slate-500 space-y-1.5">
-              <Row label="Receitas do mês" value={data?.actualIncome ?? 0} type="income" />
+              <Row label="Receitas do mÃªs" value={data?.actualIncome ?? 0} type="income" />
               <Row label="(-) Despesas fixas" value={data?.actualFixedExpenses ?? 0} type="expense" />
-              <Row label="(-) Gastos variáveis" value={data?.spentVariable ?? 0} type="expense" />
+              <Row label="(-) Gastos variÃ¡veis" value={data?.spentVariable ?? 0} type="expense" />
               <div className="flex justify-between border-t border-slate-200 pt-1.5 font-medium text-slate-700">
                 <span>= Saldo restante</span>
                 <span className="font-mono">{formatCurrency(data?.remainingReal ?? 0)}</span>
@@ -130,11 +130,11 @@ export function DailyLimitClient() {
                 <Row label={`(-) Reserva para ${nextMonthName}`} value={data?.reserveNeeded ?? 0} type="expense" />
               )}
               <div className="flex justify-between border-t border-slate-200 pt-1.5 font-semibold text-slate-800">
-                <span>= Disponível para gastar</span>
+                <span>= DisponÃ­vel para gastar</span>
                 <span className="font-mono">{formatCurrency(data?.adjustedAvailable ?? 0)}</span>
               </div>
               <div className="flex justify-between pt-1 text-brand-600 font-semibold">
-                <span>÷ {data?.daysRemaining ?? 0} dias restantes</span>
+                <span>Ã· {data?.daysRemaining ?? 0} dias restantes</span>
                 <span className="font-mono">{formatCurrency(adjustedDailyLimit)} / dia</span>
               </div>
             </div>
@@ -142,7 +142,7 @@ export function DailyLimitClient() {
 
           {(data?.actualIncome ?? 0) === 0 && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
-              Nenhuma receita lançada para {MONTHS[month - 1]} de {year}. Adicione receitas em <strong>Lançamentos</strong> para calcular seu limite diário.
+              Nenhuma receita lanÃ§ada para {MONTHS[month - 1]} de {year}. Adicione receitas em <strong>LanÃ§amentos</strong> para calcular seu limite diÃ¡rio.
             </div>
           )}
         </>

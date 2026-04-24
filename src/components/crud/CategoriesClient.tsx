@@ -136,13 +136,13 @@ export function CategoriesClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Categorias</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Organize seus lançamentos por categoria</p>
+          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Categorias</h1>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Organize seus lançamentos por categoria</p>
         </div>
         <button
           onClick={() => { if (showForm) { setShowForm(false); setEditing(null); reset(); } else startNew(); }}
           title="Nova Categoria"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Nova Categoria</span>
@@ -176,7 +176,7 @@ export function CategoriesClient() {
                 {/* Preview */}
                 <div
                   className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0 border border-slate-200"
-                  style={{ backgroundColor: (watchedColor ?? "#6173f4") + "22" }}
+                  style={{ backgroundColor: (watchedColor ?? "#6366f1") + "22" }}
                 >
                   {watchedIcon || "💳"}
                 </div>
@@ -213,14 +213,14 @@ export function CategoriesClient() {
               <button
                 type="button"
                 onClick={() => { setShowForm(false); setEditing(null); reset(); }}
-                className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition"
+                className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-[#f8f9fd]transition"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
+                className="flex-1 h-9 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
               >
                 {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
               </button>
@@ -231,10 +231,10 @@ export function CategoriesClient() {
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
             <ListSkeleton rows={4} />
           </div>
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
             <ListSkeleton rows={4} />
           </div>
         </div>
@@ -272,18 +272,18 @@ function CategoryGroup({
   color: "income" | "expense";
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
       <div className={`px-6 py-3.5 border-b border-slate-100 ${color === "income" ? "bg-income-light" : "bg-expense-light"}`}>
         <h2 className={`text-sm font-semibold ${color === "income" ? "text-income-dark" : "text-expense-dark"}`}>
           {title} · {categories.length}
         </h2>
       </div>
-      <div className="divide-y divide-slate-50">
+      <div className="divide-y divide-[#f1f3f9]">
         {categories.length === 0 ? (
-          <p className="px-6 py-8 text-sm text-slate-400 text-center">Nenhuma categoria</p>
+          <p className="px-6 py-8 text-[13px] text-app-muted text-center">Nenhuma categoria</p>
         ) : (
           categories.map((cat) => (
-            <div key={cat.id} className="flex items-center px-5 py-3 gap-3 hover:bg-slate-50/50 transition">
+            <div key={cat.id} className="flex items-center px-5 py-3 gap-3 hover:bg-[#f8f9fd] transition">
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0"
                 style={{ backgroundColor: cat.color ? cat.color + "20" : "#f1f5f9" }}
@@ -291,20 +291,20 @@ function CategoryGroup({
                 {cat.icon || "💳"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800">{cat.name}</p>
-                {cat.isDefault && <span className="text-xs text-slate-400">Padrão</span>}
+                <p className="text-[13px] font-semibold text-app-text">{cat.name}</p>
+                {cat.isDefault && <span className="text-[11px] text-app-muted">Padrão</span>}
               </div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => onEdit(cat)}
-                  className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
+                  className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
                 >
                   <Edit size={13} />
                 </button>
                 {!cat.isDefault && (
                   <button
                     onClick={() => onDelete(cat.id, cat.name)}
-                    className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                    className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
                   >
                     <Trash2 size={13} />
                   </button>

@@ -46,7 +46,7 @@ export function ConfirmDialog({
       <div
         role="dialog"
         aria-modal="true"
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        className="bg-white rounded-[14px] shadow-card w-full max-w-md overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-4 p-6">

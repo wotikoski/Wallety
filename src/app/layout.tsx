@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Capriola } from "next/font/google";
+import { Plus_Jakarta_Sans, Capriola, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,6 +16,13 @@ const brandFont = Capriola({
   weight: "400",
   variable: "--font-brand",
   display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["400", "500", "600"],
 });
 
 export const viewport: Viewport = {
@@ -59,7 +66,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${plusJakarta.variable} ${brandFont.variable} font-sans antialiased`}>
+      <body className={`${plusJakarta.variable} ${brandFont.variable} ${ibmPlexMono.variable} font-sans antialiased`}>
         <Providers>
           {children}
           <Toaster />

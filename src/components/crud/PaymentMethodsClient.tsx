@@ -110,13 +110,13 @@ export function PaymentMethodsClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Formas de Pagamento</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Gerencie contas, cartões e formas de pagamento</p>
+          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Formas de Pagamento</h1>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Gerencie contas, cartões e formas de pagamento</p>
         </div>
         <button
           onClick={() => { setShowForm(!showForm); setEditing(null); reset(); }}
           title="Nova Forma de Pagamento"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Nova Forma</span>
@@ -162,7 +162,7 @@ export function PaymentMethodsClient() {
                     className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     placeholder="25"
                   />
-                  <p className="text-xs text-slate-400 mt-1">Dia em que a fatura fecha (1–31)</p>
+                  <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura fecha (1–31)</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Dia de vencimento</label>
@@ -174,21 +174,21 @@ export function PaymentMethodsClient() {
                     className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     placeholder="5"
                   />
-                  <p className="text-xs text-slate-400 mt-1">Dia em que a fatura deve ser paga (1–31)</p>
+                  <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura deve ser paga (1–31)</p>
                 </div>
               </>
             )}
             <button
               type="button"
               onClick={() => { setShowForm(false); setEditing(null); }}
-              className="h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition"
+              className="h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-[#f8f9fd]transition"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={saveMutation.isPending}
-              className="h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
+              className="h-9 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
             >
               {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
             </button>
@@ -196,26 +196,26 @@ export function PaymentMethodsClient() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
         {isLoading ? <ListSkeleton rows={4} /> : (
-        <div className="divide-y divide-slate-50">
+        <div className="divide-y divide-[#f1f3f9]">
           {paymentMethods.length === 0 ? (
-            <p className="px-6 py-12 text-sm text-slate-400 text-center">Nenhuma forma de pagamento</p>
+            <p className="px-6 py-12 text-[13px] text-app-muted text-center">Nenhuma forma de pagamento</p>
           ) : paymentMethods.map((pm) => (
-            <div key={pm.id} className="flex items-center px-6 py-4 gap-4 hover:bg-slate-50/50 transition">
+            <div key={pm.id} className="flex items-center px-6 py-4 gap-4 hover:bg-[#f8f9fd] transition">
               <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
                 <CreditCard size={18} className="text-brand-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800">{pm.name}</p>
-                <p className="text-xs text-slate-400">
+                <p className="text-[13px] font-semibold text-app-text">{pm.name}</p>
+                <p className="text-[11px] text-app-muted">
                   {getPaymentMethodLabel(pm.type)}
                   {pm.type === "credit_card" && pm.closingDay && pm.dueDay && (
                     <span> · fecha dia {pm.closingDay}, vence dia {pm.dueDay}</span>
                   )}
                 </p>
               </div>
-              {pm.isDefault && <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Padrão</span>}
+              {pm.isDefault && <span className="text-[11px] text-app-muted bg-slate-100 px-2 py-0.5 rounded-full">Padrão</span>}
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => {
@@ -229,7 +229,7 @@ export function PaymentMethodsClient() {
                     });
                     setShowForm(true);
                   }}
-                  className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
+                  className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
                 >
                   <Edit size={14} />
                 </button>
@@ -240,7 +240,7 @@ export function PaymentMethodsClient() {
                       description: `Tem certeza que deseja excluir "${pm.name}"?`,
                       confirmLabel: "Excluir",
                     })}
-                    className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                    className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
                   >
                     <Trash2 size={14} />
                   </button>

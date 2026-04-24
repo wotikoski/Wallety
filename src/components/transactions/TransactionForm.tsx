@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -149,7 +149,7 @@ export function TransactionForm({ transaction }: Props) {
       return res.json();
     },
     onSuccess: () => {
-      // A transaction change ripples into every derived view — invalidate
+      // A transaction change ripples into every derived view â€” invalidate
       // every query that reads from transactions, plus the single-row cache
       // so the next edit page opens with fresh data.
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
@@ -161,14 +161,14 @@ export function TransactionForm({ transaction }: Props) {
       if (isEdit && transaction) {
         queryClient.invalidateQueries({ queryKey: ["transaction", transaction.id] });
       }
-      toast({ title: isEdit ? "Lançamento atualizado!" : "Lançamento criado!" });
+      toast({ title: isEdit ? "LanÃ§amento atualizado!" : "LanÃ§amento criado!" });
       // Flush the Next.js router cache so navigating back to any page
       // (dashboard, transactions list) always shows server-fresh data.
       router.refresh();
       router.push("/lancamentos");
     },
     onError: () => {
-      toast({ title: "Erro ao salvar lançamento", variant: "destructive" });
+      toast({ title: "Erro ao salvar lanÃ§amento", variant: "destructive" });
     },
   });
 
@@ -177,7 +177,7 @@ export function TransactionForm({ transaction }: Props) {
   const paymentMethods = pmData?.paymentMethods ?? [];
 
   return (
-    <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-5">
+    <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="bg-white rounded-[14px] border border-app-border shadow-card p-6 space-y-5">
       {/* Type toggle */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">Tipo</label>
@@ -242,11 +242,11 @@ export function TransactionForm({ transaction }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Descrição</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1.5">DescriÃ§Ã£o</label>
         <input
           {...register("description")}
           type="text"
-          placeholder="Ex: Supermercado Pão de Açúcar"
+          placeholder="Ex: Supermercado PÃ£o de AÃ§Ãºcar"
           className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
@@ -313,13 +313,13 @@ export function TransactionForm({ transaction }: Props) {
         <p className="text-sm font-medium text-slate-700">Parcelamento</p>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs text-slate-500 mb-1">Nº de parcelas</label>
+            <label className="block text-xs text-slate-500 mb-1">NÂº de parcelas</label>
             <input
               {...register("installmentTotal", { valueAsNumber: true })}
               type="number"
               min="1"
               max="120"
-              placeholder="1 = à vista"
+              placeholder="1 = Ã  vista"
               className="w-full h-9 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
@@ -367,7 +367,7 @@ export function TransactionForm({ transaction }: Props) {
         <textarea
           {...register("notes")}
           rows={2}
-          placeholder="Alguma observação..."
+          placeholder="Alguma observaÃ§Ã£o..."
           className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
         />
       </div>
@@ -385,7 +385,7 @@ export function TransactionForm({ transaction }: Props) {
           disabled={saveMutation.isPending}
           className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 rounded-lg text-sm transition disabled:opacity-50"
         >
-          {saveMutation.isPending ? "Salvando..." : isEdit ? "Atualizar" : "Criar Lançamento"}
+          {saveMutation.isPending ? "Salvando..." : isEdit ? "Atualizar" : "Criar LanÃ§amento"}
         </button>
       </div>
     </form>

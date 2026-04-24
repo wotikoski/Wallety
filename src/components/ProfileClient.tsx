@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -73,14 +73,14 @@ export function ProfileClient() {
   return (
     <div className="space-y-6 max-w-lg animate-fade-in">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Meu Perfil</h1>
-        <p className="text-slate-500 text-sm mt-0.5">Gerencie suas informações pessoais</p>
+        <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Meu Perfil</h1>
+        <p className="text-app-muted text-[13px] mt-0.5 font-medium">Gerencie suas informaÃ§Ãµes pessoais</p>
       </div>
 
       {/* Profile form */}
       <div className="bg-white rounded-xl border border-slate-100 p-6 shadow-sm">
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
-          <div className="w-16 h-16 rounded-2xl bg-brand-100 flex items-center justify-center text-2xl font-bold text-brand-700">
+          <div className="w-16 h-16 rounded-[14px] bg-brand-100 flex items-center justify-center text-2xl font-bold text-brand-700">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
           <div>
@@ -104,24 +104,24 @@ export function ProfileClient() {
               disabled
               className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
             />
-            <p className="text-xs text-slate-400 mt-1">O e-mail não pode ser alterado</p>
+            <p className="text-xs text-slate-400 mt-1">O e-mail nÃ£o pode ser alterado</p>
           </div>
           <button
             type="submit"
             disabled={updateMutation.isPending}
             className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition disabled:opacity-50"
           >
-            {updateMutation.isPending ? "Salvando..." : "Salvar alterações"}
+            {updateMutation.isPending ? "Salvando..." : "Salvar alteraÃ§Ãµes"}
           </button>
         </form>
       </div>
 
       {/* Legal */}
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
         <div className="px-6 py-3.5 border-b border-slate-100">
           <h2 className="text-sm font-semibold text-slate-700">Legal</h2>
         </div>
-        <div className="divide-y divide-slate-50">
+        <div className="divide-y divide-[#f1f3f9]">
           <Link
             href="/termos"
             target="_blank"
@@ -130,9 +130,9 @@ export function ProfileClient() {
             <FileText size={16} className="text-slate-400 group-hover:text-brand-600 transition shrink-0" />
             <div className="flex-1">
               <p className="text-sm font-medium text-slate-700">Termos de Uso</p>
-              <p className="text-xs text-slate-400">Última atualização: 21 de abril de 2026</p>
+              <p className="text-xs text-slate-400">Ãšltima atualizaÃ§Ã£o: 21 de abril de 2026</p>
             </div>
-            <span className="text-xs text-slate-400 group-hover:text-brand-600 transition">↗</span>
+            <span className="text-xs text-slate-400 group-hover:text-brand-600 transition">â†—</span>
           </Link>
           <Link
             href="/privacidade"
@@ -141,10 +141,10 @@ export function ProfileClient() {
           >
             <ShieldCheck size={16} className="text-slate-400 group-hover:text-brand-600 transition shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-slate-700">Política de Privacidade</p>
-              <p className="text-xs text-slate-400">Conforme a LGPD – Lei nº 13.709/2018</p>
+              <p className="text-sm font-medium text-slate-700">PolÃ­tica de Privacidade</p>
+              <p className="text-xs text-slate-400">Conforme a LGPD â€“ Lei nÂº 13.709/2018</p>
             </div>
-            <span className="text-xs text-slate-400 group-hover:text-brand-600 transition">↗</span>
+            <span className="text-xs text-slate-400 group-hover:text-brand-600 transition">â†—</span>
           </Link>
         </div>
       </div>
@@ -158,7 +158,7 @@ export function ProfileClient() {
           <div>
             <p className="text-sm font-medium text-slate-800">Excluir minha conta</p>
             <p className="text-xs text-slate-400 mt-0.5">
-              Todos os seus dados serão removidos permanentemente. Esta ação não pode ser desfeita.
+              Todos os seus dados serÃ£o removidos permanentemente. Esta aÃ§Ã£o nÃ£o pode ser desfeita.
             </p>
           </div>
           <button
@@ -178,7 +178,7 @@ export function ProfileClient() {
           onClick={() => setShowDeleteDialog(false)}
         >
           <div
-            className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4"
+            className="bg-white rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Icon + title */}
@@ -189,8 +189,8 @@ export function ProfileClient() {
               <div>
                 <h2 className="text-base font-semibold text-slate-900">Excluir conta</h2>
                 <p className="text-sm text-slate-500 mt-1">
-                  Esta ação é <strong>permanente e irreversível</strong>. Todos os seus lançamentos,
-                  categorias, recorrências e configurações serão apagados.
+                  Esta aÃ§Ã£o Ã© <strong>permanente e irreversÃ­vel</strong>. Todos os seus lanÃ§amentos,
+                  categorias, recorrÃªncias e configuraÃ§Ãµes serÃ£o apagados.
                 </p>
               </div>
             </div>

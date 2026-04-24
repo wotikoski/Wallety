@@ -88,8 +88,8 @@ export function BanksClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Bancos</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Gerencie seus bancos e instituições financeiras</p>
+          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Bancos</h1>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Gerencie seus bancos e instituições financeiras</p>
         </div>
         <button
           onClick={() => {
@@ -100,7 +100,7 @@ export function BanksClient() {
               setShowForm(true);
             }
           }}
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Novo Banco</span>
@@ -147,14 +147,14 @@ export function BanksClient() {
               <button
                 type="button"
                 onClick={() => { setShowForm(false); setEditing(null); }}
-                className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-slate-50 transition"
+                className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-[#f8f9fd]transition"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
+                className="flex-1 h-9 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
               >
                 {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
               </button>
@@ -163,13 +163,13 @@ export function BanksClient() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
         {isLoading ? <ListSkeleton rows={4} /> : (
-        <div className="divide-y divide-slate-50">
+        <div className="divide-y divide-[#f1f3f9]">
           {banks.length === 0 ? (
-            <p className="px-6 py-12 text-sm text-slate-400 text-center">Nenhum banco cadastrado</p>
+            <p className="px-6 py-12 text-[13px] text-app-muted text-center">Nenhum banco cadastrado</p>
           ) : banks.map((bank) => (
-            <div key={bank.id} className="flex items-center px-6 py-4 gap-4 hover:bg-slate-50/50 transition">
+            <div key={bank.id} className="flex items-center px-6 py-4 gap-4 hover:bg-[#f8f9fd] transition">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                 style={{ backgroundColor: bank.color ? bank.color + "20" : "#f1f5f9" }}
@@ -177,10 +177,10 @@ export function BanksClient() {
                 <Building2 size={18} style={{ color: bank.color ?? "#64748b" }} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800">{bank.name}</p>
-                {bank.code && <p className="text-xs text-slate-400">Cód. {bank.code}</p>}
+                <p className="text-[13px] font-semibold text-app-text">{bank.name}</p>
+                {bank.code && <p className="text-[11px] text-app-muted">Cód. {bank.code}</p>}
               </div>
-              {bank.isDefault && <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Padrão</span>}
+              {bank.isDefault && <span className="text-[11px] text-app-muted bg-slate-100 px-2 py-0.5 rounded-full">Padrão</span>}
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => {
@@ -188,7 +188,7 @@ export function BanksClient() {
                     reset({ name: bank.name, code: bank.code ?? "", color: bank.color ?? COLOR_PALETTE[0] });
                     setShowForm(true);
                   }}
-                  className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
+                  className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
                 >
                   <Edit size={14} />
                 </button>
@@ -199,7 +199,7 @@ export function BanksClient() {
                       description: `Tem certeza que deseja excluir o banco "${bank.name}"? Essa ação não pode ser desfeita.`,
                       confirmLabel: "Excluir",
                     })}
-                    className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
+                    className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
                   >
                     <Trash2 size={14} />
                   </button>

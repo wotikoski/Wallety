@@ -47,8 +47,6 @@ export function BudgetsClient() {
     queryFn: () => fetch(`/api/budgets?${budgetParams}`).then((r) => r.json()),
   });
 
-  // Projected recurring expenses for this month. We bucket by the invoice
-  // effective date (credit cards) to match how /api/budgets computes spent.
   const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
   const monthEndDay = new Date(year, month, 0).getDate();
   const monthEnd = `${year}-${String(month).padStart(2, "0")}-${String(monthEndDay).padStart(2, "0")}`;
@@ -62,8 +60,6 @@ export function BudgetsClient() {
     queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => r.json()),
   });
 
-  // Sum projected expenses per category for the visible month (bucketed by
-  // effective date so invoices land in the right month).
   const projectedByCat = new Map<string, number>();
   for (const p of projData?.projected ?? []) {
     if (p.type !== "expense" || !p.categoryId) continue;
@@ -84,13 +80,7 @@ export function BudgetsClient() {
       const res = await fetch("/api/budgets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          categoryId: d.categoryId,
-          amount: d.amount,
-          year,
-          month,
-          groupId: activeGroupId ?? undefined,
-        }),
+        body: JSON.stringify({ categoryId: d.categoryId, amount: d.amount, year, month, groupId: activeGroupId ?? undefined }),
       });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? "Erro ao salvar");
     },
@@ -112,85 +102,102 @@ export function BudgetsClient() {
 
   const budgets = budgetsData?.budgets ?? [];
   const expenseCategories = (catsData?.categories ?? []).filter((c) => c.type === "expense" || c.type === "both");
-
-  // Merge: for every expense category, either show its budget or an empty slot.
-  const rows = expenseCategories.map((cat) => {
-    const existing = budgets.find((b) => b.categoryId === cat.id);
-    return { category: cat, budget: existing };
-  });
+  const rows = expenseCategories.map((cat) => ({ category: cat, budget: budgets.find((b) => b.categoryId === cat.id) }));
 
   const totalPlanned = budgets.reduce((acc, b) => acc + parseFloat(b.amount), 0);
   const totalSpent = budgets.reduce((acc, b) => acc + b.spent, 0);
   const totalProjected = budgets.reduce((acc, b) => acc + (projectedByCat.get(b.categoryId) ?? 0), 0);
+  const overallPct = totalPlanned > 0 ? Math.round((totalSpent / totalPlanned) * 100) : 0;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Orçamentos</h1>
-        <p className="text-slate-500 text-sm mt-0.5">Defina um teto mensal de gastos por categoria</p>
-      </div>
-
-      {/* Month navigator */}
-      <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex items-center justify-between">
-        <button
-          onClick={() => {
-            if (month === 1) { setMonth(12); setYear(year - 1); }
-            else setMonth(month - 1);
-          }}
-          className="p-2 text-slate-500 hover:bg-slate-50 rounded-lg"
-        >
-          <ChevronLeft size={18} />
-        </button>
-        <div className="text-sm font-medium text-slate-800">{MONTHS[month - 1]} {year}</div>
-        <button
-          onClick={() => {
-            if (month === 12) { setMonth(1); setYear(year + 1); }
-            else setMonth(month + 1);
-          }}
-          className="p-2 text-slate-500 hover:bg-slate-50 rounded-lg"
-        >
-          <ChevronRight size={18} />
-        </button>
-      </div>
-
-      {/* Summary */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
-          <p className="text-xs text-slate-500 mb-1">Total orçado</p>
-          <p className="text-xl font-bold text-slate-900 font-mono">{formatCurrency(totalPlanned)}</p>
+    <div className="space-y-5 animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Orçamentos</h1>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Defina um teto mensal de gastos por categoria</p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
-          <p className="text-xs text-slate-500 mb-1">Total gasto</p>
-          <p className={`text-xl font-bold font-mono ${totalSpent > totalPlanned && totalPlanned > 0 ? "text-expense" : "text-slate-900"}`}>
-            {formatCurrency(totalSpent)}
-          </p>
-          {totalProjected > 0 && (
-            <p className="text-xs text-slate-400 mt-1">
-              + <span className="font-mono font-medium text-slate-500">{formatCurrency(totalProjected)}</span> previsto
-            </p>
-          )}
+        {/* Month nav */}
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => { if (month === 1) { setMonth(12); setYear(year - 1); } else setMonth(month - 1); }}
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+          >
+            <ChevronLeft size={15} />
+          </button>
+          <span className="text-[13px] font-semibold text-app-text px-3">{MONTHS[month - 1]} {year}</span>
+          <button
+            onClick={() => { if (month === 12) { setMonth(1); setYear(year + 1); } else setMonth(month + 1); }}
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+          >
+            <ChevronRight size={15} />
+          </button>
         </div>
       </div>
 
-      {/* Categories list */}
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-        {isLoading ? <ListSkeleton rows={6} /> : (
-          <div className="divide-y divide-slate-50">
-            {rows.length === 0 ? (
-              <p className="px-6 py-12 text-sm text-slate-400 text-center">Nenhuma categoria de despesa cadastrada</p>
-            ) : rows.map(({ category, budget }) => (
-              <BudgetRow
-                key={category.id}
-                category={category}
-                budget={budget}
-                projected={projectedByCat.get(category.id) ?? 0}
-                onSave={(amount) => saveMutation.mutate({ categoryId: category.id, amount })}
-                onDelete={budget ? () => deleteMutation.mutate(budget.id) : undefined}
+      {/* Hero summary card */}
+      <div className="bg-white rounded-[14px] border border-app-border shadow-card p-5">
+        <div className="flex flex-wrap gap-6 items-center">
+          <div className="flex-1 min-w-[200px]">
+            <p className="text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] mb-2">Gasto total do mês</p>
+            <div className="flex items-baseline gap-2.5 mb-3">
+              <p className="text-[26px] font-bold font-mono text-app-text">{formatCurrency(totalSpent)}</p>
+              <span className="text-[13px] text-app-muted">de {formatCurrency(totalPlanned)}</span>
+            </div>
+            <div className="prog-track" style={{ height: 8 }}>
+              <div
+                className="prog-fill"
+                style={{ width: `${Math.min(100, overallPct)}%`, background: overallPct >= 100 ? "#f87171" : overallPct >= 80 ? "#f59e0b" : "#10b981" }}
               />
-            ))}
+            </div>
+            <p className="text-[12px] text-app-muted mt-1.5">{overallPct}% do orçamento utilizado</p>
           </div>
-        )}
+          <div className="flex gap-6 items-center">
+            <div className="text-center">
+              <p className="text-[18px] font-bold font-mono text-income">{formatCurrency(Math.max(0, totalPlanned - totalSpent))}</p>
+              <p className="text-[11px] text-app-muted mt-1">Disponível</p>
+            </div>
+            <div className="w-px h-10 bg-app-border" />
+            <div className="text-center">
+              <p className="text-[18px] font-bold font-mono text-app-text">
+                {budgets.filter((b) => b.spent <= parseFloat(b.amount)).length}/{budgets.length}
+              </p>
+              <p className="text-[11px] text-app-muted mt-1">Dentro do limite</p>
+            </div>
+            {totalProjected > 0 && (
+              <>
+                <div className="w-px h-10 bg-app-border" />
+                <div className="text-center">
+                  <p className="text-[18px] font-bold font-mono text-app-text">+{formatCurrency(totalProjected)}</p>
+                  <p className="text-[11px] text-app-muted mt-1">Previsto</p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* Budget cards grid */}
+      {isLoading ? (
+        <ListSkeleton rows={4} />
+      ) : rows.length === 0 ? (
+        <div className="bg-white rounded-[14px] border border-app-border shadow-card p-12 text-center text-app-muted text-sm">
+          Nenhuma categoria de despesa cadastrada
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {rows.map(({ category, budget }) => (
+            <BudgetRow
+              key={category.id}
+              category={category}
+              budget={budget}
+              projected={projectedByCat.get(category.id) ?? 0}
+              onSave={(amount) => saveMutation.mutate({ categoryId: category.id, amount })}
+              onDelete={budget ? () => deleteMutation.mutate(budget.id) : undefined}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -209,6 +216,7 @@ function BudgetRow({
   const pct = planned > 0 ? (spent / planned) * 100 : 0;
   const projectedPct = planned > 0 ? ((spent + projected) / planned) * 100 : 0;
   const state = pct >= 100 ? "over" : pct >= 80 ? "warn" : "ok";
+  const barColor = state === "over" ? "#f87171" : state === "warn" ? "#f59e0b" : category.color ?? "#6366f1";
 
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(planned > 0 ? String(planned).replace(".", ",") : "");
@@ -221,81 +229,85 @@ function BudgetRow({
   };
 
   return (
-    <div className="px-6 py-4">
-      <div className="flex items-center gap-4">
-        <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-sm"
-          style={{ backgroundColor: category.color ? category.color + "22" : "#f1f5f9" }}
-        >
-          {category.icon || "💳"}
+    <div className="bg-white rounded-[14px] border border-app-border shadow-card p-4">
+      {/* Top row */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-2.5 h-2.5 rounded-full shrink-0"
+            style={{ background: category.color ?? "#6366f1" }}
+          />
+          <span className="text-[14px] font-semibold text-app-text">{category.name}</span>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-slate-800">{category.name}</p>
-          {budget && (
-            <p className="text-xs text-slate-400 mt-0.5">
-              Gasto: <span className="font-mono text-slate-600">{formatCurrency(spent)}</span>
-              {projected > 0 && (
-                <> {" · "}<span className="font-mono text-slate-500">+{formatCurrency(projected)}</span> previsto</>
-              )}
-              {" · "}
-              <span className={state === "over" ? "text-expense" : state === "warn" ? "text-amber-600" : "text-slate-400"}>
-                {pct.toFixed(0)}% do orçamento
-              </span>
-              {state === "over" && <AlertTriangle className="inline ml-1 text-expense" size={12} />}
-            </p>
+        <div className="flex items-center gap-1.5">
+          {state === "over" && (
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "rgba(248,113,113,.12)", color: "#f87171" }}>
+              Acima do limite
+            </span>
+          )}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className="p-1 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
+            >
+              <Trash2 size={13} />
+            </button>
           )}
         </div>
+      </div>
 
+      {/* Value row */}
+      <div className="flex items-center justify-between mb-2.5">
         {editing ? (
-          <div className="flex items-center gap-2">
-            <input
-              autoFocus
-              type="text"
-              inputMode="decimal"
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onBlur={commit}
-              onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
-              className="w-28 px-2.5 py-1.5 text-sm font-mono border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder="0,00"
-            />
-          </div>
+          <input
+            autoFocus
+            type="text"
+            inputMode="decimal"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
+            className="w-32 px-2.5 h-8 text-[13px] font-mono border-[1.5px] border-brand-400 rounded-[8px] focus:outline-none focus:ring-2 focus:ring-brand-500"
+            placeholder="0,00"
+          />
         ) : (
           <button
             onClick={() => setEditing(true)}
-            className="text-sm font-mono text-slate-700 hover:text-brand-600 min-w-[90px] text-right"
+            className="text-[18px] font-bold font-mono text-app-text hover:text-brand-500 transition"
+            style={{ color: state === "over" ? "#f87171" : undefined }}
           >
-            {planned > 0 ? formatCurrency(planned) : <span className="text-slate-400">Definir</span>}
+            {formatCurrency(spent)}
           </button>
         )}
-
-        {onDelete && (
-          <button
-            onClick={onDelete}
-            className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
-          >
-            <Trash2 size={14} />
+        <span className="text-[12px] text-app-muted">
+          limite{" "}
+          <button onClick={() => setEditing(true)} className="font-mono font-semibold hover:text-brand-500 transition">
+            {planned > 0 ? formatCurrency(planned) : <span className="text-brand-500">Definir</span>}
           </button>
-        )}
+        </span>
       </div>
 
-      {budget && planned > 0 && (
-        <div className="mt-2 h-1.5 rounded-full bg-slate-100 overflow-hidden relative">
-          {/* Projected extension: shown behind the actual bar as a lighter stripe */}
-          {projected > 0 && (
-            <div
-              className="absolute inset-y-0 left-0 bg-slate-300/60"
-              style={{ width: `${Math.min(100, projectedPct)}%` }}
-              title={`Projetado: ${projectedPct.toFixed(0)}% se as recorrências previstas acontecerem`}
-            />
-          )}
-          <div
-            className={`relative h-full transition-all ${
-              state === "over" ? "bg-expense" : state === "warn" ? "bg-amber-500" : "bg-income"
-            }`}
-            style={{ width: `${Math.min(100, pct)}%` }}
-          />
-        </div>
+      {/* Progress bar */}
+      {planned > 0 && (
+        <>
+          <div className="prog-track relative" style={{ height: 7 }}>
+            {projected > 0 && (
+              <div
+                className="absolute inset-y-0 left-0 rounded-full opacity-30"
+                style={{ width: `${Math.min(100, projectedPct)}%`, background: barColor }}
+              />
+            )}
+            <div className="prog-fill" style={{ width: `${Math.min(100, pct)}%`, background: barColor }} />
+          </div>
+          <p className="text-[11px] mt-1.5 font-medium" style={{ color: state === "over" ? "#f87171" : state === "warn" ? "#f59e0b" : "#94a3b8" }}>
+            {Math.round(pct)}%
+            {state === "over"
+              ? ` · ${formatCurrency(spent - planned)} acima`
+              : ` · ${formatCurrency(planned - spent)} restante`}
+            {projected > 0 && <span className="text-app-muted"> · +{formatCurrency(projected)} previsto</span>}
+            {state === "over" && <AlertTriangle className="inline ml-1" size={11} />}
+          </p>
+        </>
       )}
     </div>
   );

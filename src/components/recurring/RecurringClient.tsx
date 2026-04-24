@@ -129,30 +129,35 @@ export function RecurringClient() {
     setEditingRule(null);
   }
 
+  const active = rows.filter((r) => r.isActive);
+  const inactive = rows.filter((r) => !r.isActive);
+  const monthlyCommitted = active
+    .filter((r) => r.type === "expense" && r.frequency === "monthly")
+    .reduce((s, r) => s + parseCurrency(r.value), 0);
+
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Recorrências</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Modelos que geram lançamentos automaticamente</p>
+          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Recorrências</h1>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Receitas e despesas automáticas</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => materializeMutation.mutate()}
             disabled={materializeMutation.isPending}
             title="Gerar pendentes"
-            className="inline-flex items-center gap-2 px-3.5 h-9 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-60"
+            className="inline-flex items-center gap-2 px-3.5 h-9 text-[13px] font-semibold text-app-text bg-white border-[1.5px] border-app-border rounded-[10px] hover:bg-[#f4f5fb] disabled:opacity-60 transition"
           >
-            <Play size={14} />
+            <Play size={13} />
             <span className="hidden sm:inline">
               {materializeMutation.isPending ? "Gerando..." : "Gerar pendentes"}
             </span>
           </button>
-          {/* "Nova recorrência" button — hidden on mobile (FAB is used instead) */}
           <button
             onClick={openNew}
             title="Nova recorrência"
-            className="hidden sm:inline-flex items-center gap-2 px-3.5 h-9 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700"
+            className="hidden sm:inline-flex items-center gap-2 px-3.5 h-9 text-[13px] font-semibold text-white bg-brand-500 rounded-[10px] hover:bg-brand-700 transition"
           >
             <Plus size={14} />
             Nova recorrência
@@ -160,21 +165,37 @@ export function RecurringClient() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+      {/* Stats */}
+      {rows.length > 0 && (
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Comprometido/mês", value: formatCurrency(monthlyCommitted), color: "text-expense" },
+            { label: "Recorrências ativas", value: String(active.length), color: "text-app-text" },
+            { label: "Pausadas", value: String(inactive.length), color: "text-app-muted" },
+          ].map((s) => (
+            <div key={s.label} className="bg-white rounded-[14px] border border-app-border shadow-card p-4">
+              <p className="text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] mb-2">{s.label}</p>
+              <p className={`text-[20px] font-bold font-mono ${s.color}`}>{s.value}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
         {isLoading ? (
           <ListSkeleton rows={4} />
         ) : rows.length === 0 ? (
           <div className="p-12 text-center">
             <div className="text-4xl mb-3">🔁</div>
-            <p className="text-slate-500 text-sm">Nenhuma recorrência cadastrada</p>
-            <button onClick={openNew} className="mt-3 inline-flex items-center gap-1 text-brand-600 text-sm font-medium hover:text-brand-700">
+            <p className="text-app-muted text-sm">Nenhuma recorrência cadastrada</p>
+            <button onClick={openNew} className="mt-3 inline-flex items-center gap-1 text-brand-500 text-sm font-semibold hover:text-brand-700">
               <Plus size={14} /> Criar primeira recorrência
             </button>
           </div>
         ) : (
           <>
             {/* Mobile card view */}
-            <div className="md:hidden divide-y divide-slate-50">
+            <div className="md:hidden divide-y divide-[#f1f3f9]">
               {rows.map((r) => {
                 const cat = r.categoryId ? catMap.get(r.categoryId) : null;
                 return (
@@ -184,7 +205,7 @@ export function RecurringClient() {
                       <div className="flex h-full w-full">
                         <button
                           onClick={() => openEdit(r)}
-                          className="flex-1 flex flex-col items-center justify-center gap-1 bg-brand-600 text-white text-xs font-medium"
+                          className="flex-1 flex flex-col items-center justify-center gap-1 bg-brand-500 text-white text-xs font-medium"
                         >
                           <Edit size={16} />
                           Editar
@@ -199,32 +220,44 @@ export function RecurringClient() {
                       </div>
                     }
                   >
-                    <div className="px-4 py-3.5 flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${r.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                    <div className={`px-4 py-3.5 flex items-center gap-3 bg-white transition ${!r.isActive ? "opacity-60" : ""}`}>
+                      <div
+                        className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
+                        style={{ background: r.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                      >
                         {r.type === "income"
-                          ? <ArrowUpRight size={14} className="text-income" />
-                          : <ArrowDownRight size={14} className="text-expense" />}
+                          ? <ArrowUpRight size={14} className="text-income" strokeWidth={2.5} />
+                          : <ArrowDownRight size={14} className="text-expense" strokeWidth={2.5} />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-800 truncate">{r.description}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          {FREQ_LABEL[r.frequency]}
-                          {r.frequency === "monthly" && r.dayOfMonth && ` · dia ${r.dayOfMonth === "last" ? "último" : r.dayOfMonth}`}
-                          {cat && ` · ${cat.name}`}
-                        </p>
+                        <p className="text-[13px] font-semibold text-app-text truncate">{r.description}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-[11px] text-app-muted">
+                            {FREQ_LABEL[r.frequency]}
+                            {r.frequency === "monthly" && r.dayOfMonth && ` · dia ${r.dayOfMonth === "last" ? "último" : r.dayOfMonth}`}
+                          </span>
+                          {cat && (
+                            <span
+                              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                              style={{ background: `${cat.color ?? "#6366f1"}20`, color: cat.color ?? "#6366f1" }}
+                            >
+                              {cat.name}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <div className="text-right">
-                          <p className={`text-sm font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
-                            {r.type === "income" ? "+" : "-"}{formatCurrency(r.value)}
+                          <p className={`text-[13px] font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
+                            {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
                           </p>
-                          <span className={`text-xs ${r.isActive ? "text-income" : "text-slate-400"}`}>
+                          <span className={`text-[10px] font-semibold ${r.isActive ? "text-income" : "text-app-muted"}`}>
                             {r.isActive ? "Ativa" : "Pausada"}
                           </span>
                         </div>
                         <button
                           onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
-                          className="text-slate-400 hover:text-income transition"
+                          className="text-app-muted hover:text-income transition"
                         >
                           {r.isActive ? <CheckCircle2 size={18} className="text-income" /> : <Circle size={18} />}
                         </button>
@@ -237,73 +270,75 @@ export function RecurringClient() {
 
             {/* Desktop table view */}
             <table className="hidden md:table w-full">
-              <thead className="bg-slate-50 border-b border-slate-100">
+              <thead className="bg-[#f8f9fd] border-b border-[#f1f3f9]">
                 <tr>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Descrição</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Frequência</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Início</th>
-                  <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Valor</th>
-                  <th className="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Ativa</th>
-                  <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Ações</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Descrição</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Frequência</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Início</th>
+                  <th className="text-right px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Valor</th>
+                  <th className="text-center px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Ativa</th>
+                  <th className="text-right px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-[#f1f3f9]">
                 {rows.map((r) => {
                   const cat = r.categoryId ? catMap.get(r.categoryId) : null;
                   return (
-                    <tr key={r.id} className="hover:bg-slate-50/50 transition">
-                      {/* Descrição */}
-                      <td className="px-6 py-3.5">
+                    <tr key={r.id} className={`hover:bg-[#f8f9fd] transition ${!r.isActive ? "opacity-60" : ""}`}>
+                      <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2.5">
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${r.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+                          <div
+                            className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0"
+                            style={{ background: r.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                          >
                             {r.type === "income"
-                              ? <ArrowUpRight size={12} className="text-income" />
-                              : <ArrowDownRight size={12} className="text-expense" />}
+                              ? <ArrowUpRight size={13} className="text-income" strokeWidth={2.5} />
+                              : <ArrowDownRight size={13} className="text-expense" strokeWidth={2.5} />}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-slate-800 truncate">{r.description}</p>
-                            {cat && <p className="text-xs text-slate-400 truncate">{cat.icon} {cat.name}</p>}
+                            <p className="text-[13px] font-semibold text-app-text truncate">{r.description}</p>
+                            {cat && (
+                              <span
+                                className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                                style={{ background: `${cat.color ?? "#6366f1"}20`, color: cat.color ?? "#6366f1" }}
+                              >
+                                {cat.icon} {cat.name}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </td>
-                      {/* Frequência */}
-                      <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">
+                      <td className="px-5 py-3.5 text-[13px] text-app-muted whitespace-nowrap">
                         {FREQ_LABEL[r.frequency]}
                         {r.frequency === "monthly" && r.dayOfMonth && (
-                          <span className="text-slate-400"> · dia {r.dayOfMonth === "last" ? "último" : r.dayOfMonth}</span>
+                          <span className="text-[#b0bac9]"> · dia {r.dayOfMonth === "last" ? "último" : r.dayOfMonth}</span>
                         )}
                       </td>
-                      {/* Início */}
-                      <td className="px-6 py-3.5 text-sm text-slate-500 whitespace-nowrap">
+                      <td className="px-5 py-3.5 text-[13px] text-app-muted whitespace-nowrap">
                         {fmtDate(r.startDate)}
-                        {r.endDate && <p className="text-xs text-slate-400">até {fmtDate(r.endDate)}</p>}
+                        {r.endDate && <p className="text-[11px] text-[#b0bac9]">até {fmtDate(r.endDate)}</p>}
                       </td>
-                      {/* Valor */}
-                      <td className="px-6 py-3.5 text-right">
-                        <span className={`text-sm font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
-                          {r.type === "income" ? "+" : "-"}{formatCurrency(r.value)}
+                      <td className="px-5 py-3.5 text-right">
+                        <span className={`text-[13px] font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
+                          {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
                         </span>
                       </td>
-                      {/* Ativa */}
-                      <td className="px-6 py-3.5 text-center">
-                        <button onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })} className="text-slate-400 hover:text-income transition">
+                      <td className="px-5 py-3.5 text-center">
+                        <button onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })} className="text-app-muted hover:text-income transition">
                           {r.isActive ? <CheckCircle2 size={18} className="text-income" /> : <Circle size={18} />}
                         </button>
                       </td>
-                      {/* Ações */}
-                      <td className="px-6 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-5 py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => openEdit(r)}
-                            className="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
-                            title="Editar"
+                            className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
                           >
                             <Edit size={14} />
                           </button>
                           <button
                             onClick={() => confirm(() => deleteMutation.mutate(r.id), { title: "Remover recorrência?", description: "A regra e todos os lançamentos gerados por ela serão removidos.", variant: "danger" })}
-                            className="p-1.5 text-slate-400 hover:text-expense hover:bg-expense-light rounded-lg transition"
-                            title="Remover"
+                            className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -349,7 +384,7 @@ export function RecurringClient() {
         onClick={openNew}
         title="Nova recorrência"
         aria-label="Nova recorrência"
-        className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-lg transition"
+        className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-brand-500 hover:bg-brand-700 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(99,102,241,.4)] transition"
       >
         <Plus size={24} />
       </button>
@@ -446,7 +481,7 @@ function RecurringForm({
       <form
         onSubmit={submit}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4"
+        className="bg-white rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
       >
         <h2 className="text-lg font-semibold text-slate-900">
           {editing ? "Editar recorrência" : "Nova recorrência"}

@@ -138,7 +138,7 @@ export function DashboardClient() {
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="flex-1 sm:flex-none text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="flex-1 sm:flex-none text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             {MONTHS.map((m, i) => (
               <option key={i} value={i + 1}>{m}</option>
@@ -147,7 +147,7 @@ export function DashboardClient() {
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             {[2023, 2024, 2025, 2026].map((y) => (
               <option key={y} value={y}>{y}</option>
@@ -161,14 +161,14 @@ export function DashboardClient() {
         <SummaryCard
           label="Receitas"
           value={totalIncome}
-          icon={<TrendingUp size={20} />}
+          icon={<TrendingUp size={18} />}
           color="income"
           projected={projectedIncome}
         />
         <SummaryCard
           label="Despesas"
           value={totalExpenses}
-          icon={<TrendingDown size={20} />}
+          icon={<TrendingDown size={18} />}
           color="expense"
           paid={data?.paidExpenses ?? 0}
           pending={data?.pendingExpenses ?? 0}
@@ -177,7 +177,7 @@ export function DashboardClient() {
         <SummaryCard
           label="Saldo"
           value={balance}
-          icon={<Wallet size={20} />}
+          icon={<Wallet size={18} />}
           color={balance >= 0 ? "income" : "expense"}
           projectedBalance={
             projectedIncome || projectedExpenses
@@ -190,55 +190,75 @@ export function DashboardClient() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Monthly Trend */}
-        <div className="bg-white rounded-2xl border border-app-border p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-white rounded-[14px] border border-app-border p-4 shadow-card">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-[14px] font-bold text-app-text">Receitas vs Despesas</h2>
             <div className="flex items-center gap-3">
-              {[["#0d9f6a", "Receitas"], ["#e05252", "Despesas"]].map(([c, l]) => (
+              {[["#10b981", "Receitas"], ["#f87171", "Despesas"]].map(([c, l]) => (
                 <div key={l} className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-[3px]" style={{ background: c }} />
+                  <div className="w-5 h-[2.5px] rounded-full" style={{ background: c }} />
                   <span className="text-[11px] text-app-muted font-medium">{l}</span>
                 </div>
               ))}
             </div>
           </div>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="30%">
-              <CartesianGrid vertical={false} stroke="#f3f4f6" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ba3af" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: "#9ba3af" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
-              <Tooltip formatter={(v: number) => formatCurrency(v)} contentStyle={{ background: "#fff", border: "1px solid #e8eaf2", borderRadius: 10, fontSize: 12 }} />
-              <Bar dataKey="income" name="Receitas" fill="#0d9f6a" radius={[6, 6, 6, 6]} />
-              <Bar dataKey="expenses" name="Despesas" fill="#e05252" radius={[6, 6, 6, 6]} />
+            <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="35%">
+              <CartesianGrid vertical={false} stroke="#f1f3f9" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
+              <Tooltip
+                formatter={(v: number) => formatCurrency(v)}
+                contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}
+              />
+              <Bar dataKey="income" name="Receitas" fill="#10b981" radius={[5, 5, 5, 5]} />
+              <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[5, 5, 5, 5]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Expenses by Category */}
-        <div className="bg-white rounded-2xl border border-app-border p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-          <h2 className="text-[14px] font-bold text-app-text mb-3">Despesas por Categoria</h2>
+        <div className="bg-white rounded-[14px] border border-app-border p-4 shadow-card">
+          <h2 className="text-[14px] font-bold text-app-text mb-4">Despesas por Categoria</h2>
           {(data?.expensesByCategory?.length ?? 0) > 0 ? (
-            <div className="flex items-center gap-4">
-              <div className="w-[150px] h-[150px] shrink-0">
+            <div className="flex items-start gap-5">
+              <div className="w-[140px] h-[140px] shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={data?.expensesByCategory ?? []} dataKey="total" nameKey="name" cx="50%" cy="50%" innerRadius={46} outerRadius={68} paddingAngle={2}>
+                    <Pie data={data?.expensesByCategory ?? []} dataKey="total" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={66} paddingAngle={2}>
                       {(data?.expensesByCategory ?? []).map((entry, index) => (
                         <Cell key={index} fill={entry.color || `hsl(${index * 37}, 70%, 50%)`} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(v: number) => formatCurrency(v)} contentStyle={{ background: "#fff", border: "1px solid #e8eaf2", borderRadius: 10, fontSize: 12 }} />
+                    <Tooltip
+                      formatter={(v: number) => formatCurrency(v)}
+                      contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12 }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex-1 min-w-0 space-y-1.5">
-                {(data?.expensesByCategory ?? []).map((cat) => (
-                  <div key={cat.name} className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
-                    <span className="text-[11px] text-slate-500 font-medium flex-1 truncate">{cat.name}</span>
-                    <span className="text-[11px] font-bold text-slate-700 tabular-nums">{formatCurrency(cat.total)}</span>
-                  </div>
-                ))}
+              <div className="flex-1 min-w-0 space-y-2.5">
+                {(data?.expensesByCategory ?? []).map((cat) => {
+                  const total = (data?.expensesByCategory ?? []).reduce((s, c) => s + c.total, 0);
+                  const pct = total > 0 ? Math.round((cat.total / total) * 100) : 0;
+                  return (
+                    <div key={cat.name}>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
+                          <span className="text-[12px] font-semibold text-app-text truncate">{cat.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] text-app-muted">{pct}%</span>
+                          <span className="text-[12px] font-semibold text-app-text font-mono tabular-nums">{formatCurrency(cat.total)}</span>
+                        </div>
+                      </div>
+                      <div className="prog-track" style={{ height: 4 }}>
+                        <div className="prog-fill" style={{ width: `${pct}%`, background: cat.color }} />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ) : (
@@ -250,19 +270,22 @@ export function DashboardClient() {
       </div>
 
       {/* Recent Transactions */}
-      <div className="bg-white rounded-2xl border border-app-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-50 flex items-center justify-between">
+      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-[#f1f3f9] flex items-center justify-between">
           <h2 className="text-[14px] font-bold text-app-text">Lançamentos Recentes</h2>
         </div>
-        <div className="divide-y divide-[#f7f8fc]">
+        <div className="divide-y divide-[#f1f3f9]">
           {(data?.recentTransactions ?? []).length === 0 ? (
             <div className="p-12 text-center text-app-muted text-sm">
               Nenhum lançamento no período
             </div>
           ) : (
             (data?.recentTransactions ?? []).map((t) => (
-              <div key={t.id} className="flex items-center px-5 py-3 gap-3 hover:bg-[#f9fafc] transition cursor-pointer">
-                <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 ${t.type === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+              <div key={t.id} className="flex items-center px-5 py-3.5 gap-3.5 hover:bg-[#f8f9fd] transition cursor-pointer">
+                <div
+                  className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0"
+                  style={{ background: t.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                >
                   {t.type === "income"
                     ? <ArrowUpRight size={16} className="text-income" strokeWidth={2.5} />
                     : <ArrowDownRight size={16} className="text-expense" strokeWidth={2.5} />
@@ -278,8 +301,8 @@ export function DashboardClient() {
                         <span
                           className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                           style={{
-                            backgroundColor: t.categoryColor ? `${t.categoryColor}22` : "#6173f422",
-                            color: t.categoryColor ?? "#6173f4",
+                            backgroundColor: t.categoryColor ? `${t.categoryColor}20` : "#6366f120",
+                            color: t.categoryColor ?? "#6366f1",
                           }}
                         >
                           {t.categoryName}
@@ -289,7 +312,7 @@ export function DashboardClient() {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className={`text-[14px] font-bold tabular-nums ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                  <p className={`text-[14px] font-semibold font-mono tabular-nums ${t.type === "income" ? "text-income" : "text-expense"}`}>
                     {t.type === "income" ? "+" : "−"}{formatCurrency(t.value)}
                   </p>
                   <span className={`text-[10px] font-semibold ${t.isPaid ? "text-income" : "text-amber-500"}`}>
@@ -327,28 +350,35 @@ function SummaryCard({
   const showProgress = paid !== undefined && pending !== undefined && value > 0;
   const pct = showProgress ? Math.min(100, Math.round((paid! / value) * 100)) : 0;
 
+  const iconBg = color === "income" ? "rgba(16,185,129,.12)" : color === "expense" ? "rgba(248,113,113,.12)" : "rgba(99,102,241,.12)";
+  const iconColor = color === "income" ? "#10b981" : color === "expense" ? "#f87171" : "#6366f1";
+  const barColor = color === "income" ? "#10b981" : "#f87171";
+
   return (
-    <div className="bg-white rounded-2xl border border-app-border p-3 md:p-4 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.03)] flex-1 min-w-0">
-      {/* Header: label + icon (icon hidden on mobile) */}
-      <div className="flex items-start justify-between mb-2 md:mb-3.5">
-        <span className="text-[9px] md:text-[11px] font-bold text-app-muted uppercase tracking-[0.06em]">{label}</span>
-        <div className={`hidden md:flex w-[34px] h-[34px] rounded-[10px] items-center justify-center shrink-0 ${color === "income" ? "bg-income-light text-income" : "bg-expense-light text-expense"}`}>
+    <div className="bg-white rounded-[14px] border border-app-border p-3 md:p-4 shadow-card flex-1 min-w-0">
+      {/* Header: label + icon badge */}
+      <div className="flex items-start justify-between mb-2 md:mb-3">
+        <span className="text-[9px] md:text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">{label}</span>
+        <div
+          className="hidden md:flex w-9 h-9 rounded-[10px] items-center justify-center shrink-0"
+          style={{ background: iconBg, color: iconColor }}
+        >
           {icon}
         </div>
       </div>
 
       {/* Value */}
-      <p className={`text-base md:text-[26px] font-extrabold tracking-tight leading-none truncate ${color === "income" ? "text-income" : "text-expense"}`}>
+      <p className={`text-[15px] md:text-[24px] font-bold font-mono tracking-tight leading-none truncate ${color === "income" ? "text-income" : "text-expense"}`}>
         {formatCurrency(value)}
       </p>
 
       {/* Progress bar — desktop only */}
       {showProgress && (
         <div className="hidden md:block mt-3">
-          <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
-            <div className="h-full bg-expense transition-all" style={{ width: `${pct}%` }} />
+          <div className="prog-track">
+            <div className="prog-fill" style={{ width: `${pct}%`, background: barColor }} />
           </div>
-          <p className="text-xs text-slate-400 mt-1.5 font-medium">
+          <p className="text-[11px] text-app-muted mt-1.5 font-medium">
             {pct}% pago
             {pending! > 0 && <span> · {formatCurrency(pending!)} pendente</span>}
           </p>
@@ -357,14 +387,14 @@ function SummaryCard({
 
       {/* Projections — desktop only */}
       {projected !== undefined && projected > 0 && (
-        <p className="hidden md:block text-xs text-slate-400 mt-2 border-t border-dashed border-slate-200 pt-2">
+        <p className="hidden md:block text-[11px] text-app-muted mt-2 border-t border-dashed border-[#e2e5ef] pt-2">
           <span className="font-medium text-slate-500">+ {formatCurrency(projected)}</span> previsto
         </p>
       )}
       {projectedBalance !== undefined && (
-        <p className="hidden md:block text-xs text-slate-400 mt-2 border-t border-dashed border-slate-200 pt-2">
-          Previsto fim do mês:{" "}
-          <span className={`font-mono font-medium ${projectedBalance >= 0 ? "text-income" : "text-expense"}`}>
+        <p className="hidden md:block text-[11px] text-app-muted mt-2 border-t border-dashed border-[#e2e5ef] pt-2">
+          Previsto:{" "}
+          <span className={`font-mono font-semibold ${projectedBalance >= 0 ? "text-income" : "text-expense"}`}>
             {formatCurrency(projectedBalance)}
           </span>
         </p>
