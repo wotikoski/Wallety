@@ -26,12 +26,6 @@ export function Topbar() {
     queryFn: () => fetch("/api/groups").then((r) => r.json()),
   });
 
-  const { data: meData } = useQuery<{ user: { name: string } }>({
-    queryKey: ["me"],
-    queryFn: () => fetch("/api/users/me").then((r) => r.json()),
-  });
-
-  const firstName = meData?.user?.name?.split(" ")[0] ?? "";
   const groups = data?.groups ?? [];
   const activeGroup = groups.find((g) => g.id === activeGroupId);
 
@@ -71,13 +65,8 @@ export function Topbar() {
 
       <div className="flex-1" />
 
-      {/* Mobile: date only */}
-      <span className="md:hidden text-[12px] text-app-muted font-medium">
+      <span className="text-[12px] text-app-muted font-medium">
         {dateLabel}
-      </span>
-      {/* Desktop: greeting + date */}
-      <span className="hidden md:inline text-[12px] text-app-muted font-medium">
-        {firstName ? `Bem-vindo, ${firstName}! Hoje é ${dateLabel}` : `Hoje é ${dateLabel}`}
       </span>
     </header>
   );

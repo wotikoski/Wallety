@@ -71,6 +71,7 @@ export async function GET(req: NextRequest) {
         installmentGroupId: transactions.installmentGroupId,
         userId: transactions.userId,
         groupId: transactions.groupId,
+        notes: transactions.notes,
         categoryName: categories.name,
         categoryColor: categories.color,
       })
