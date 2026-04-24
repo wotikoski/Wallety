@@ -198,7 +198,7 @@ export function DashboardClient() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Monthly Trend */}
-        <div className="bg-white rounded-[14px] border border-app-border p-4 shadow-card">
+        <div className="bg-white rounded-[14px] border border-app-border p-4 shadow-card flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[14px] font-bold text-app-text">Receitas vs Despesas</h2>
             <div className="flex items-center gap-3">
@@ -210,19 +210,21 @@ export function DashboardClient() {
               ))}
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="35%">
-              <CartesianGrid vertical={false} stroke="#f1f3f9" />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} interval={0} />
-              <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
-              <Tooltip
-                formatter={(v: number) => formatCurrency(v)}
-                contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}
-              />
-              <Bar dataKey="income" name="Receitas" fill="#10b981" radius={[5, 5, 5, 5]} />
-              <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[5, 5, 5, 5]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="flex-1 flex items-center">
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="35%">
+                <CartesianGrid vertical={false} stroke="#f1f3f9" />
+                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} interval={0} />
+                <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
+                <Tooltip
+                  formatter={(v: number) => formatCurrency(v)}
+                  contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}
+                />
+                <Bar dataKey="income" name="Receitas" fill="#10b981" radius={[5, 5, 5, 5]} />
+                <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[5, 5, 5, 5]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         {/* Expenses by Category */}
