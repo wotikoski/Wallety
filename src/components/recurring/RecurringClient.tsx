@@ -8,7 +8,7 @@ import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Plus, RefreshCcw, Trash2, Play, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SwipeableRow } from "@/components/transactions/SwipeableRow";
 
 // "2026-02-17" → "17/02/2026"
@@ -44,6 +44,50 @@ const FREQ_LABEL: Record<string, string> = {
   weekly: "Semanal",
   yearly: "Anual",
 };
+
+function fmtShort(value: number): string {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? "-" : "";
+  if (abs >= 1_000_000) return `${sign}R$ ${(abs / 1_000_000).toFixed(1).replace(".", ",")}M`;
+  if (abs >= 1_000) return `${sign}R$ ${(abs / 1_000).toFixed(1).replace(".", ",")}k`;
+  return formatCurrency(value);
+}
+
+function CommittedCard({ value }: { value: number }) {
+  const [tooltip, setTooltip] = useState(false);
+  useEffect(() => {
+    if (!tooltip) return;
+    const t = setTimeout(() => setTooltip(false), 2500);
+    return () => clearTimeout(t);
+  }, [tooltip]);
+
+  return (
+    <div className="bg-white rounded-[14px] border border-app-border shadow-card p-3">
+      <p className="text-[10px] font-bold text-app-muted uppercase tracking-[0.06em] mb-1.5 leading-tight">
+        Comprometido<span className="normal-case font-medium">/mês</span>
+      </p>
+      {/* Mobile: abbreviated + tap-to-reveal tooltip */}
+      <div className="relative md:hidden">
+        <button
+          onClick={() => setTooltip((v) => !v)}
+          className="text-[15px] font-bold font-mono leading-tight text-expense text-left"
+        >
+          {fmtShort(value)}
+        </button>
+        {tooltip && (
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] font-mono font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
+            {formatCurrency(value)}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#0f172a]" />
+          </div>
+        )}
+      </div>
+      {/* Desktop: full value, no interaction */}
+      <p className="hidden md:block text-[15px] font-bold font-mono leading-tight text-expense">
+        {formatCurrency(value)}
+      </p>
+    </div>
+  );
+}
 
 export function RecurringClient() {
   const { activeGroupId } = useActiveGroup();
@@ -170,16 +214,15 @@ export function RecurringClient() {
       {/* Stats */}
       {rows.length > 0 && (
         <div className="grid grid-cols-3 gap-2.5">
+          {/* Comprometido — abbreviated on mobile + tooltip */}
+          <CommittedCard value={monthlyCommitted} />
           {[
-            { label: "Comprometido", sublabel: "/mês", value: formatCurrency(monthlyCommitted), color: "text-expense" },
-            { label: "Ativas", sublabel: "", value: String(active.length), color: "text-app-text" },
-            { label: "Pausadas", sublabel: "", value: String(inactive.length), color: "text-app-muted" },
+            { label: "Ativas", value: String(active.length), color: "text-app-text" },
+            { label: "Pausadas", value: String(inactive.length), color: "text-app-muted" },
           ].map((s) => (
             <div key={s.label} className="bg-white rounded-[14px] border border-app-border shadow-card p-3">
-              <p className="text-[10px] font-bold text-app-muted uppercase tracking-[0.06em] mb-1.5 leading-tight">
-                {s.label}<span className="normal-case font-medium">{s.sublabel}</span>
-              </p>
-              <p className={`text-[15px] font-bold font-mono leading-tight truncate ${s.color}`}>{s.value}</p>
+              <p className="text-[10px] font-bold text-app-muted uppercase tracking-[0.06em] mb-1.5 leading-tight">{s.label}</p>
+              <p className={`text-[15px] font-bold font-mono leading-tight ${s.color}`}>{s.value}</p>
             </div>
           ))}
         </div>
