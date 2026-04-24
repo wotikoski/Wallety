@@ -213,7 +213,7 @@ export function DashboardClient() {
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="35%">
               <CartesianGrid vertical={false} stroke="#f1f3f9" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} interval={0} />
               <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
               <Tooltip
                 formatter={(v: number) => formatCurrency(v)}
