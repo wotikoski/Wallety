@@ -106,14 +106,13 @@ export function ReportsClient() {
 
   const drilldownRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (drilldown && drilldownRef.current) {
-      // Double RAF: wait for React to finish painting before scrolling
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          drilldownRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        });
-      });
-    }
+    if (!drilldown || !drilldownRef.current) return;
+    const el = drilldownRef.current;
+    const timer = setTimeout(() => {
+      const top = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: "smooth" });
+    }, 200);
+    return () => clearTimeout(timer);
   }, [drilldown?.groupKey]);
 
   // Reset drilldown when filters change
@@ -268,6 +267,7 @@ export function ReportsClient() {
                     dataKey="total"
                     radius={[0, 5, 5, 0]}
                     cursor="pointer"
+                    isAnimationActive={false}
                     onClick={(barData, index) => openDrilldown(barData as ReportItem, index)}
                     onMouseEnter={(_, index) => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
