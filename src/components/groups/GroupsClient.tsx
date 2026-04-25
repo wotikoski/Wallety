@@ -200,7 +200,7 @@ export function GroupsClient() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveGroupId(activeGroupId === selectedGroup ? null : selectedGroup)}
-                    className={`text-xs px-3 h-9 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-brand-600 text-white" : "border border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text"}`}
+                    className={`text-sm px-3.5 h-9 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-brand-600 text-white" : "border border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text"}`}
                   >
                     {activeGroupId === selectedGroup ? "Ativo" : "Ativar"}
                   </button>
