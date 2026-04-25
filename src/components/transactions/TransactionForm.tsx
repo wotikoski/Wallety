@@ -181,7 +181,7 @@ export function TransactionForm({ transaction }: Props) {
       {/* Type toggle */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">Tipo</label>
-        <div className="flex rounded-lg border border-slate-200 overflow-hidden">
+        <div className="flex rounded-lg border border-app-border overflow-hidden">
           <Controller
             control={control}
             name="type"
@@ -213,7 +213,7 @@ export function TransactionForm({ transaction }: Props) {
           <input
             {...register("date")}
             type="date"
-            className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
           />
           {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>}
         </div>
@@ -229,7 +229,7 @@ export function TransactionForm({ transaction }: Props) {
                 value={field.value ?? ""}
                 onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
                 onBlur={field.onBlur}
-                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
               >
                 <option value="">Sem categoria</option>
                 {categories.map((c: { id: string; name: string; icon: string }) => (
@@ -247,7 +247,7 @@ export function TransactionForm({ transaction }: Props) {
           {...register("description")}
           type="text"
           placeholder="Ex: Supermercado Pão de Açúcar"
-          className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
         />
         {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
       </div>
@@ -261,7 +261,7 @@ export function TransactionForm({ transaction }: Props) {
             step="0.01"
             min="0"
             placeholder="0,00"
-            className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
+            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text font-mono"
           />
           {errors.value && <p className="text-red-500 text-xs mt-1">{errors.value.message}</p>}
         </div>
@@ -275,7 +275,7 @@ export function TransactionForm({ transaction }: Props) {
                 value={field.value ?? ""}
                 onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
                 onBlur={field.onBlur}
-                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
               >
                 <option value="">Selecionar...</option>
                 {paymentMethods.map((pm: { id: string; name: string; type: string }) => (
@@ -297,7 +297,7 @@ export function TransactionForm({ transaction }: Props) {
               value={field.value ?? ""}
               onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
               onBlur={field.onBlur}
-              className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             >
               <option value="">Sem banco</option>
               {banks.map((b: { id: string; name: string }) => (
@@ -309,8 +309,8 @@ export function TransactionForm({ transaction }: Props) {
       </div>
 
       {/* Installments */}
-      <div className="p-4 bg-slate-50 rounded-lg space-y-4">
-        <p className="text-sm font-medium text-slate-700">Parcelamento</p>
+      <div className="p-4 bg-[var(--surface-raised)] rounded-lg border border-app-border space-y-4">
+        <p className="text-sm font-medium text-app-text">Parcelamento</p>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs text-slate-500 mb-1">Nº de parcelas</label>
@@ -320,7 +320,7 @@ export function TransactionForm({ transaction }: Props) {
               min="1"
               max="120"
               placeholder="1 = à vista"
-              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full h-9 px-3 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             />
           </div>
           <div>
@@ -331,7 +331,7 @@ export function TransactionForm({ transaction }: Props) {
               step="0.01"
               placeholder="Calculado automaticamente"
               readOnly={!!installmentTotal && installmentTotal > 1}
-              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono bg-slate-100"
+              className="w-full h-9 px-3 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-hover)] text-app-muted font-mono"
             />
           </div>
         </div>
@@ -368,7 +368,7 @@ export function TransactionForm({ transaction }: Props) {
           {...register("notes")}
           rows={2}
           placeholder="Alguma observação..."
-          className="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+          className="w-full px-3.5 py-2 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text resize-none"
         />
       </div>
 
@@ -385,7 +385,9 @@ export function TransactionForm({ transaction }: Props) {
           disabled={saveMutation.isPending}
           className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 rounded-lg text-sm transition disabled:opacity-50"
         >
-          {saveMutation.isPending ? "Salvando..." : isEdit ? "Atualizar" : "Criar Lançamento"}
+          {saveMutation.isPending ? "Salvando..." : isEdit ? "Atualizar" : (
+            <><span className="sm:hidden">Criar</span><span className="hidden sm:inline">Criar Lançamento</span></>
+          )}
         </button>
       </div>
     </form>
