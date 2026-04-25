@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
-import { Plus, Trash2, Edit, CreditCard } from "lucide-react";
+import { Plus, Trash2, Edit, CreditCard, X } from "lucide-react";
 import { PAYMENT_METHOD_TYPES, getPaymentMethodLabel } from "@/lib/constants/payment-method-types";
 
 interface PaymentMethod {
@@ -124,75 +124,88 @@ export function PaymentMethodsClient() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-xl border border-app-border p-5 shadow-card">
-          <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Nova"} Forma de Pagamento</h2>
-          <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-app-text mb-1.5">Nome</label>
-              <input
-                {...register("name", { required: true })}
-                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-                placeholder="Ex: Nubank Crédito"
-              />
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => { setShowForm(false); setEditing(null); reset(); }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-app-text">{editing ? "Editar" : "Nova"} Forma de Pagamento</h2>
+              <button type="button" onClick={() => { setShowForm(false); setEditing(null); reset(); }} className="p-1 text-app-muted hover:text-app-text rounded-lg transition">
+                <X size={18} />
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-app-text mb-1.5">Tipo</label>
-              <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
-                {PAYMENT_METHOD_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-app-text mb-1.5">Banco vinculado (opcional)</label>
-              <select {...register("bankId")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
-                <option value="">Sem banco vinculado</option>
-                {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-              </select>
-            </div>
-            {watchedType === "credit_card" && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-app-text mb-1.5">Dia de fechamento</label>
-                  <input
-                    {...register("closingDay")}
-                    type="number"
-                    min={1}
-                    max={31}
-                    className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-                    placeholder="25"
-                  />
-                  <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura fecha (1–31)</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-app-text mb-1.5">Dia de vencimento</label>
-                  <input
-                    {...register("dueDay")}
-                    type="number"
-                    min={1}
-                    max={31}
-                    className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-                    placeholder="5"
-                  />
-                  <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura deve ser paga (1–31)</p>
-                </div>
-              </>
-            )}
-            <button
-              type="button"
-              onClick={() => { setShowForm(false); setEditing(null); }}
-              className="h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={saveMutation.isPending}
-              className="h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
-            >
-              {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
-            </button>
-          </form>
+            <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-app-text mb-1.5">Nome</label>
+                <input
+                  {...register("name", { required: true })}
+                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                  placeholder="Ex: Nubank Crédito"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-app-text mb-1.5">Tipo</label>
+                <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
+                  {PAYMENT_METHOD_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-app-text mb-1.5">Banco vinculado (opcional)</label>
+                <select {...register("bankId")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
+                  <option value="">Sem banco vinculado</option>
+                  {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                </select>
+              </div>
+              {watchedType === "credit_card" && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-app-text mb-1.5">Dia de fechamento</label>
+                    <input
+                      {...register("closingDay")}
+                      type="number"
+                      min={1}
+                      max={31}
+                      className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                      placeholder="25"
+                    />
+                    <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura fecha (1–31)</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-app-text mb-1.5">Dia de vencimento</label>
+                    <input
+                      {...register("dueDay")}
+                      type="number"
+                      min={1}
+                      max={31}
+                      className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                      placeholder="5"
+                    />
+                    <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura deve ser paga (1–31)</p>
+                  </div>
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => { setShowForm(false); setEditing(null); reset(); }}
+                className="h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={saveMutation.isPending}
+                className="h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
+              >
+                {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
+              </button>
+            </form>
+          </div>
         </div>
       )}
 

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useConfirm } from "@/lib/hooks/useConfirm";
-import { Plus, Users, Crown, Trash2, UserPlus, Copy, Check } from "lucide-react";
+import { Plus, Users, Crown, Trash2, UserPlus, Copy, Check, X } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/date";
 
@@ -129,32 +129,45 @@ export function GroupsClient() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
-          <h2 className="text-base font-semibold text-app-text mb-4">Criar Grupo</h2>
-          <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-app-text mb-1.5">Nome do grupo</label>
-              <input
-                {...register("name", { required: true })}
-                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder="Ex: Família Silva"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-app-text mb-1.5">Descrição (opcional)</label>
-              <input
-                {...register("description")}
-                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder="Breve descrição do grupo"
-              />
-            </div>
-            <div className="flex gap-3">
-              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition">Cancelar</button>
-              <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
-                {createMutation.isPending ? "Criando..." : "Criar Grupo"}
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => { setShowForm(false); reset(); }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-app-text">Criar Grupo</h2>
+              <button type="button" onClick={() => { setShowForm(false); reset(); }} className="p-1 text-app-muted hover:text-app-text rounded-lg transition">
+                <X size={18} />
               </button>
             </div>
-          </form>
+            <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-app-text mb-1.5">Nome do grupo</label>
+                <input
+                  {...register("name", { required: true })}
+                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                  placeholder="Ex: Família Silva"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-app-text mb-1.5">Descrição (opcional)</label>
+                <input
+                  {...register("description")}
+                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                  placeholder="Breve descrição do grupo"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button type="button" onClick={() => { setShowForm(false); reset(); }} className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition">Cancelar</button>
+                <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
+                  {createMutation.isPending ? "Criando..." : "Criar Grupo"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

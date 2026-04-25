@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -47,7 +47,6 @@ export function CategoriesClient() {
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
-  const formRef = useRef<HTMLDivElement>(null);
 
   const params = new URLSearchParams();
   if (activeGroupId) params.set("groupId", activeGroupId);
@@ -117,8 +116,6 @@ export function CategoriesClient() {
     setEditing(cat);
     reset({ name: cat.name, type: cat.type as "income" | "expense" | "both", icon: cat.icon ?? "", color: cat.color ?? COLOR_PALETTE[0] });
     setShowForm(true);
-    // Scroll the form into view after React renders it.
-    setTimeout(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
 
   function startNew() {
@@ -149,83 +146,93 @@ export function CategoriesClient() {
         </button>
       </div>
 
-      {/* Form */}
+      {/* Form modal */}
       {showForm && (
-        <div ref={formRef} className="bg-white rounded-xl border border-app-border p-5 shadow-card">
-          <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Nova"} Categoria</h2>
-          <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-app-text mb-1.5">Nome</label>
-              <input
-                {...register("name", { required: true })}
-                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-                placeholder="Ex: Alimentação"
-              />
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => { setShowForm(false); setEditing(null); reset(); }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-app-text">{editing ? "Editar" : "Nova"} Categoria</h2>
+              <button type="button" onClick={() => { setShowForm(false); setEditing(null); reset(); }} className="p-1 text-app-muted hover:text-app-text rounded-lg transition">
+                <X size={18} />
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-app-text mb-1.5">Tipo</label>
-              <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
-                <option value="expense">Despesa</option>
-                <option value="income">Receita</option>
-                <option value="both">Ambos</option>
-              </select>
-            </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-app-text mb-2">Ícone</label>
-              <div className="flex items-start gap-3">
-                {/* Preview */}
-                <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0 border border-app-border"
-                  style={{ backgroundColor: (watchedColor ?? "#6366f1") + "22" }}
-                >
-                  {watchedIcon || "💳"}
-                </div>
-                {/* Emoji grid */}
-                <div className="flex-1 grid grid-cols-8 gap-1.5">
-                  {EMOJI_SUGGESTIONS.map((e) => (
-                    <button
-                      key={e}
-                      type="button"
-                      onClick={() => setValue("icon", e)}
-                      className={`h-9 rounded-lg text-lg flex items-center justify-center transition ${
-                        watchedIcon === e
-                          ? "bg-brand-50 ring-2 ring-brand-500"
-                          : "hover:bg-[var(--surface-raised)]"
-                      }`}
-                    >
-                      {e}
-                    </button>
-                  ))}
-                </div>
+            <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-app-text mb-1.5">Nome</label>
+                <input
+                  {...register("name", { required: true })}
+                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                  placeholder="Ex: Alimentação"
+                />
               </div>
-              {/* Hidden field so the form carries the icon value. */}
-              <input type="hidden" {...register("icon")} />
-            </div>
-            <div className="col-span-2">
-              <ColorPicker
-                value={watchedColor ?? COLOR_PALETTE[0]}
-                onChange={(c) => setValue("color", c)}
-                showSuggest={!editing}
-                onSuggest={() => setValue("color", rotatePaletteColor(watchedColor))}
-              />
-            </div>
-            <div className="col-span-2 flex gap-3">
-              <button
-                type="button"
-                onClick={() => { setShowForm(false); setEditing(null); reset(); }}
-                className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={saveMutation.isPending}
-                className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
-              >
-                {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
-              </button>
-            </div>
-          </form>
+              <div>
+                <label className="block text-sm font-medium text-app-text mb-1.5">Tipo</label>
+                <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
+                  <option value="expense">Despesa</option>
+                  <option value="income">Receita</option>
+                  <option value="both">Ambos</option>
+                </select>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-app-text mb-2">Ícone</label>
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0 border border-app-border"
+                    style={{ backgroundColor: (watchedColor ?? "#6366f1") + "22" }}
+                  >
+                    {watchedIcon || "💳"}
+                  </div>
+                  <div className="flex-1 grid grid-cols-8 gap-1.5">
+                    {EMOJI_SUGGESTIONS.map((e) => (
+                      <button
+                        key={e}
+                        type="button"
+                        onClick={() => setValue("icon", e)}
+                        className={`h-9 rounded-lg text-lg flex items-center justify-center transition ${
+                          watchedIcon === e
+                            ? "bg-brand-50 ring-2 ring-brand-500"
+                            : "hover:bg-[var(--surface-raised)]"
+                        }`}
+                      >
+                        {e}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <input type="hidden" {...register("icon")} />
+              </div>
+              <div className="col-span-2">
+                <ColorPicker
+                  value={watchedColor ?? COLOR_PALETTE[0]}
+                  onChange={(c) => setValue("color", c)}
+                  showSuggest={!editing}
+                  onSuggest={() => setValue("color", rotatePaletteColor(watchedColor))}
+                />
+              </div>
+              <div className="col-span-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => { setShowForm(false); setEditing(null); reset(); }}
+                  className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={saveMutation.isPending}
+                  className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
+                >
+                  {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
