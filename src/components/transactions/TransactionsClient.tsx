@@ -63,6 +63,7 @@ import { useConfirm } from "@/lib/hooks/useConfirm";
 import { FilterSheet } from "./FilterSheet";
 import { SwipeableRow } from "./SwipeableRow";
 import { usePullToRefresh } from "@/lib/hooks/usePullToRefresh";
+import { TransactionForm } from "./TransactionForm";
 
 interface Transaction {
   id: string;
@@ -101,6 +102,7 @@ export function TransactionsClient() {
   const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
   const [showFuture, setShowFuture] = useState(false);
+  const [showNewForm, setShowNewForm] = useState(false);
 
   // Pull-to-refresh: ref on the mobile card list container
   const listRef = useRef<HTMLDivElement>(null);
@@ -283,26 +285,26 @@ export function TransactionsClient() {
             setPage={setPage}
           />
           {/* "Novo Lançamento" button — hidden on mobile (FAB is used instead) */}
-          <Link
-            href="/lancamentos/novo"
+          <button
+            onClick={() => setShowNewForm(true)}
             title="Novo Lançamento"
             className="hidden md:flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
           >
             <Plus size={16} />
             Novo Lançamento
-          </Link>
+          </button>
         </div>
       </div>
 
       {/* FAB — mobile only, above the bottom nav */}
-      <Link
-        href="/lancamentos/novo"
+      <button
+        onClick={() => setShowNewForm(true)}
         title="Novo Lançamento"
         className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-lg transition"
         aria-label="Novo Lançamento"
       >
         <Plus size={24} />
-      </Link>
+      </button>
 
       {/* Filters — desktop only (mobile uses FilterSheet) */}
       <div className="hidden md:flex flex-wrap gap-2 items-center">
@@ -404,9 +406,9 @@ export function TransactionsClient() {
           <div className="p-12 text-center">
             <div className="text-4xl mb-3">💳</div>
             <p className="text-slate-500 text-sm">Nenhum lançamento encontrado</p>
-            <Link href="/lancamentos/novo" className="mt-3 inline-flex items-center gap-1 text-brand-600 text-sm font-medium hover:text-brand-700">
+            <button onClick={() => setShowNewForm(true)} className="mt-3 inline-flex items-center gap-1 text-brand-600 text-sm font-medium hover:text-brand-700">
               <Plus size={14} /> Criar primeiro lançamento
-            </Link>
+            </button>
           </div>
         ) : (
           <>
@@ -605,6 +607,20 @@ export function TransactionsClient() {
             deleteTransaction.mutate({ id, scope });
           }}
         />
+      )}
+
+      {showNewForm && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setShowNewForm(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md max-h-[90vh] overflow-y-auto"
+          >
+            <TransactionForm onClose={() => setShowNewForm(false)} />
+          </div>
+        </div>
       )}
     </div>
   );

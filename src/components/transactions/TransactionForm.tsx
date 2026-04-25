@@ -9,8 +9,10 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { PAYMENT_METHOD_TYPES } from "@/lib/constants/payment-method-types";
+import { X } from "lucide-react";
 
 interface Props {
+  onClose?: () => void;
   transaction?: {
     id: string;
     date: string;
@@ -28,7 +30,7 @@ interface Props {
   };
 }
 
-export function TransactionForm({ transaction }: Props) {
+export function TransactionForm({ transaction, onClose }: Props) {
   const { activeGroupId } = useActiveGroup();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -162,10 +164,12 @@ export function TransactionForm({ transaction }: Props) {
         queryClient.invalidateQueries({ queryKey: ["transaction", transaction.id] });
       }
       toast({ title: isEdit ? "Lançamento atualizado!" : "Lançamento criado!" });
-      // Flush the Next.js router cache so navigating back to any page
-      // (dashboard, transactions list) always shows server-fresh data.
-      router.refresh();
-      router.push("/lancamentos");
+      if (onClose) {
+        onClose();
+      } else {
+        router.refresh();
+        router.push("/lancamentos");
+      }
     },
     onError: () => {
       toast({ title: "Erro ao salvar lançamento", variant: "destructive" });
@@ -178,6 +182,14 @@ export function TransactionForm({ transaction }: Props) {
 
   return (
     <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="bg-white rounded-[14px] border border-app-border shadow-card p-6 space-y-5">
+      {onClose && (
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-app-text">Novo Lançamento</h2>
+          <button type="button" onClick={onClose} className="p-1 text-app-muted hover:text-app-text rounded-lg transition">
+            <X size={18} />
+          </button>
+        </div>
+      )}
       {/* Type toggle */}
       <div>
         <label className="block text-sm font-medium text-app-text mb-2">Tipo</label>
@@ -375,7 +387,7 @@ export function TransactionForm({ transaction }: Props) {
       <div className="flex gap-3 pt-2">
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => onClose ? onClose() : router.back()}
           className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
         >
           Cancelar
