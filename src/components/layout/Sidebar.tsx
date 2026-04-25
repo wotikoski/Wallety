@@ -53,7 +53,7 @@ export function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 pt-3 pb-2 overflow-y-auto">
+      <nav className="flex-1 px-3 pt-3 pb-2 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="mb-2">
           {navItems.map((item) => (
             <NavItem
