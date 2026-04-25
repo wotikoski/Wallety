@@ -273,8 +273,14 @@ function CategoryGroup({
 }) {
   return (
     <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
-      <div className={`px-6 py-3.5 border-b border-app-border ${color === "income" ? "bg-income-light" : "bg-expense-light"}`}>
-        <h2 className={`text-sm font-semibold ${color === "income" ? "text-income-dark" : "text-expense-dark"}`}>
+      <div
+        className="px-6 py-3.5 border-b border-app-border"
+        style={{ background: color === "income" ? "rgba(16,185,129,.1)" : "rgba(248,113,113,.1)" }}
+      >
+        <h2
+          className="text-sm font-semibold"
+          style={{ color: color === "income" ? "#059669" : "#ef4444" }}
+        >
           {title} · {categories.length}
         </h2>
       </div>
