@@ -342,12 +342,12 @@ export function RecurringClient() {
                       <td className="px-5 py-3.5 text-[13px] text-app-muted whitespace-nowrap">
                         {FREQ_LABEL[r.frequency]}
                         {r.frequency === "monthly" && r.dayOfMonth && (
-                          <span className="text-[#b0bac9]"> · dia {r.dayOfMonth === "last" ? "último" : r.dayOfMonth}</span>
+                          <span className="text-app-muted"> · dia {r.dayOfMonth === "last" ? "último" : r.dayOfMonth}</span>
                         )}
                       </td>
                       <td className="px-5 py-3.5 text-[13px] text-app-muted whitespace-nowrap">
                         {fmtDate(r.startDate)}
-                        {r.endDate && <p className="text-[11px] text-[#b0bac9]">até {fmtDate(r.endDate)}</p>}
+                        {r.endDate && <p className="text-[11px] text-app-muted">até {fmtDate(r.endDate)}</p>}
                       </td>
                       <td className="px-5 py-3.5 text-right">
                         <span className={`text-[13px] font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
@@ -606,7 +606,7 @@ function RecurringForm({
                 <option value="last">Último</option>
               </select>
               {(parseInt(dayOfMonth) >= 29 || dayOfMonth === "last") && (
-                <p className="text-[10px] text-[#B0BAC9] mt-1">
+                <p className="text-[10px] text-app-muted mt-1">
                   Em meses com menos dias, usa o último dia do mês.
                 </p>
               )}

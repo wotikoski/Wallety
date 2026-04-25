@@ -23,7 +23,7 @@ const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: "13px",
   fontWeight: 500,
-  color: "#B0BAC9",
+  color: "var(--color-muted)",
   marginBottom: "6px",
 };
 

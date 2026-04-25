@@ -72,7 +72,7 @@ export function LoginForm() {
         </div>
       )}
 
-      <label style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "#B0BAC9", marginBottom: "6px" }}>
+      <label style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "var(--color-muted)", marginBottom: "6px" }}>
         E-mail
       </label>
       <input
@@ -85,7 +85,7 @@ export function LoginForm() {
       />
       {errors.email && <p style={{ color: "#f87171", fontSize: "12px", marginTop: "-12px", marginBottom: "12px" }}>{errors.email.message}</p>}
 
-      <label style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "#B0BAC9", marginBottom: "6px" }}>
+      <label style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "var(--color-muted)", marginBottom: "6px" }}>
         Senha
       </label>
       <input

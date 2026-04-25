@@ -174,7 +174,7 @@ export function GroupsClient() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Groups list */}
         <div className="space-y-3">
-          <p className="text-xs font-medium text-[#B0BAC9] uppercase tracking-wider">Meus grupos</p>
+          <p className="text-xs font-medium text-app-muted uppercase tracking-wider">Meus grupos</p>
           {groups.length === 0 ? (
             <div className="bg-white rounded-[14px] border border-app-border p-8 text-center shadow-card">
               <Users size={32} className="text-slate-300 mx-auto mb-2" />
