@@ -149,7 +149,7 @@ export function GroupsClient() {
               />
             </div>
             <div className="flex gap-3">
-              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 rounded-[10px] border-[1.5px] border-app-border text-[13px] font-semibold text-app-muted hover:bg-white hover:text-app-text transition">Cancelar</button>
+              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition">Cancelar</button>
               <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
                 {createMutation.isPending ? "Criando..." : "Criar Grupo"}
               </button>
