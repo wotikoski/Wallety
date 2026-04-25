@@ -202,14 +202,14 @@ export function TransactionForm({ transaction, onClose }: Props) {
                 <button
                   type="button"
                   onClick={() => field.onChange("income")}
-                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "income" ? "bg-income text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"}`}
+                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "income" ? "bg-[rgba(16,185,129,.15)] text-income font-semibold" : "text-app-muted hover:bg-[var(--surface-raised)]"}`}
                 >
                   + Receita
                 </button>
                 <button
                   type="button"
                   onClick={() => field.onChange("expense")}
-                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "expense" ? "bg-expense text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"}`}
+                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "expense" ? "bg-[rgba(248,113,113,.15)] text-expense font-semibold" : "text-app-muted hover:bg-[var(--surface-raised)]"}`}
                 >
                   - Despesa
                 </button>
