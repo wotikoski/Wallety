@@ -117,7 +117,7 @@ export function ProfileClient() {
       </div>
 
       {/* Legal */}
-      <div className="bg-white dark:bg-blue-50 rounded-[14px] border border-app-border dark:border-blue-200 shadow-card overflow-hidden">
+      <div className="bg-[var(--surface-card)] dark:bg-blue-50 rounded-[14px] border border-app-border dark:border-blue-200 shadow-card overflow-hidden">
         <div className="px-6 py-3.5 border-b border-app-border dark:border-blue-200">
           <h2 className="text-sm font-semibold text-app-text dark:text-blue-800">Legal</h2>
         </div>
@@ -150,7 +150,7 @@ export function ProfileClient() {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-white dark:bg-blue-50 rounded-xl border border-red-200 dark:border-blue-200 shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface-card)] dark:bg-blue-50 rounded-xl border border-red-200 dark:border-blue-200 shadow-sm overflow-hidden">
         <div className="px-6 py-3.5 border-b border-red-100 dark:border-blue-200 bg-red-50/60 dark:bg-blue-50">
           <h2 className="text-sm font-semibold text-red-700">Zona de Perigo</h2>
         </div>
