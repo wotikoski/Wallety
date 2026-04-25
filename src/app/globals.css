@@ -2,53 +2,118 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 225 36% 96%; /* #f0f2f8 */
-    --foreground: 222 47% 6%; /* #0f172a */
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 6%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 6%;
-    --primary: 239 84% 67%; /* #6366f1 */
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 215 16% 47%; /* #64748b */
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 91% 71%; /* #f87171 */
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 20% 91%; /* #e2e5ef */
-    --input: 220 20% 91%;
-    --ring: 239 84% 67%;
-    --radius: 0.875rem; /* 14px */
-  }
+/* ══════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — light (default) & dark
+   All semantic colors are CSS custom properties; Tailwind tokens and
+   inline styles reference these so a single .dark class on <html>
+   switches the entire palette without touching component files.
+   ══════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Brand */
+  --brand:         #3630A0;
+  --brand-hover:   #2C2882;
+  --brand-rgb:     54, 48, 160;
 
-  .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 231 70% 63%;
-    --primary-foreground: 224 71.4% 4.1%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 231 70% 63%;
-  }
+  /* Surfaces */
+  --surface-bg:      #F3F2FB;
+  --surface-card:    #FFFFFF;
+  --surface-sidebar: #0D0B2A;
+  --surface-raised:  #F0EFF9;   /* subtle elevated – table stripes, sticky headers */
+  --surface-hover:   #E8E6F5;   /* hover state on interactive rows / buttons */
+  --surface-divider: #E8E6F4;   /* internal dividers */
+
+  /* Text */
+  --color-text:   #0F0D2E;
+  --color-muted:  #706DA0;
+
+  /* Border */
+  --color-border: #E2E0F4;
+
+  /* Semantic */
+  --color-income:  #059669;
+  --color-expense: #E0484A;
+  --color-amber:   #D97706;
+
+  /* Shadow */
+  --shadow-card: 0 1px 4px rgba(0,0,0,.04), 0 6px 20px rgba(0,0,0,.04);
+
+  /* ── shadcn / Radix CSS-var compatibility ──────────────────────── */
+  --background:          243 40% 97%;
+  --foreground:          243 55% 11%;
+  --card:                0 0% 100%;
+  --card-foreground:     243 55% 11%;
+  --popover:             0 0% 100%;
+  --popover-foreground:  243 55% 11%;
+  --primary:             243 54% 41%;
+  --primary-foreground:  210 20% 98%;
+  --secondary:           243 40% 93%;
+  --secondary-foreground:243 55% 11%;
+  --muted:               243 40% 93%;
+  --muted-foreground:    243 30% 54%;
+  --accent:              243 40% 93%;
+  --accent-foreground:   243 55% 11%;
+  --destructive:         359 68% 57%;
+  --destructive-foreground: 210 20% 98%;
+  --border:              243 30% 92%;
+  --input:               243 30% 92%;
+  --ring:                243 54% 41%;
+  --radius:              0.875rem;
 }
 
+.dark {
+  /* Brand */
+  --brand:         #7B75D4;
+  --brand-hover:   #9D99E8;
+  --brand-rgb:     123, 117, 212;
+
+  /* Surfaces */
+  --surface-bg:      #0D0B2A;
+  --surface-card:    #16133E;
+  --surface-sidebar: #0A0822;
+  --surface-raised:  #1C1845;
+  --surface-hover:   #221E4E;
+  --surface-divider: rgba(255,255,255,0.07);
+
+  /* Text */
+  --color-text:   #E8E6FF;
+  --color-muted:  #8B88C0;
+
+  /* Border */
+  --color-border: rgba(255,255,255,0.09);
+
+  /* Semantic */
+  --color-income:  #34D399;
+  --color-expense: #F87171;
+  --color-amber:   #FCD34D;
+
+  /* Shadow */
+  --shadow-card: 0 1px 4px rgba(0,0,0,.20), 0 6px 20px rgba(0,0,0,.28);
+
+  /* ── shadcn / Radix CSS-var compatibility ──────────────────────── */
+  --background:          243 52% 11%;
+  --foreground:          243 60% 96%;
+  --card:                243 51% 16%;
+  --card-foreground:     243 60% 96%;
+  --popover:             243 51% 16%;
+  --popover-foreground:  243 60% 96%;
+  --primary:             243 52% 64%;
+  --primary-foreground:  243 55% 10%;
+  --secondary:           243 50% 19%;
+  --secondary-foreground:243 60% 96%;
+  --muted:               243 50% 19%;
+  --muted-foreground:    243 30% 64%;
+  --accent:              243 50% 19%;
+  --accent-foreground:   243 60% 96%;
+  --destructive:         0 72% 70%;
+  --destructive-foreground: 210 20% 98%;
+  --border:              243 40% 22%;
+  --input:               243 50% 19%;
+  --ring:                243 52% 64%;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   BASE RESETS
+   ══════════════════════════════════════════════════════════════════════ */
 @layer base {
   * {
     @apply border-border;
@@ -59,75 +124,114 @@
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   DARK-MODE SURFACE OVERRIDES
+   Because many components hardcode bg-white / #f8f9fd etc., we patch
+   them globally here rather than touching every component file.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* White → card surface */
+.dark .bg-white { background-color: var(--surface-card) !important; }
+
+/* Subtle off-white surfaces (table stripes, sticky bars, dropdowns) */
+.dark .bg-\[\#f8f9fd\],
+.dark .bg-\[\#f4f5fb\],
+.dark .bg-\[\#f1f3f9\],
+.dark .bg-\[\#f0f1f8\],
+.dark .bg-\[\#f0f2f8\] { background-color: var(--surface-raised) !important; }
+
+/* App background */
+.dark .bg-app-bg { background-color: var(--surface-bg) !important; }
+
+/* Hover states */
+.dark .hover\:bg-\[\#f8f9fd\]:hover,
+.dark .hover\:bg-\[\#f4f5fb\]:hover,
+.dark .hover\:bg-\[\#eceef7\]:hover,
+.dark .hover\:bg-\[\#f1f3f9\]:hover { background-color: var(--surface-hover) !important; }
+
+/* Divider / border colours */
+.dark .border-\[\#f1f3f9\],
+.dark .border-\[\#e2e5ef\] { border-color: var(--surface-divider) !important; }
+.dark .divide-\[\#f1f3f9\] > * + *,
+.dark .divide-\[\#eff0f6\] > * + * { border-color: var(--surface-divider) !important; }
+
+/* Drilldown / inner panel bg */
+.dark .bg-\[\#f8f9fd\] { background-color: var(--surface-raised) !important; }
+
+/* Brand tint backgrounds */
+.dark .bg-\[rgba\(99\,102\,241\,\.06\)\],
+.dark .bg-\[rgba\(99\,102\,241\,\.03\)\] {
+  background-color: rgba(var(--brand-rgb), 0.10) !important;
+}
+.dark .hover\:bg-\[rgba\(99\,102\,241\,\.03\)\]:hover {
+  background-color: rgba(var(--brand-rgb), 0.10) !important;
+}
+
+/* Text overrides */
+.dark .text-\[\#64748b\] { color: var(--color-muted) !important; }
+.dark .text-\[\#94a3b8\] { color: var(--color-muted) !important; }
+
+/* Brand colour overrides (buttons, links, indicators) */
+.dark .bg-brand-600,
+.dark .bg-brand-500  { background-color: var(--brand) !important; }
+.dark .hover\:bg-brand-700:hover,
+.dark .hover\:bg-brand-600:hover { background-color: var(--brand-hover) !important; }
+.dark .text-brand-500,
+.dark .text-brand-600 { color: var(--brand) !important; }
+.dark .border-brand-500 { border-color: var(--brand) !important; }
+.dark .focus\:ring-brand-500:focus { --tw-ring-color: var(--brand) !important; }
+.dark .bg-brand-50  { background-color: rgba(var(--brand-rgb), 0.14) !important; }
+
+/* Income / expense text in dark mode */
+.dark .text-income { color: var(--color-income) !important; }
+.dark .text-expense { color: var(--color-expense) !important; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   PRINT STYLES
+   ══════════════════════════════════════════════════════════════════════ */
 @media print {
   @page {
     size: A4;
     margin: 18mm 15mm;
   }
-  .no-print {
-    display: none !important;
-  }
-  .print-only {
-    display: block !important;
-  }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
   html, body {
     @apply text-black bg-white;
     margin: 0 !important;
     padding: 0 !important;
   }
-  .sidebar, nav, header, button {
-    display: none !important;
-  }
-  /* Force content to start at top of page, not centered vertically.
-     Dashboard layout uses h-screen + overflow hidden which traps print
-     output in the middle of the page. Unset those during print. */
+  .sidebar, nav, header, button { display: none !important; }
   html, body, #__next, main, main *, body * {
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
     overflow: visible !important;
   }
-  main {
-    margin: 0 !important;
-    padding: 0 !important;
-    display: block !important;
-  }
-  /* Ensure colored backgrounds/charts print accurately */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  /* Avoid awkward page breaks inside cards, charts and tables */
-  .print-only > * {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-  table {
-    break-inside: auto;
-  }
-  tr {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
+  main { margin: 0 !important; padding: 0 !important; display: block !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .print-only > * { break-inside: avoid; page-break-inside: avoid; }
+  table { break-inside: auto; }
+  tr { break-inside: avoid; page-break-inside: avoid; }
 }
 
-.print-only {
-  display: none;
-}
+.print-only { display: none; }
 
 .font-brand {
   font-family: var(--font-brand), system-ui, sans-serif;
 }
 
-/* ── Chip filter buttons (Lançamentos, Relatórios, etc.) ─────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   CHIP FILTER BUTTONS
+   ══════════════════════════════════════════════════════════════════════ */
 .chip-filter {
   padding: 5px 14px;
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 600;
-  border: 1.5px solid #e2e5ef;
-  background: #fff;
-  color: #64748b;
+  border: 1.5px solid var(--color-border);
+  background: var(--surface-card);
+  color: var(--color-muted);
   cursor: pointer;
   transition: all .15s;
   white-space: nowrap;
@@ -135,20 +239,22 @@
   line-height: 1.4;
 }
 .chip-filter:hover {
-  border-color: #a5b4fc;
-  color: #4338ca;
+  border-color: var(--brand);
+  color: var(--brand);
 }
 .chip-filter.active {
-  background: #6366f1;
-  border-color: #6366f1;
+  background: var(--brand);
+  border-color: var(--brand);
   color: #fff;
 }
 
-/* ── Progress track/fill ─────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   PROGRESS TRACK / FILL
+   ══════════════════════════════════════════════════════════════════════ */
 .prog-track {
   height: 6px;
   border-radius: 9999px;
-  background: #f1f3f9;
+  background: var(--surface-raised);
   overflow: hidden;
 }
 .prog-fill {
@@ -157,17 +263,9 @@
   transition: width .5s cubic-bezier(.4,0,.2,1);
 }
 
-/* ---------------------------------------------------------------------------
-   Form control normalization
-   ---------------------------------------------------------------------------
-   iOS Safari renders <select>, <input type="date"/time/datetime-local>,
-   and some <input type="number"> with its own native chrome (rounded gray
-   pills) that ignores CSS border/background. This forces every form field
-   to share the same visual footprint across platforms.
-
-   Height is defined as a MIN (42px) so textareas and wrapped content can
-   grow, but compact controls stay aligned with text inputs on the same row.
-   -------------------------------------------------------------------------*/
+/* ══════════════════════════════════════════════════════════════════════
+   FORM CONTROLS
+   ══════════════════════════════════════════════════════════════════════ */
 @layer base {
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
   select,
@@ -176,15 +274,14 @@
     -moz-appearance: none;
     appearance: none;
     min-height: 0;
-    background-color: #ffffff;
+    background-color: var(--surface-card);
+    color: var(--color-text);
     box-sizing: border-box;
-    font-size: 0.875rem; /* 14px — matches text-sm */
+    font-size: 0.875rem;
     line-height: 1.35;
     font-family: inherit;
-    color: inherit;
   }
 
-  /* Selects need a custom chevron since appearance:none hides the native one. */
   select {
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
@@ -192,8 +289,6 @@
     padding-right: 2rem !important;
   }
 
-  /* Date/time pickers: remove any browser-imposed min-height so that
-     our h-9 (36px) class takes full effect. */
   input[type="date"],
   input[type="datetime-local"],
   input[type="time"],
@@ -202,11 +297,13 @@
     min-height: 0;
   }
 
-  /* Textareas should grow from the same baseline but still feel like a block.
-     Zoom-on-focus is already prevented by the root viewport meta
-     (maximumScale=1), so we keep the 14px size for visual consistency. */
   textarea {
     min-height: 64px;
     line-height: 1.45;
   }
+}
+
+/* Dark-mode: select arrow uses lighter stroke */
+.dark select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B88C0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
