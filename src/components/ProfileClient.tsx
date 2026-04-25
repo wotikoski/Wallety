@@ -102,9 +102,9 @@ export function ProfileClient() {
             <input
               value={user?.email}
               disabled
-              className="w-full px-3.5 py-2.5 rounded-lg border border-app-border text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-app-border text-sm bg-[var(--surface-raised)] text-app-muted cursor-not-allowed"
             />
-            <p className="text-xs text-slate-400 mt-1">O e-mail não pode ser alterado</p>
+            <p className="text-xs text-app-muted mt-1">O e-mail não pode ser alterado</p>
           </div>
           <button
             type="submit"

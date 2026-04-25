@@ -199,13 +199,13 @@ export function ReportsClient() {
         <div className="flex items-center gap-1">
           <button
             onClick={() => navigateMonth(-1)}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
           >
             <ChevronLeft size={14} />
           </button>
           <button
             onClick={() => navigateMonth(1)}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
           >
             <ChevronRight size={14} />
           </button>

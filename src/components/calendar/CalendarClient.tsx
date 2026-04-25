@@ -101,7 +101,7 @@ export function CalendarClient() {
         <div className="flex items-center gap-1">
           <button
             onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
           >
             <ChevronLeft size={15} />
           </button>
@@ -110,7 +110,7 @@ export function CalendarClient() {
           </span>
           <button
             onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-white hover:text-app-text transition"
+            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
           >
             <ChevronRight size={15} />
           </button>
@@ -123,7 +123,7 @@ export function CalendarClient() {
           {/* Weekday headers */}
           <div className="grid grid-cols-7 border-b border-app-border">
             {WEEKDAYS.map((d) => (
-              <div key={d} className="text-center text-xs font-medium text-slate-400 py-3">
+              <div key={d} className="text-center text-xs font-medium text-app-muted py-3">
                 {d}
               </div>
             ))}
@@ -145,9 +145,9 @@ export function CalendarClient() {
                 <button
                   key={day.toISOString()}
                   onClick={() => setSelectedDay(isSelected ? null : day)}
-                  className={`h-14 md:h-24 border-b border-r border-app-border p-1 md:p-2 text-left transition hover:bg-[var(--surface-raised)] ${isSelected ? "bg-brand-50 ring-1 ring-inset ring-brand-300" : ""}`}
+                  className={`h-14 md:h-24 border-b border-r border-app-border p-1 md:p-2 text-left transition hover:bg-[var(--surface-raised)] ${isSelected ? "bg-brand-50 ring-1 ring-inset ring-brand-500" : ""}`}
                 >
-                  <span className={`inline-flex w-6 h-6 items-center justify-center rounded-full text-xs font-medium mb-1 ${today ? "bg-brand-600 text-white" : "text-slate-600"}`}>
+                  <span className={`inline-flex w-6 h-6 items-center justify-center rounded-full text-xs font-medium mb-1 ${today ? "bg-brand-600 text-white" : "text-app-muted"}`}>
                     {format(day, "d")}
                   </span>
                   <div className="space-y-0.5 hidden md:block">
