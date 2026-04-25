@@ -151,7 +151,7 @@ export function CategoriesClient() {
 
       {/* Form */}
       {showForm && (
-        <div ref={formRef} className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
+        <div ref={formRef} className="bg-white rounded-xl border border-app-border p-5 shadow-card">
           <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Nova"} Categoria</h2>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
             <div>
@@ -273,7 +273,7 @@ function CategoryGroup({
 }) {
   return (
     <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
-      <div className={`px-6 py-3.5 border-b border-slate-100 ${color === "income" ? "bg-income-light" : "bg-expense-light"}`}>
+      <div className={`px-6 py-3.5 border-b border-app-border ${color === "income" ? "bg-income-light" : "bg-expense-light"}`}>
         <h2 className={`text-sm font-semibold ${color === "income" ? "text-income-dark" : "text-expense-dark"}`}>
           {title} · {categories.length}
         </h2>

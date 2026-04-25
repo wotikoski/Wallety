@@ -108,7 +108,7 @@ export function BanksClient() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
+        <div className="bg-white rounded-xl border border-app-border p-5 shadow-card">
           <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Novo"} Banco</h2>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-3 gap-4">
             <div className="col-span-2">
