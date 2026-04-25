@@ -348,7 +348,7 @@ export function TransactionForm({ transaction }: Props) {
           <input
             {...register("isPaid")}
             type="checkbox"
-            className="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+            className="w-4 h-4 rounded border-app-border text-brand-600 focus:ring-brand-500"
           />
           <span className="text-sm text-app-text">Marcar como pago</span>
         </label>
@@ -356,7 +356,7 @@ export function TransactionForm({ transaction }: Props) {
           <input
             {...register("isFixed")}
             type="checkbox"
-            className="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+            className="w-4 h-4 rounded border-app-border text-brand-600 focus:ring-brand-500"
           />
           <span className="text-sm text-app-text">Custo fixo</span>
         </label>

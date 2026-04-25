@@ -124,7 +124,7 @@ export function PaymentMethodsClient() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
+        <div className="bg-white rounded-xl border border-app-border p-5 shadow-card">
           <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Nova"} Forma de Pagamento</h2>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
             <div>
