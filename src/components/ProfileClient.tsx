@@ -78,8 +78,8 @@ export function ProfileClient() {
       </div>
 
       {/* Profile form */}
-      <div className="bg-white rounded-xl border border-slate-100 p-6 shadow-sm">
-        <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
+      <div className="bg-white rounded-xl border border-app-border p-6 shadow-sm">
+        <div className="flex items-center gap-4 mb-6 pb-6 border-b border-app-border">
           <div className="w-16 h-16 rounded-[14px] bg-brand-100 flex items-center justify-center text-2xl font-bold text-brand-700">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
@@ -94,7 +94,7 @@ export function ProfileClient() {
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome completo</label>
             <input
               {...register("name", { required: true })}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div>
@@ -118,7 +118,7 @@ export function ProfileClient() {
 
       {/* Legal */}
       <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
-        <div className="px-6 py-3.5 border-b border-slate-100">
+        <div className="px-6 py-3.5 border-b border-app-border">
           <h2 className="text-sm font-semibold text-slate-700">Legal</h2>
         </div>
         <div className="divide-y divide-[#f1f3f9]">
@@ -150,20 +150,20 @@ export function ProfileClient() {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
-        <div className="px-6 py-3.5 border-b border-[#f1f3f9]">
-          <h2 className="text-sm font-semibold text-app-text">Zona de Perigo</h2>
+      <div className="bg-white rounded-xl border border-red-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-3.5 border-b border-red-100 bg-red-50/60">
+          <h2 className="text-sm font-semibold text-red-700">Zona de Perigo</h2>
         </div>
         <div className="px-6 py-5 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-app-text">Excluir minha conta</p>
-            <p className="text-xs text-app-muted mt-0.5">
+            <p className="text-sm font-medium text-slate-800">Excluir minha conta</p>
+            <p className="text-xs text-slate-400 mt-0.5">
               Todos os seus dados serão removidos permanentemente. Esta ação não pode ser desfeita.
             </p>
           </div>
           <button
             onClick={() => { setConfirmEmail(""); setShowDeleteDialog(true); }}
-            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-app-muted border border-app-border rounded-lg hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 transition"
           >
             <Trash2 size={14} />
             Excluir conta
