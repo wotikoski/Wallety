@@ -300,7 +300,7 @@ function BudgetRow({
             )}
             <div className="prog-fill" style={{ width: `${Math.min(100, pct)}%`, background: barColor }} />
           </div>
-          <p className="text-[11px] mt-1.5 font-medium" style={{ color: state === "over" ? "#f87171" : state === "warn" ? "#f59e0b" : "#94a3b8" }}>
+          <p className="text-[11px] mt-1.5 font-medium" style={{ color: state === "over" ? "#f87171" : state === "warn" ? "#f59e0b" : "#B0BAC9" }}>
             {Math.round(pct)}%
             {state === "over"
               ? ` · ${formatCurrency(spent - planned)} acima`

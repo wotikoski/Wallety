@@ -279,7 +279,7 @@ export function ReportsClient() {
                       return (
                         <text x={x + width + 10} y={y + height / 2} fill="#64748b" fontSize={12} dominantBaseline="middle">
                           {formatCurrency(value)}
-                          <tspan fill="#94a3b8" fontSize={11}> · {item.percentage.toFixed(1)}%</tspan>
+                          <tspan fill="#B0BAC9" fontSize={11}> · {item.percentage.toFixed(1)}%</tspan>
                         </text>
                       );
                     }}

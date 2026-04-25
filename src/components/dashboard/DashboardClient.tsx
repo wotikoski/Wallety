@@ -214,8 +214,8 @@ export function DashboardClient() {
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="35%">
                 <CartesianGrid vertical={false} stroke="#f1f3f9" />
-                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} interval={0} />
-                <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#B0BAC9" }} axisLine={false} tickLine={false} interval={0} />
+                <YAxis tick={{ fontSize: 11, fill: "#B0BAC9" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
                 <Tooltip
                   formatter={(v: number) => formatCurrency(v)}
                   contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}

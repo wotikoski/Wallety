@@ -606,7 +606,7 @@ function RecurringForm({
                 <option value="last">Último</option>
               </select>
               {(parseInt(dayOfMonth) >= 29 || dayOfMonth === "last") && (
-                <p className="text-[10px] text-slate-400 mt-1">
+                <p className="text-[10px] text-[#B0BAC9] mt-1">
                   Em meses com menos dias, usa o último dia do mês.
                 </p>
               )}
