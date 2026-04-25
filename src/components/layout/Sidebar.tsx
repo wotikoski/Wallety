@@ -78,23 +78,13 @@ export function Sidebar() {
         </div>
       </nav>
 
-      {/* Footer: author + logout */}
-      <div className="h-14 flex items-center justify-between gap-2 px-4 border-t border-[#2B284F] shrink-0">
-        <div>
-          <p className="text-white/25 text-[10px] leading-tight">
-            Feito por <span className="text-white/35 font-medium">Leonardo Schneider</span>
-          </p>
-          <div className="flex items-center gap-2 text-[10px] mt-0.5">
-            <a href="mailto:leonardoschneider@outlook.pt" className="text-white/25 hover:text-white/50 transition">E-mail</a>
-            <span className="text-white/20">·</span>
-            <a href="https://t.me/leonardoschneider" target="_blank" rel="noopener noreferrer" className="text-white/25 hover:text-white/50 transition">Telegram</a>
-          </div>
-        </div>
+      {/* Logout */}
+      <div className="h-14 flex items-center px-3 border-t border-[#2B284F] shrink-0">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[10px] text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition text-[12px] font-medium shrink-0"
+          className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition text-[13px] font-medium"
         >
-          <LogOut size={14} />
+          <LogOut size={15} />
           <span>Sair</span>
         </button>
       </div>
