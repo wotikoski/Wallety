@@ -263,7 +263,7 @@ export function TransactionsClient() {
         <div className="flex items-center gap-2">
           <a
             href={`/api/transactions/export?${params}`}
-            className="flex items-center gap-2 h-9 px-3.5 rounded-[10px] border-[1.5px] border-app-border text-[13px] font-semibold text-app-muted hover:bg-white hover:text-app-text transition"
+            className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
             title="Baixar CSV com os filtros atuais"
           >
             <Download size={16} />

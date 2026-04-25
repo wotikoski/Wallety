@@ -376,7 +376,7 @@ export function TransactionForm({ transaction }: Props) {
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex-1 h-9 px-4 rounded-[10px] border-[1.5px] border-app-border text-[13px] font-semibold text-app-muted hover:bg-white hover:text-app-text transition"
+          className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
         >
           Cancelar
         </button>

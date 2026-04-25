@@ -193,7 +193,7 @@ export function RecurringClient() {
             onClick={() => materializeMutation.mutate()}
             disabled={materializeMutation.isPending}
             title="Gerar pendentes"
-            className="flex items-center gap-2 h-9 px-3.5 rounded-[10px] border-[1.5px] border-app-border text-[13px] font-semibold text-app-muted hover:bg-white hover:text-app-text transition disabled:opacity-60"
+            className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition disabled:opacity-60"
           >
             <Play size={14} />
             <span className="hidden sm:inline">
@@ -639,7 +639,7 @@ function RecurringForm({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 h-9 px-4 rounded-[10px] border-[1.5px] border-app-border text-[13px] font-semibold text-app-muted hover:bg-white hover:text-app-text transition"
+            className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
           >
             Cancelar
           </button>
