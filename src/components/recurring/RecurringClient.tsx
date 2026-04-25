@@ -527,8 +527,8 @@ function RecurringForm({
               className={`flex-1 h-9 px-3 text-sm rounded-lg border ${
                 type === t
                   ? t === "expense"
-                    ? "bg-expense-light text-expense border-expense/30 font-medium"
-                    : "bg-income-light text-income border-income/30 font-medium"
+                    ? "bg-[rgba(248,113,113,.15)] text-expense border-[rgba(248,113,113,.3)] font-semibold"
+                    : "bg-[rgba(16,185,129,.15)] text-income border-[rgba(16,185,129,.3)] font-semibold"
                   : "bg-[var(--surface-raised)] text-app-muted border-app-border"
               }`}
             >
