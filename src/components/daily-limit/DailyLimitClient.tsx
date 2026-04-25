@@ -84,17 +84,17 @@ export function DailyLimitClient() {
 
           {/* Next month alert */}
           {hasReserve && (
-            <div className="bg-amber-50 dark:bg-[var(--surface-raised)] border border-amber-200 dark:border-app-border rounded-[14px] p-4">
+            <div className="bg-amber-50 dark:bg-blue-50 border border-amber-200 dark:border-blue-200 rounded-[14px] p-4">
               <div className="flex gap-3">
-                <CalendarClock size={16} className="text-amber-600 dark:text-app-muted shrink-0 mt-0.5" />
+                <CalendarClock size={16} className="text-amber-600 dark:text-blue-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[13px] font-semibold text-amber-800 dark:text-app-text">
+                  <p className="text-[13px] font-semibold text-amber-800 dark:text-blue-800">
                     Déficit previsto em {nextMonthName}: {formatCurrency(data?.nextMonthDeficit ?? 0)}
                   </p>
-                  <p className="text-[12px] text-amber-700 dark:text-app-muted mt-0.5">
+                  <p className="text-[12px] text-amber-700 dark:text-blue-700 mt-0.5">
                     Receitas lançadas: {formatCurrency(data?.nextMonthIncome ?? 0)} · Despesas lançadas: {formatCurrency(data?.nextMonthExpenses ?? 0)}
                   </p>
-                  <p className="text-[12px] text-amber-600 dark:text-app-muted mt-1">
+                  <p className="text-[12px] text-amber-600 dark:text-blue-600 mt-1">
                     Este valor já está sendo reservado do seu limite atual.
                   </p>
                 </div>
@@ -139,9 +139,9 @@ export function DailyLimitClient() {
           </div>
 
           {(data?.actualIncome ?? 0) === 0 && (
-            <div className="bg-amber-50 dark:bg-[var(--surface-raised)] border border-amber-200 dark:border-app-border rounded-[14px] p-4 text-[13px] text-amber-700 dark:text-app-muted">
+            <div className="bg-amber-50 dark:bg-blue-50 border border-amber-200 dark:border-blue-200 rounded-[14px] p-4 text-[13px] text-amber-700 dark:text-blue-700">
               Nenhuma receita lançada para {MONTHS[month - 1]} de {year}. Adicione receitas em{" "}
-              <strong className="text-amber-800 dark:text-app-text">Lançamentos</strong> para calcular seu limite diário.
+              <strong className="text-amber-800 dark:text-blue-800">Lançamentos</strong> para calcular seu limite diário.
             </div>
           )}
         </>
