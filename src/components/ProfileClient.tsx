@@ -102,7 +102,7 @@ export function ProfileClient() {
             <input
               value={user?.email}
               disabled
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-app-border text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
             />
             <p className="text-xs text-slate-400 mt-1">O e-mail não pode ser alterado</p>
           </div>
@@ -163,7 +163,7 @@ export function ProfileClient() {
           </div>
           <button
             onClick={() => { setConfirmEmail(""); setShowDeleteDialog(true); }}
-            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition"
+            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-app-border rounded-lg hover:bg-red-50 transition"
           >
             <Trash2 size={14} />
             Excluir conta
