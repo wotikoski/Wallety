@@ -50,7 +50,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
         onClick={onClose}
       />
       <div className="fixed bottom-0 left-0 right-0 bg-sidebar-bg rounded-t-2xl z-50 md:hidden pb-safe max-h-[85vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] sticky top-0 bg-sidebar-bg">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#2B284F] sticky top-0 bg-sidebar-bg">
           <img src="/logo-white.png" alt="Wallety" className="h-7 w-auto block" />
           <button onClick={onClose} className="text-white/40 p-1">
             <X size={20} />
@@ -63,7 +63,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
           ))}
         </nav>
 
-        <div className="px-4 pb-2 pt-3 border-t border-white/[0.06]">
+        <div className="px-4 pb-2 pt-3 border-t border-[#2B284F]">
           <p className="text-slate-500 text-xs font-medium px-3 mb-2 uppercase tracking-wider">
             Configurações
           </p>
@@ -74,7 +74,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
           </nav>
         </div>
 
-        <div className="px-4 pb-6 border-t border-white/[0.06] pt-3 mt-2">
+        <div className="px-4 pb-6 border-t border-[#2B284F] pt-3 mt-2">
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-3 py-3 rounded-lg text-white/40 text-sm"
@@ -104,7 +104,7 @@ function DrawerItem({
       onClick={onClose}
       className={cn(
         "flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition",
-        active ? "bg-[rgba(97,115,244,0.18)] text-[#818cf8] font-semibold" : "text-white/40",
+        active ? "bg-[rgba(123,117,212,0.18)] text-[#7B75D4] font-semibold" : "text-white/40",
       )}
     >
       <item.icon size={18} />

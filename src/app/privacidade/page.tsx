@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ForceLight } from "@/components/ForceLight";
 
 export const metadata: Metadata = {
   title: "Política de Privacidade – Wallety",
@@ -42,7 +43,8 @@ const sections = [
 
 export default function PrivacidadePage() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50" style={{ colorScheme: "light" }}>
+      <ForceLight />
       {/* Header */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center gap-3">
