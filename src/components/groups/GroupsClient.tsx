@@ -239,7 +239,7 @@ export function GroupsClient() {
 
             {/* Invite section */}
             <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
-              <h3 className="text-sm font-semibold text-app-text mb-3">Convidar membro</h3>
+              <h3 className="text-base font-semibold text-app-text mb-3">Convidar membro</h3>
               <div className="flex gap-2">
                 <input
                   type="email"
