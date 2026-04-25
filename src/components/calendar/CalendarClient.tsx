@@ -183,9 +183,9 @@ export function CalendarClient() {
               <h2 className="text-base font-semibold text-app-text mb-1">
                 {format(selectedDay, "dd 'de' MMMM", { locale: ptBR })}
               </h2>
-              <p className="text-xs text-[#706DA0] dark:text-[#B0BAC9] mb-4">{selectedTxns.length} lançamento(s)</p>
+              <p className="text-xs text-app-muted mb-4">{selectedTxns.length} lançamento(s)</p>
               {selectedTxns.length === 0 ? (
-                <p className="text-sm text-[#706DA0] dark:text-[#B0BAC9]">Nenhum lançamento neste dia</p>
+                <p className="text-sm text-app-muted">Nenhum lançamento neste dia</p>
               ) : (
                 <div className="space-y-2">
                   {selectedTxns.map((t) => (
@@ -202,9 +202,9 @@ export function CalendarClient() {
                           {t.description}
                         </p>
                         {t.notes && (
-                          <p className="text-xs text-[#706DA0] dark:text-[#B0BAC9] truncate mt-0.5">{t.notes}</p>
+                          <p className="text-xs text-app-muted truncate mt-0.5">{t.notes}</p>
                         )}
-                        <span className={`text-xs ${t.projected ? "text-[#706DA0] dark:text-[#B0BAC9]" : t.isPaid ? "text-income" : "text-[#706DA0] dark:text-[#B0BAC9]"}`}>
+                        <span className={`text-xs ${t.projected ? "text-app-muted" : t.isPaid ? "text-income" : "text-app-muted"}`}>
                           {t.projected ? "Previsto" : t.isPaid ? "Pago" : "Pendente"}
                         </span>
                       </div>
@@ -232,7 +232,7 @@ export function CalendarClient() {
               )}
             </>
           ) : (
-            <div className="h-full flex items-center justify-center text-[#706DA0] dark:text-[#B0BAC9] text-sm py-12">
+            <div className="h-full flex items-center justify-center text-app-muted text-sm py-12">
               Clique em um dia para ver os lançamentos
             </div>
           )}

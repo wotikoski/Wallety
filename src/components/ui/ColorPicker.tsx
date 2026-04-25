@@ -54,7 +54,7 @@ export function ColorPicker({
           <button
             type="button"
             onClick={onSuggest}
-            className="text-xs text-[#B0BAC9] hover:text-brand-600 inline-flex items-center gap-1"
+            className="text-xs text-app-muted hover:text-brand-600 inline-flex items-center gap-1"
             title="Sugerir outra cor"
           >
             <Shuffle size={11} />

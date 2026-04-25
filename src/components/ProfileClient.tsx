@@ -68,7 +68,7 @@ export function ProfileClient() {
   const user = data?.user;
   const emailMatches = confirmEmail.trim().toLowerCase() === user?.email?.toLowerCase();
 
-  if (isLoading) return <div className="text-[#B0BAC9] text-sm">Carregando...</div>;
+  if (isLoading) return <div className="text-app-muted text-sm">Carregando...</div>;
 
   return (
     <div className="space-y-6 max-w-lg animate-fade-in">
