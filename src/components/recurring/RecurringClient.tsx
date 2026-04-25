@@ -197,7 +197,7 @@ export function RecurringClient() {
           >
             <Play size={14} />
             <span className="hidden sm:inline">
-              {materializeMutation.isPending ? "Gerando..." : "Gerar pendentes"}
+              {materializeMutation.isPending ? "Gerando..." : "Gerar Pendentes"}
             </span>
           </button>
           <button
@@ -206,7 +206,7 @@ export function RecurringClient() {
             className="hidden sm:flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
           >
             <Plus size={14} />
-            Nova recorrência
+            Nova Recorrência
           </button>
         </div>
       </div>
