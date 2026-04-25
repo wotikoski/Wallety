@@ -48,7 +48,7 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex w-60 bg-sidebar-bg flex-col h-screen sticky top-0 shrink-0 overflow-x-hidden">
       {/* Logo */}
-      <div className="px-5 py-4 border-b border-[#2B284F]">
+      <div className="h-14 flex items-center px-5 border-b border-[#2B284F] shrink-0">
         <img src="/logo-white.png" alt="Wallety" className="h-8 w-auto block" />
       </div>
 
@@ -78,25 +78,23 @@ export function Sidebar() {
         </div>
       </nav>
 
-      {/* Author */}
-      <div className="px-5 py-2 border-t border-[#2B284F]">
-        <p className="text-white/25 text-[10px] mb-1">
-          Feito por <span className="text-white/35 font-medium">Leonardo Schneider</span>
-        </p>
-        <div className="flex items-center gap-2 text-[10px]">
-          <a href="mailto:leonardoschneider@outlook.pt" className="text-white/25 hover:text-white/50 transition">E-mail</a>
-          <span className="text-white/20">·</span>
-          <a href="https://t.me/leonardoschneider" target="_blank" rel="noopener noreferrer" className="text-white/25 hover:text-white/50 transition">Telegram</a>
+      {/* Footer: author + logout */}
+      <div className="h-14 flex items-center justify-between gap-2 px-4 border-t border-[#2B284F] shrink-0">
+        <div>
+          <p className="text-white/25 text-[10px] leading-tight">
+            Feito por <span className="text-white/35 font-medium">Leonardo Schneider</span>
+          </p>
+          <div className="flex items-center gap-2 text-[10px] mt-0.5">
+            <a href="mailto:leonardoschneider@outlook.pt" className="text-white/25 hover:text-white/50 transition">E-mail</a>
+            <span className="text-white/20">·</span>
+            <a href="https://t.me/leonardoschneider" target="_blank" rel="noopener noreferrer" className="text-white/25 hover:text-white/50 transition">Telegram</a>
+          </div>
         </div>
-      </div>
-
-      {/* Logout */}
-      <div className="px-3 pb-2 border-t border-[#2B284F] pt-2">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition text-[13px] font-medium"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[10px] text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition text-[12px] font-medium shrink-0"
         >
-          <LogOut size={15} />
+          <LogOut size={14} />
           <span>Sair</span>
         </button>
       </div>
