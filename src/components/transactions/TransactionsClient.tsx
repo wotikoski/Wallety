@@ -616,7 +616,7 @@ export function TransactionsClient() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-md max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             <TransactionForm onClose={() => setShowNewForm(false)} />
           </div>

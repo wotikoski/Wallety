@@ -114,7 +114,7 @@ export function BanksClient() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold text-app-text">{editing ? "Editar" : "Novo"} Banco</h2>
