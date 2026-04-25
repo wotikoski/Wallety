@@ -654,12 +654,12 @@ function InstallmentDeleteDialog({
       <div
         role="dialog"
         aria-modal="true"
-        className="bg-white rounded-[14px] shadow-card w-full max-w-md overflow-hidden"
+        className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
-          <h2 className="text-base font-semibold text-slate-900">Excluir parcelamento</h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <h2 className="text-base font-semibold text-app-text">Excluir parcelamento</h2>
+          <p className="text-sm text-app-muted mt-1">
             &quot;{transaction.description}&quot; faz parte de um parcelamento de {total} parcelas. O que você quer excluir?
           </p>
           <div className="mt-4 space-y-2">
@@ -669,7 +669,7 @@ function InstallmentDeleteDialog({
                 className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
                   scope === opt.value
                     ? "border-brand-500 bg-brand-50"
-                    : "border-slate-200 hover:bg-slate-50"
+                    : "border-app-border hover:bg-[var(--surface-raised)]"
                 }`}
               >
                 <input
@@ -681,18 +681,18 @@ function InstallmentDeleteDialog({
                   className="mt-1 accent-brand-600"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800">{opt.label}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{opt.hint}</p>
+                  <p className="text-sm font-medium text-app-text">{opt.label}</p>
+                  <p className="text-xs text-app-muted mt-0.5">{opt.hint}</p>
                 </div>
               </label>
             ))}
           </div>
         </div>
-        <div className="flex items-center justify-end gap-2 px-6 py-4 bg-slate-50 border-t border-slate-100">
+        <div className="flex items-center justify-end gap-2 px-6 py-4 bg-[var(--surface-raised)] border-t border-app-border">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-app-muted hover:bg-[var(--surface-hover)] hover:text-app-text rounded-lg transition disabled:opacity-50"
           >
             Cancelar
           </button>

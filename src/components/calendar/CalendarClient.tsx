@@ -180,7 +180,7 @@ export function CalendarClient() {
         <div className="bg-white rounded-[14px] border border-app-border shadow-card p-5">
           {selectedDay ? (
             <>
-              <h2 className="text-base font-semibold text-slate-800 mb-1">
+              <h2 className="text-base font-semibold text-app-text mb-1">
                 {format(selectedDay, "dd 'de' MMMM", { locale: ptBR })}
               </h2>
               <p className="text-xs text-slate-400 mb-4">{selectedTxns.length} lançamento(s)</p>
@@ -198,7 +198,7 @@ export function CalendarClient() {
                       }`}
                     >
                       <div className="min-w-0 flex-1">
-                        <p className={`text-sm font-medium truncate ${t.projected ? "text-slate-500 italic" : "text-slate-800"}`}>
+                        <p className={`text-sm font-medium truncate ${t.projected ? "text-app-muted italic" : "text-app-text"}`}>
                           {t.description}
                         </p>
                         {t.notes && (

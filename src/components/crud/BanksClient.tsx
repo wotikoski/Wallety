@@ -109,7 +109,7 @@ export function BanksClient() {
 
       {showForm && (
         <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-800 mb-4">{editing ? "Editar" : "Novo"} Banco</h2>
+          <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Novo"} Banco</h2>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-3 gap-4">
             <div className="col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome do banco</label>
@@ -123,7 +123,7 @@ export function BanksClient() {
                     if (brand) setValue("color", brand);
                   }
                 }}
-                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
                 placeholder="Ex: Nubank"
               />
             </div>
@@ -131,7 +131,7 @@ export function BanksClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Código COMPE</label>
               <input
                 {...register("code")}
-                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
                 placeholder="260"
               />
             </div>
@@ -180,7 +180,7 @@ export function BanksClient() {
                 <p className="text-[13px] font-semibold text-app-text">{bank.name}</p>
                 {bank.code && <p className="text-[11px] text-app-muted">Cód. {bank.code}</p>}
               </div>
-              {bank.isDefault && <span className="text-[11px] text-app-muted bg-slate-100 px-2 py-0.5 rounded-full">Padrão</span>}
+              {bank.isDefault && <span className="text-[11px] text-app-muted bg-[var(--surface-raised)] px-2 py-0.5 rounded-full">Padrão</span>}
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => {
