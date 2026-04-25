@@ -180,7 +180,7 @@ export function TransactionForm({ transaction }: Props) {
     <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="bg-white rounded-[14px] border border-app-border shadow-card p-6 space-y-5">
       {/* Type toggle */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">Tipo</label>
+        <label className="block text-sm font-medium text-app-text mb-2">Tipo</label>
         <div className="flex rounded-lg border border-app-border overflow-hidden">
           <Controller
             control={control}
@@ -209,7 +209,7 @@ export function TransactionForm({ transaction }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Data</label>
+          <label className="block text-sm font-medium text-app-text mb-1.5">Data</label>
           <input
             {...register("date")}
             type="date"
@@ -218,7 +218,7 @@ export function TransactionForm({ transaction }: Props) {
           {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Categoria</label>
+          <label className="block text-sm font-medium text-app-text mb-1.5">Categoria</label>
           {/* Controlled so the rendered value always tracks RHF state, even
               when the categories list loads asynchronously after mount. */}
           <Controller
@@ -242,7 +242,7 @@ export function TransactionForm({ transaction }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Descrição</label>
+        <label className="block text-sm font-medium text-app-text mb-1.5">Descrição</label>
         <input
           {...register("description")}
           type="text"
@@ -254,7 +254,7 @@ export function TransactionForm({ transaction }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Valor total (R$)</label>
+          <label className="block text-sm font-medium text-app-text mb-1.5">Valor total (R$)</label>
           <input
             {...register("value", { valueAsNumber: true })}
             type="number"
@@ -266,7 +266,7 @@ export function TransactionForm({ transaction }: Props) {
           {errors.value && <p className="text-red-500 text-xs mt-1">{errors.value.message}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Forma de Pagamento</label>
+          <label className="block text-sm font-medium text-app-text mb-1.5">Forma de Pagamento</label>
           <Controller
             control={control}
             name="paymentMethodId"
@@ -288,7 +288,7 @@ export function TransactionForm({ transaction }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Banco</label>
+        <label className="block text-sm font-medium text-app-text mb-1.5">Banco</label>
         <Controller
           control={control}
           name="bankId"
@@ -350,7 +350,7 @@ export function TransactionForm({ transaction }: Props) {
             type="checkbox"
             className="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
           />
-          <span className="text-sm text-slate-700">Marcar como pago</span>
+          <span className="text-sm text-app-text">Marcar como pago</span>
         </label>
         <label className="flex items-center gap-2.5 cursor-pointer">
           <input
@@ -358,12 +358,12 @@ export function TransactionForm({ transaction }: Props) {
             type="checkbox"
             className="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
           />
-          <span className="text-sm text-slate-700">Custo fixo</span>
+          <span className="text-sm text-app-text">Custo fixo</span>
         </label>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Notas (opcional)</label>
+        <label className="block text-sm font-medium text-app-text mb-1.5">Notas (opcional)</label>
         <textarea
           {...register("notes")}
           rows={2}

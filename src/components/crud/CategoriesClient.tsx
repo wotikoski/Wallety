@@ -155,7 +155,7 @@ export function CategoriesClient() {
           <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Nova"} Categoria</h2>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome</label>
+              <label className="block text-sm font-medium text-app-text mb-1.5">Nome</label>
               <input
                 {...register("name", { required: true })}
                 className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
@@ -163,7 +163,7 @@ export function CategoriesClient() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo</label>
+              <label className="block text-sm font-medium text-app-text mb-1.5">Tipo</label>
               <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
                 <option value="expense">Despesa</option>
                 <option value="income">Receita</option>
@@ -171,7 +171,7 @@ export function CategoriesClient() {
               </select>
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-2">Ícone</label>
+              <label className="block text-sm font-medium text-app-text mb-2">Ícone</label>
               <div className="flex items-start gap-3">
                 {/* Preview */}
                 <div

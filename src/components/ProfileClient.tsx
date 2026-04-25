@@ -91,14 +91,14 @@ export function ProfileClient() {
 
         <form onSubmit={handleSubmit((d) => updateMutation.mutate(d))} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome completo</label>
+            <label className="block text-sm font-medium text-app-text mb-1.5">Nome completo</label>
             <input
               {...register("name", { required: true })}
               className="w-full px-3.5 py-2.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">E-mail</label>
+            <label className="block text-sm font-medium text-app-text mb-1.5">E-mail</label>
             <input
               value={user?.email}
               disabled
@@ -119,7 +119,7 @@ export function ProfileClient() {
       {/* Legal */}
       <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
         <div className="px-6 py-3.5 border-b border-app-border">
-          <h2 className="text-sm font-semibold text-slate-700">Legal</h2>
+          <h2 className="text-sm font-semibold text-app-text">Legal</h2>
         </div>
         <div className="divide-y divide-app-border">
           <Link

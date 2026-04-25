@@ -128,7 +128,7 @@ export function PaymentMethodsClient() {
           <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Nova"} Forma de Pagamento</h2>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome</label>
+              <label className="block text-sm font-medium text-app-text mb-1.5">Nome</label>
               <input
                 {...register("name", { required: true })}
                 className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
@@ -136,7 +136,7 @@ export function PaymentMethodsClient() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo</label>
+              <label className="block text-sm font-medium text-app-text mb-1.5">Tipo</label>
               <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
                 {PAYMENT_METHOD_TYPES.map((t) => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -144,7 +144,7 @@ export function PaymentMethodsClient() {
               </select>
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Banco vinculado (opcional)</label>
+              <label className="block text-sm font-medium text-app-text mb-1.5">Banco vinculado (opcional)</label>
               <select {...register("bankId")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
                 <option value="">Sem banco vinculado</option>
                 {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
@@ -153,7 +153,7 @@ export function PaymentMethodsClient() {
             {watchedType === "credit_card" && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Dia de fechamento</label>
+                  <label className="block text-sm font-medium text-app-text mb-1.5">Dia de fechamento</label>
                   <input
                     {...register("closingDay")}
                     type="number"
@@ -165,7 +165,7 @@ export function PaymentMethodsClient() {
                   <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura fecha (1–31)</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Dia de vencimento</label>
+                  <label className="block text-sm font-medium text-app-text mb-1.5">Dia de vencimento</label>
                   <input
                     {...register("dueDay")}
                     type="number"
