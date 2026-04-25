@@ -75,7 +75,7 @@ export function DailyLimitClient() {
               por dia · {data?.daysRemaining ?? 0} dias restantes
             </p>
             {hasReserve && (
-              <div className="mt-3 pt-3 border-t border-[#2B284F] flex items-center gap-2 text-[12px] text-white/80">
+              <div className="mt-3 pt-3 border-t border-white/30 flex items-center gap-2 text-[12px] text-white/80">
                 <CalendarClock size={13} />
                 <span>Inclui reserva de {formatCurrency(data?.reserveNeeded ?? 0)} para {nextMonthName}</span>
               </div>

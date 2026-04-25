@@ -121,7 +121,7 @@ export function GroupsClient() {
         <button
           onClick={() => setShowForm(!showForm)}
           title="Novo Grupo"
-          className="flex items-center gap-2 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Novo Grupo</span>
@@ -149,7 +149,7 @@ export function GroupsClient() {
               />
             </div>
             <div className="flex gap-3">
-              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 border border-app-border text-slate-600 rounded-lg text-sm hover:bg-[var(--surface-raised)] transition">Cancelar</button>
+              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 rounded-[10px] border-[1.5px] border-app-border text-[13px] font-semibold text-app-muted hover:bg-white hover:text-app-text transition">Cancelar</button>
               <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
                 {createMutation.isPending ? "Criando..." : "Criar Grupo"}
               </button>
@@ -251,7 +251,7 @@ export function GroupsClient() {
                 <button
                   onClick={() => inviteMutation.mutate()}
                   disabled={!inviteEmail || inviteMutation.isPending}
-                  className="flex items-center gap-1.5 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-4 h-9 rounded-lg transition disabled:opacity-50"
+                  className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 h-9 rounded-lg transition disabled:opacity-50"
                 >
                   <UserPlus size={14} />
                   Convidar

@@ -116,7 +116,7 @@ export function PaymentMethodsClient() {
         <button
           onClick={() => { setShowForm(!showForm); setEditing(null); reset(); }}
           title="Nova Forma de Pagamento"
-          className="flex items-center gap-2 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Nova Forma</span>
@@ -181,14 +181,14 @@ export function PaymentMethodsClient() {
             <button
               type="button"
               onClick={() => { setShowForm(false); setEditing(null); }}
-              className="h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-[#f8f9fd]transition"
+              className="h-9 px-4 rounded-[10px] border-[1.5px] border-app-border text-[13px] font-semibold text-app-muted hover:bg-white hover:text-app-text transition"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={saveMutation.isPending}
-              className="h-9 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
+              className="h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
             >
               {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
             </button>

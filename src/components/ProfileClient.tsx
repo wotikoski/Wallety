@@ -150,20 +150,20 @@ export function ProfileClient() {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-white rounded-xl border border-red-100 shadow-sm overflow-hidden">
-        <div className="px-6 py-3.5 border-b border-red-100 bg-red-50/60">
+      <div className="bg-white rounded-xl border border-[#2B284F] shadow-sm overflow-hidden">
+        <div className="px-6 py-3.5 border-b border-[#2B284F] bg-red-50/60">
           <h2 className="text-sm font-semibold text-red-700">Zona de Perigo</h2>
         </div>
         <div className="px-6 py-5 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-slate-800">Excluir minha conta</p>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-sm font-medium text-app-text">Excluir minha conta</p>
+            <p className="text-xs text-app-muted mt-0.5">
               Todos os seus dados serão removidos permanentemente. Esta ação não pode ser desfeita.
             </p>
           </div>
           <button
             onClick={() => { setConfirmEmail(""); setShowDeleteDialog(true); }}
-            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 transition"
+            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition"
           >
             <Trash2 size={14} />
             Excluir conta
