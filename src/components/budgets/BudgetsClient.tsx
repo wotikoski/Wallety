@@ -268,7 +268,7 @@ function BudgetRow({
             onChange={(e) => setDraft(e.target.value)}
             onBlur={commit}
             onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
-            className="w-32 px-2.5 h-8 text-[13px] font-mono border-[1.5px] border-brand-400 rounded-[8px] focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-32 px-2.5 h-8 text-[13px] font-mono border-[1.5px] border-brand-500 rounded-[8px] focus:outline-none focus:ring-2 focus:ring-brand-500"
             placeholder="0,00"
           />
         ) : (
