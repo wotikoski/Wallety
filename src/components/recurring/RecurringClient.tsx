@@ -512,9 +512,9 @@ function RecurringForm({
       <form
         onSubmit={submit}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
+        className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
       >
-        <h2 className="text-lg font-semibold text-slate-900">
+        <h2 className="text-lg font-semibold text-app-text">
           {editing ? "Editar recorrência" : "Nova recorrência"}
         </h2>
 
@@ -529,7 +529,7 @@ function RecurringForm({
                   ? t === "expense"
                     ? "bg-expense-light text-expense border-expense/30 font-medium"
                     : "bg-income-light text-income border-income/30 font-medium"
-                  : "bg-white text-slate-500 border-slate-200"
+                  : "bg-[var(--surface-raised)] text-app-muted border-app-border"
               }`}
             >
               {t === "expense" ? "Despesa" : "Receita"}
@@ -538,7 +538,7 @@ function RecurringForm({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Descrição</label>
+          <label className="block text-xs font-medium text-app-muted mb-1">Descrição</label>
           <input
             type="text"
             value={description}
@@ -550,7 +550,7 @@ function RecurringForm({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Valor</label>
+            <label className="block text-xs font-medium text-app-muted mb-1">Valor</label>
             <input
               type="text"
               inputMode="decimal"
@@ -561,7 +561,7 @@ function RecurringForm({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Categoria</label>
+            <label className="block text-xs font-medium text-app-muted mb-1">Categoria</label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
@@ -579,7 +579,7 @@ function RecurringForm({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Frequência</label>
+            <label className="block text-xs font-medium text-app-muted mb-1">Frequência</label>
             <select
               value={frequency}
               onChange={(e) => setFrequency(e.target.value as "monthly" | "weekly" | "yearly")}
@@ -592,7 +592,7 @@ function RecurringForm({
           </div>
           {frequency === "monthly" && (
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Dia do mês</label>
+              <label className="block text-xs font-medium text-app-muted mb-1">Dia do mês</label>
               <select
                 value={dayOfMonth}
                 onChange={(e) => setDayOfMonth(e.target.value)}
@@ -616,7 +616,7 @@ function RecurringForm({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Início</label>
+            <label className="block text-xs font-medium text-app-muted mb-1">Início</label>
             <input
               type="date"
               value={startDate}
@@ -625,7 +625,7 @@ function RecurringForm({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Fim (opcional)</label>
+            <label className="block text-xs font-medium text-app-muted mb-1">Fim (opcional)</label>
             <input
               type="date"
               value={endDate}
