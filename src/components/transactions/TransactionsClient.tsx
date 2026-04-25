@@ -456,7 +456,7 @@ export function TransactionsClient() {
                           </span>
                         )}
                         {t.effectiveDate && t.effectiveDate !== t.date && (
-                          <span className="text-[10px] font-medium text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-semibold text-brand-500 bg-[rgba(99,102,241,.08)] px-1.5 py-0.5 rounded-full">
                             Fatura {formatInvoiceMonth(t.effectiveDate)}
                           </span>
                         )}

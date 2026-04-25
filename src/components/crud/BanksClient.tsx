@@ -192,7 +192,7 @@ export function BanksClient() {
                 <p className="text-[13px] font-semibold text-app-text">{bank.name}</p>
                 {bank.code && <p className="text-[11px] text-app-muted">Cód. {bank.code}</p>}
               </div>
-              {bank.isDefault && <span className="text-[11px] text-app-muted bg-[var(--surface-raised)] px-2 py-0.5 rounded-full">Padrão</span>}
+              {bank.isDefault && <span className="text-[10px] font-semibold text-brand-500 bg-[rgba(99,102,241,.08)] px-1.5 py-0.5 rounded-full">Padrão</span>}
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => {
