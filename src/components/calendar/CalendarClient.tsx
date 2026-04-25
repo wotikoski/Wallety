@@ -218,7 +218,7 @@ export function CalendarClient() {
                     </div>
                   ))}
                   <div className="pt-2 border-t border-app-border flex justify-between text-sm font-semibold">
-                    <span className="text-slate-600">Saldo do dia</span>
+                    <span className="text-app-text">Saldo do dia</span>
                     <span className={`font-mono ${
                       selectedTxns.reduce((a, t) => t.type === "income" ? a + parseFloat(t.value) : a - parseFloat(t.value), 0) >= 0
                         ? "text-income" : "text-expense"
