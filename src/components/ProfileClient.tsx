@@ -117,53 +117,53 @@ export function ProfileClient() {
       </div>
 
       {/* Legal */}
-      <div className="bg-[var(--surface-card)] dark:bg-blue-50 rounded-[14px] border border-app-border dark:border-blue-200 shadow-card overflow-hidden">
-        <div className="px-6 py-3.5 border-b border-app-border dark:border-blue-200">
-          <h2 className="text-sm font-semibold text-app-text dark:text-blue-800">Legal</h2>
+      <div className="bg-amber-50 dark:bg-blue-50 rounded-[14px] border border-amber-200 dark:border-blue-200 shadow-card overflow-hidden">
+        <div className="px-6 py-3.5 border-b border-amber-200 dark:border-blue-200">
+          <h2 className="text-sm font-semibold text-amber-800 dark:text-blue-800">Legal</h2>
         </div>
-        <div className="divide-y divide-app-border dark:divide-blue-200">
+        <div className="divide-y divide-amber-200 dark:divide-blue-200">
           <Link
             href="/termos"
             target="_blank"
-            className="flex items-center gap-3 px-6 py-4 hover:bg-[var(--surface-raised)] dark:hover:bg-blue-100 transition group"
+            className="flex items-center gap-3 px-6 py-4 hover:bg-amber-100 dark:hover:bg-blue-100 transition group"
           >
-            <FileText size={16} className="text-app-muted dark:text-blue-600 group-hover:text-brand-600 transition shrink-0" />
+            <FileText size={16} className="text-amber-600 dark:text-blue-600 shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-app-text dark:text-blue-700">Termos de Uso</p>
-              <p className="text-xs text-app-muted dark:text-blue-600">Última atualização: 21 de abril de 2026</p>
+              <p className="text-sm font-medium text-amber-700 dark:text-blue-700">Termos de Uso</p>
+              <p className="text-xs text-amber-600 dark:text-blue-600">Última atualização: 21 de abril de 2026</p>
             </div>
-            <span className="text-xs text-app-muted dark:text-blue-600 group-hover:text-brand-600 transition">›</span>
+            <span className="text-xs text-amber-600 dark:text-blue-600">›</span>
           </Link>
           <Link
             href="/privacidade"
             target="_blank"
-            className="flex items-center gap-3 px-6 py-4 hover:bg-[var(--surface-raised)] dark:hover:bg-blue-100 transition group"
+            className="flex items-center gap-3 px-6 py-4 hover:bg-amber-100 dark:hover:bg-blue-100 transition group"
           >
-            <ShieldCheck size={16} className="text-app-muted dark:text-blue-600 group-hover:text-brand-600 transition shrink-0" />
+            <ShieldCheck size={16} className="text-amber-600 dark:text-blue-600 shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-app-text dark:text-blue-700">Política de Privacidade</p>
-              <p className="text-xs text-app-muted dark:text-blue-600">Conforme a LGPD – Lei nº 13.709/2018</p>
+              <p className="text-sm font-medium text-amber-700 dark:text-blue-700">Política de Privacidade</p>
+              <p className="text-xs text-amber-600 dark:text-blue-600">Conforme a LGPD – Lei nº 13.709/2018</p>
             </div>
-            <span className="text-xs text-app-muted dark:text-blue-600 group-hover:text-brand-600 transition">›</span>
+            <span className="text-xs text-amber-600 dark:text-blue-600">›</span>
           </Link>
         </div>
       </div>
 
       {/* Danger zone */}
-      <div className="bg-[var(--surface-card)] dark:bg-blue-50 rounded-xl border border-red-200 dark:border-blue-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-3.5 border-b border-red-100 dark:border-blue-200 bg-red-50/60 dark:bg-blue-50">
+      <div className="bg-amber-50 dark:bg-blue-50 rounded-xl border border-amber-200 dark:border-blue-200 shadow-sm overflow-hidden">
+        <div className="px-6 py-3.5 border-b border-amber-200 dark:border-blue-200">
           <h2 className="text-sm font-semibold text-red-700">Zona de Perigo</h2>
         </div>
         <div className="px-6 py-5 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-app-text dark:text-blue-700">Excluir minha conta</p>
-            <p className="text-xs text-app-muted dark:text-blue-600 mt-0.5">
+            <p className="text-sm font-medium text-amber-700 dark:text-blue-700">Excluir minha conta</p>
+            <p className="text-xs text-amber-600 dark:text-blue-600 mt-0.5">
               Todos os seus dados serão removidos permanentemente. Esta ação não pode ser desfeita.
             </p>
           </div>
           <button
             onClick={() => { setConfirmEmail(""); setShowDeleteDialog(true); }}
-            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 dark:border-blue-200 rounded-lg hover:bg-red-50 dark:hover:bg-blue-100 transition"
+            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-amber-200 dark:border-blue-200 rounded-lg hover:bg-amber-100 dark:hover:bg-blue-100 transition"
           >
             <Trash2 size={14} />
             Excluir conta
