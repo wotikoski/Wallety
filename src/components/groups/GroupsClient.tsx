@@ -219,7 +219,7 @@ export function GroupsClient() {
                 </div>
               </div>
 
-              <h3 className="text-sm font-medium text-slate-600 mb-3">Membros ({members.length})</h3>
+              <h3 className="text-sm font-medium text-app-muted mb-3">Membros ({members.length})</h3>
               <div className="space-y-2">
                 {members.map((m) => (
                   <div key={m.user.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-[var(--surface-raised)]">
@@ -239,7 +239,7 @@ export function GroupsClient() {
 
             {/* Invite section */}
             <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
-              <h3 className="text-sm font-semibold text-slate-800 mb-3">Convidar membro</h3>
+              <h3 className="text-sm font-semibold text-app-text mb-3">Convidar membro</h3>
               <div className="flex gap-2">
                 <input
                   type="email"
