@@ -48,7 +48,7 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex w-60 bg-sidebar-bg flex-col h-screen sticky top-0 shrink-0 overflow-x-hidden">
       {/* Logo */}
-      <div className="px-5 py-4 border-b border-white/[0.06]">
+      <div className="px-5 py-4 border-b border-[#2B284F]">
         <img src="/logo-white.png" alt="Wallety" className="h-8 w-auto block" />
       </div>
 
@@ -64,7 +64,7 @@ export function Sidebar() {
           ))}
         </div>
 
-        <div className="pt-4 border-t border-white/[0.06]">
+        <div className="pt-4 border-t border-[#2B284F]">
           <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.1em] px-2.5 pb-2">
             Configurações
           </p>
@@ -79,7 +79,7 @@ export function Sidebar() {
       </nav>
 
       {/* Author */}
-      <div className="px-5 py-2 border-t border-white/[0.06]">
+      <div className="px-5 py-2 border-t border-[#2B284F]">
         <p className="text-white/25 text-[10px] mb-1">
           Feito por <span className="text-white/35 font-medium">Leonardo Schneider</span>
         </p>
@@ -91,7 +91,7 @@ export function Sidebar() {
       </div>
 
       {/* Logout */}
-      <div className="px-3 pb-2 border-t border-white/[0.06] pt-2">
+      <div className="px-3 pb-2 border-t border-[#2B284F] pt-2">
         <button
           onClick={handleLogout}
           className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition text-[13px] font-medium"

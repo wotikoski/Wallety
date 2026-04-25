@@ -79,7 +79,10 @@
   --color-muted:  #8B88C0;
 
   /* Border */
-  --color-border: rgba(255,255,255,0.09);
+  --color-border: #2B284F;
+
+  /* Surfaces — also update divider */
+  --surface-divider: #2B284F;
 
   /* Semantic */
   --color-income:  #34D399;
