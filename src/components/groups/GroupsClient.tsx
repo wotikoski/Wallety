@@ -172,7 +172,7 @@ export function GroupsClient() {
               <button
                 key={g.id}
                 onClick={() => setSelectedGroup(g.id === selectedGroup ? null : g.id)}
-                className={`w-full text-left bg-white rounded-xl border p-4 shadow-sm transition ${g.id === selectedGroup ? "border-brand-300 ring-1 ring-brand-300" : "border-app-border hover:border-brand-300"}`}
+                className={`w-full text-left bg-white rounded-xl border p-4 shadow-sm transition ${g.id === selectedGroup ? "border-brand-500 ring-1 ring-brand-500" : "border-app-border hover:border-brand-500"}`}
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center shrink-0">
@@ -200,7 +200,7 @@ export function GroupsClient() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveGroupId(activeGroupId === selectedGroup ? null : selectedGroup)}
-                    className={`text-xs px-3 h-9 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-brand-600 text-white" : "border border-brand-300 text-brand-600 hover:bg-brand-50"}`}
+                    className={`text-xs px-3 h-9 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-brand-600 text-white" : "border border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text"}`}
                   >
                     {activeGroupId === selectedGroup ? "Ativo" : "Ativar"}
                   </button>
@@ -263,7 +263,7 @@ export function GroupsClient() {
                   <p className="text-xs text-slate-500 mb-1.5">Link de convite (válido por 7 dias):</p>
                   <div className="flex items-center gap-2">
                     <code className="text-xs text-app-text flex-1 truncate">{inviteUrl}</code>
-                    <button onClick={copyInviteUrl} className="p-1.5 text-slate-400 hover:text-brand-600 transition">
+                    <button onClick={copyInviteUrl} className="p-1.5 text-app-muted hover:text-brand-600 transition">
                       {copied ? <Check size={14} className="text-income" /> : <Copy size={14} />}
                     </button>
                   </div>

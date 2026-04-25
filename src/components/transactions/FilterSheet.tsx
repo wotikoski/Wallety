@@ -67,7 +67,7 @@ export function FilterSheet({
         onClick={openSheet}
         className={`md:hidden relative flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border transition ${
           hasActiveFilters
-            ? "border-brand-400 bg-brand-50 text-brand-600 font-medium"
+            ? "border-brand-500 bg-brand-50 text-brand-600 font-medium"
             : "border-app-border text-app-muted bg-[var(--surface-card)] hover:bg-[var(--surface-raised)]"
         }`}
         aria-label="Filtros"
@@ -171,7 +171,7 @@ export function FilterSheet({
             onClick={() => setDraftFuture((v) => !v)}
             className={`w-full h-[42px] flex items-center justify-center gap-2 text-sm rounded-xl border transition ${
               draftFuture
-                ? "border-brand-400 bg-brand-50 text-brand-600 font-medium"
+                ? "border-brand-500 bg-brand-50 text-brand-600 font-medium"
                 : "border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text"
             }`}
           >
