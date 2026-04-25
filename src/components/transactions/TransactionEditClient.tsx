@@ -15,7 +15,7 @@ export function TransactionEditClient({ id }: { id: string }) {
   });
 
   if (isLoading || isFetching) {
-    return <div className="text-slate-400 text-sm">Carregando...</div>;
+    return <div className="text-[#B0BAC9] text-sm">Carregando...</div>;
   }
 
   // Key on the row's updatedAt so a refetch after a save force-remounts the
