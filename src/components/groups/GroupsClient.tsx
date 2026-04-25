@@ -136,7 +136,7 @@ export function GroupsClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome do grupo</label>
               <input
                 {...register("name", { required: true })}
-                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Ex: Família Silva"
               />
             </div>
@@ -144,13 +144,13 @@ export function GroupsClient() {
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Descrição (opcional)</label>
               <input
                 {...register("description")}
-                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Breve descrição do grupo"
               />
             </div>
             <div className="flex gap-3">
-              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 border border-slate-200 text-slate-600 rounded-lg text-sm hover:bg-[#f8f9fd]transition">Cancelar</button>
-              <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-500 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
+              <button type="button" onClick={() => setShowForm(false)} className="flex-1 h-9 px-4 border border-app-border text-slate-600 rounded-lg text-sm hover:bg-[var(--surface-raised)] transition">Cancelar</button>
+              <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
                 {createMutation.isPending ? "Criando..." : "Criar Grupo"}
               </button>
             </div>
@@ -172,7 +172,7 @@ export function GroupsClient() {
               <button
                 key={g.id}
                 onClick={() => setSelectedGroup(g.id === selectedGroup ? null : g.id)}
-                className={`w-full text-left bg-white rounded-xl border p-4 shadow-sm transition ${g.id === selectedGroup ? "border-brand-300 ring-1 ring-brand-300" : "border-slate-100 hover:border-slate-200"}`}
+                className={`w-full text-left bg-white rounded-xl border p-4 shadow-sm transition ${g.id === selectedGroup ? "border-brand-300 ring-1 ring-brand-300" : "border-app-border hover:border-brand-300"}`}
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center shrink-0">
@@ -246,7 +246,7 @@ export function GroupsClient() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="email@exemplo.com"
-                  className="flex-1 h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex-1 h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 <button
                   onClick={() => inviteMutation.mutate()}

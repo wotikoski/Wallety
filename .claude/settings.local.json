@@ -32,7 +32,8 @@
       "Bash(node -e \"require\\('date-fns/locale/pt-BR'\\); console.log\\('ptBR available'\\)\")",
       "Bash(findstr /i \"deploy\\\\|build\\\\|start\\\\|script\")",
       "Bash(npx wrangler *)",
-      "Bash(git commit -m 'Replace white borders, fix Profile delete button, force light on legal pages *)"
+      "Bash(git commit -m 'Replace white borders, fix Profile delete button, force light on legal pages *)",
+      "Bash(git commit -m 'Fix white borders, revert danger zone, standardize Recurring buttons *)"
     ]
   }
 }

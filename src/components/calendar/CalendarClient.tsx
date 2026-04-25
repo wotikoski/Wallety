@@ -121,7 +121,7 @@ export function CalendarClient() {
         {/* Calendar Grid */}
         <div className="lg:col-span-2 bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
           {/* Weekday headers */}
-          <div className="grid grid-cols-7 border-b border-slate-100">
+          <div className="grid grid-cols-7 border-b border-app-border">
             {WEEKDAYS.map((d) => (
               <div key={d} className="text-center text-xs font-medium text-slate-400 py-3">
                 {d}
@@ -132,7 +132,7 @@ export function CalendarClient() {
           {/* Day grid */}
           <div className="grid grid-cols-7">
             {Array.from({ length: firstDayOffset }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-14 md:h-24 border-b border-r border-slate-50" />
+              <div key={`empty-${i}`} className="h-14 md:h-24 border-b border-r border-app-border" />
             ))}
             {days.map((day) => {
               const dayTxns = getTxnsForDay(day);
@@ -145,7 +145,7 @@ export function CalendarClient() {
                 <button
                   key={day.toISOString()}
                   onClick={() => setSelectedDay(isSelected ? null : day)}
-                  className={`h-14 md:h-24 border-b border-r border-slate-50 p-1 md:p-2 text-left transition hover:bg-slate-50 ${isSelected ? "bg-brand-50 ring-1 ring-inset ring-brand-300" : ""}`}
+                  className={`h-14 md:h-24 border-b border-r border-app-border p-1 md:p-2 text-left transition hover:bg-[var(--surface-raised)] ${isSelected ? "bg-brand-50 ring-1 ring-inset ring-brand-300" : ""}`}
                 >
                   <span className={`inline-flex w-6 h-6 items-center justify-center rounded-full text-xs font-medium mb-1 ${today ? "bg-brand-600 text-white" : "text-slate-600"}`}>
                     {format(day, "d")}
@@ -193,8 +193,8 @@ export function CalendarClient() {
                       key={t.id}
                       className={`flex items-center justify-between p-2.5 rounded-lg ${
                         t.projected
-                          ? "bg-white border border-dashed border-slate-300"
-                          : "bg-slate-50"
+                          ? "bg-white border border-dashed border-app-border"
+                          : "bg-[var(--surface-raised)]"
                       }`}
                     >
                       <div className="min-w-0 flex-1">
@@ -217,7 +217,7 @@ export function CalendarClient() {
                       </span>
                     </div>
                   ))}
-                  <div className="pt-2 border-t border-slate-100 flex justify-between text-sm font-semibold">
+                  <div className="pt-2 border-t border-app-border flex justify-between text-sm font-semibold">
                     <span className="text-slate-600">Saldo do dia</span>
                     <span className={`font-mono ${
                       selectedTxns.reduce((a, t) => t.type === "income" ? a + parseFloat(t.value) : a - parseFloat(t.value), 0) >= 0
