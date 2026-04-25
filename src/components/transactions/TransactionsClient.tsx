@@ -260,7 +260,7 @@ export function TransactionsClient() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Lançamentos</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Gerencie todas as suas transações</p>
+          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Gerencie todas as suas transações</p>
         </div>
         <div className="flex items-center gap-2">
           <a
