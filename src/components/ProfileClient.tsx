@@ -84,8 +84,8 @@ export function ProfileClient() {
             {user?.name?.charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="text-lg font-semibold text-slate-900">{user?.name}</p>
-            <p className="text-sm text-slate-400">{user?.email}</p>
+            <p className="text-lg font-semibold text-app-text">{user?.name}</p>
+            <p className="text-sm text-app-muted">{user?.email}</p>
           </div>
         </div>
 
@@ -150,8 +150,8 @@ export function ProfileClient() {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-white rounded-xl border border-[#2B284F] shadow-sm overflow-hidden">
-        <div className="px-6 py-3.5 border-b border-[#2B284F] bg-red-50/60">
+      <div className="bg-white rounded-xl border border-red-200 dark:border-[#2B284F] shadow-sm overflow-hidden">
+        <div className="px-6 py-3.5 border-b border-red-100 dark:border-[#2B284F] bg-red-50/60">
           <h2 className="text-sm font-semibold text-red-700">Zona de Perigo</h2>
         </div>
         <div className="px-6 py-5 flex items-center justify-between gap-4">
