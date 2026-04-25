@@ -130,7 +130,7 @@ export function GroupsClient() {
 
       {showForm && (
         <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
-          <h2 className="text-base font-semibold text-slate-800 mb-4">Criar Grupo</h2>
+          <h2 className="text-base font-semibold text-app-text mb-4">Criar Grupo</h2>
           <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome do grupo</label>
@@ -179,7 +179,7 @@ export function GroupsClient() {
                     <Users size={18} className="text-brand-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{g.name}</p>
+                    <p className="text-sm font-semibold text-app-text truncate">{g.name}</p>
                     <p className="text-[11px] text-app-muted capitalize">{g.role === "owner" ? "Dono" : g.role}</p>
                   </div>
                   {activeGroupId === g.id && (
@@ -196,7 +196,7 @@ export function GroupsClient() {
           <div className="lg:col-span-2 space-y-4">
             <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-semibold text-slate-800">{currentGroup.name}</h2>
+                <h2 className="text-base font-semibold text-app-text">{currentGroup.name}</h2>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveGroupId(activeGroupId === selectedGroup ? null : selectedGroup)}
@@ -222,7 +222,7 @@ export function GroupsClient() {
               <h3 className="text-sm font-medium text-slate-600 mb-3">Membros ({members.length})</h3>
               <div className="space-y-2">
                 {members.map((m) => (
-                  <div key={m.user.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50">
+                  <div key={m.user.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-[var(--surface-raised)]">
                     <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700 shrink-0">
                       {m.user.name.charAt(0).toUpperCase()}
                     </div>
@@ -259,7 +259,7 @@ export function GroupsClient() {
               </div>
 
               {inviteUrl && (
-                <div className="mt-3 p-3 bg-slate-50 rounded-lg">
+                <div className="mt-3 p-3 bg-[var(--surface-raised)] rounded-lg">
                   <p className="text-xs text-slate-500 mb-1.5">Link de convite (válido por 7 dias):</p>
                   <div className="flex items-center gap-2">
                     <code className="text-xs text-slate-700 flex-1 truncate">{inviteUrl}</code>

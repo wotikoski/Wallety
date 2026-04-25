@@ -190,14 +190,14 @@ export function TransactionForm({ transaction }: Props) {
                 <button
                   type="button"
                   onClick={() => field.onChange("income")}
-                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "income" ? "bg-income text-white" : "text-slate-500 hover:bg-slate-50"}`}
+                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "income" ? "bg-income text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"}`}
                 >
                   + Receita
                 </button>
                 <button
                   type="button"
                   onClick={() => field.onChange("expense")}
-                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "expense" ? "bg-expense text-white" : "text-slate-500 hover:bg-slate-50"}`}
+                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "expense" ? "bg-expense text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"}`}
                 >
                   - Despesa
                 </button>

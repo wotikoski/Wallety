@@ -152,19 +152,19 @@ export function CategoriesClient() {
       {/* Form */}
       {showForm && (
         <div ref={formRef} className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-800 mb-4">{editing ? "Editar" : "Nova"} Categoria</h2>
+          <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Nova"} Categoria</h2>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome</label>
               <input
                 {...register("name", { required: true })}
-                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
                 placeholder="Ex: Alimentação"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo</label>
-              <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
                 <option value="expense">Despesa</option>
                 <option value="income">Receita</option>
                 <option value="both">Ambos</option>
@@ -175,7 +175,7 @@ export function CategoriesClient() {
               <div className="flex items-start gap-3">
                 {/* Preview */}
                 <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0 border border-slate-200"
+                  className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0 border border-app-border"
                   style={{ backgroundColor: (watchedColor ?? "#6366f1") + "22" }}
                 >
                   {watchedIcon || "💳"}
@@ -190,7 +190,7 @@ export function CategoriesClient() {
                       className={`h-9 rounded-lg text-lg flex items-center justify-center transition ${
                         watchedIcon === e
                           ? "bg-brand-50 ring-2 ring-brand-500"
-                          : "hover:bg-slate-100"
+                          : "hover:bg-[var(--surface-raised)]"
                       }`}
                     >
                       {e}

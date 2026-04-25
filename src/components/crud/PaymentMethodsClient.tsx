@@ -125,19 +125,19 @@ export function PaymentMethodsClient() {
 
       {showForm && (
         <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-800 mb-4">{editing ? "Editar" : "Nova"} Forma de Pagamento</h2>
+          <h2 className="text-base font-semibold text-app-text mb-4">{editing ? "Editar" : "Nova"} Forma de Pagamento</h2>
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome</label>
               <input
                 {...register("name", { required: true })}
-                className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
                 placeholder="Ex: Nubank Crédito"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo</label>
-              <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
                 {PAYMENT_METHOD_TYPES.map((t) => (
                   <option key={t.value} value={t.value}>{t.label}</option>
                 ))}
@@ -145,7 +145,7 @@ export function PaymentMethodsClient() {
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Banco vinculado (opcional)</label>
-              <select {...register("bankId")} className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <select {...register("bankId")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
                 <option value="">Sem banco vinculado</option>
                 {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
@@ -159,7 +159,7 @@ export function PaymentMethodsClient() {
                     type="number"
                     min={1}
                     max={31}
-                    className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
                     placeholder="25"
                   />
                   <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura fecha (1–31)</p>
@@ -171,7 +171,7 @@ export function PaymentMethodsClient() {
                     type="number"
                     min={1}
                     max={31}
-                    className="w-full h-9 px-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
                     placeholder="5"
                   />
                   <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura deve ser paga (1–31)</p>
@@ -215,7 +215,7 @@ export function PaymentMethodsClient() {
                   )}
                 </p>
               </div>
-              {pm.isDefault && <span className="text-[11px] text-app-muted bg-slate-100 px-2 py-0.5 rounded-full">Padrão</span>}
+              {pm.isDefault && <span className="text-[11px] text-app-muted bg-[var(--surface-raised)] px-2 py-0.5 rounded-full">Padrão</span>}
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => {
