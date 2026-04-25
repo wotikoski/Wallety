@@ -29,14 +29,12 @@ export function FilterSheet({
 }: FilterSheetProps) {
   const [open, setOpen] = useState(false);
 
-  // Local draft state — only applied when user taps "Aplicar"
   const [draftType, setDraftType] = useState(type);
   const [draftStart, setDraftStart] = useState(startDate);
   const [draftEnd, setDraftEnd] = useState(endDate);
   const [draftFuture, setDraftFuture] = useState(showFuture);
 
   const openSheet = () => {
-    // Sync draft with current values when opening
     setDraftType(type);
     setDraftStart(startDate);
     setDraftEnd(endDate);
@@ -70,7 +68,7 @@ export function FilterSheet({
         className={`md:hidden relative flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border transition ${
           hasActiveFilters
             ? "border-brand-400 bg-brand-50 text-brand-600 font-medium"
-            : "border-slate-200 text-slate-500 bg-white hover:bg-slate-50"
+            : "border-app-border text-app-muted bg-[var(--surface-card)] hover:bg-[var(--surface-raised)]"
         }`}
         aria-label="Filtros"
       >
@@ -91,21 +89,21 @@ export function FilterSheet({
 
       {/* Slide-up sheet */}
       <div
-        className={`md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl transition-transform duration-300 ${
+        className={`md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--surface-card)] rounded-t-2xl shadow-2xl transition-transform duration-300 ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full bg-slate-200" />
+          <div className="w-10 h-1 rounded-full bg-app-border" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-900">Filtros</h2>
+        <div className="flex items-center justify-between px-5 py-3 border-b border-app-border">
+          <h2 className="text-base font-semibold text-app-text">Filtros</h2>
           <button
             onClick={() => setOpen(false)}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-50 transition"
+            className="p-1.5 text-app-muted hover:text-app-text rounded-lg hover:bg-[var(--surface-raised)] transition"
           >
             <X size={18} />
           </button>
@@ -115,11 +113,11 @@ export function FilterSheet({
         <div className="px-5 py-4 space-y-4">
           {/* Tipo */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">Tipo</label>
+            <label className="block text-xs font-medium text-app-muted mb-1.5">Tipo</label>
             <select
               value={draftType}
               onChange={(e) => setDraftType(e.target.value)}
-              className="w-full h-[42px] text-sm border border-slate-200 rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             >
               <option value="">Todos</option>
               <option value="income">Receitas</option>
@@ -129,23 +127,17 @@ export function FilterSheet({
 
           {/* Navegação de mês */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">Navegar mês</label>
+            <label className="block text-xs font-medium text-app-muted mb-1.5">Navegar mês</label>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => {
-                  navigateMonth(-1);
-                  setOpen(false);
-                }}
-                className="flex-1 flex items-center justify-center gap-1 h-[42px] border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition"
+                onClick={() => { navigateMonth(-1); setOpen(false); }}
+                className="flex-1 flex items-center justify-center gap-1 h-[42px] border border-app-border rounded-xl text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
               >
                 <ChevronLeft size={16} /> Anterior
               </button>
               <button
-                onClick={() => {
-                  navigateMonth(1);
-                  setOpen(false);
-                }}
-                className="flex-1 flex items-center justify-center gap-1 h-[42px] border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition"
+                onClick={() => { navigateMonth(1); setOpen(false); }}
+                className="flex-1 flex items-center justify-center gap-1 h-[42px] border border-app-border rounded-xl text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
               >
                 Próximo <ChevronRight size={16} />
               </button>
@@ -154,23 +146,23 @@ export function FilterSheet({
 
           {/* Data inicial */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">Data inicial</label>
+            <label className="block text-xs font-medium text-app-muted mb-1.5">Data inicial</label>
             <input
               type="date"
               value={draftStart}
               onChange={(e) => setDraftStart(e.target.value)}
-              className="w-full h-[42px] text-sm border border-slate-200 rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             />
           </div>
 
           {/* Data final */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">Data final</label>
+            <label className="block text-xs font-medium text-app-muted mb-1.5">Data final</label>
             <input
               type="date"
               value={draftEnd}
               onChange={(e) => setDraftEnd(e.target.value)}
-              className="w-full h-[42px] text-sm border border-slate-200 rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             />
           </div>
 
@@ -180,7 +172,7 @@ export function FilterSheet({
             className={`w-full h-[42px] flex items-center justify-center gap-2 text-sm rounded-xl border transition ${
               draftFuture
                 ? "border-brand-400 bg-brand-50 text-brand-600 font-medium"
-                : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                : "border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text"
             }`}
           >
             <Clock size={15} />
@@ -189,10 +181,10 @@ export function FilterSheet({
         </div>
 
         {/* Footer actions */}
-        <div className="flex items-center gap-3 px-5 py-4 border-t border-slate-100 pb-safe">
+        <div className="flex items-center gap-3 px-5 py-4 border-t border-app-border pb-safe">
           <button
             onClick={clear}
-            className="flex-1 h-[44px] text-sm font-medium text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition"
+            className="flex-1 h-[44px] text-sm font-medium text-app-muted border border-app-border rounded-xl hover:bg-[var(--surface-raised)] hover:text-app-text transition"
           >
             Limpar
           </button>
