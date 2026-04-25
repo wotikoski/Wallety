@@ -121,13 +121,13 @@ function NavItem({
       className={cn(
         "relative flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-[13px] transition-all mb-0.5",
         active
-          ? "bg-[rgba(97,115,244,0.18)] text-[#818cf8] font-semibold"
+          ? "bg-[rgba(123,117,212,0.18)] text-[#7B75D4] font-semibold"
           : "text-white/40 hover:text-white/70 hover:bg-white/[0.05] font-medium",
       )}
     >
       {/* Active left indicator bar */}
       {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] bg-[#818cf8] rounded-r-[3px]" />
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] bg-[#7B75D4] rounded-r-[3px]" />
       )}
       <Icon size={15} strokeWidth={active ? 2 : 1.75} />
       <span className="truncate">{label}</span>

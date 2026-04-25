@@ -19,7 +19,19 @@
       "Bash(npx tsc *)",
       "Bash(echo \"EXIT=$?\")",
       "Bash(npm ls *)",
-      "Bash(npm uninstall *)"
+      "Bash(npm uninstall *)",
+      "Bash(cmd /c \"mkdir C:\\\\Temp\\\\wallety-next 2>nul & echo OK\")",
+      "Bash(cmd /c \"if not exist C:\\\\Temp mkdir C:\\\\Temp && if not exist C:\\\\Temp\\\\wallety-next mkdir C:\\\\Temp\\\\wallety-next && echo Criado\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Temp\\\\wallety-next\")",
+      "Bash(xargs grep *)",
+      "Bash(powershell -Command ' *)",
+      "Bash(npx next *)",
+      "Bash(Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue)",
+      "Bash(python -c ' *)",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"require\\('date-fns/locale/pt-BR'\\); console.log\\('ptBR available'\\)\")",
+      "Bash(findstr /i \"deploy\\\\|build\\\\|start\\\\|script\")",
+      "Bash(npx wrangler *)"
     ]
   }
 }
