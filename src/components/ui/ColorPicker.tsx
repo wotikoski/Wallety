@@ -49,7 +49,7 @@ export function ColorPicker({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <label className="text-sm font-medium text-slate-700">Cor</label>
+        <label className="text-sm font-medium text-app-text">Cor</label>
         {showSuggest && onSuggest && (
           <button
             type="button"

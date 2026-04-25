@@ -133,7 +133,7 @@ export function GroupsClient() {
           <h2 className="text-base font-semibold text-app-text mb-4">Criar Grupo</h2>
           <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome do grupo</label>
+              <label className="block text-sm font-medium text-app-text mb-1.5">Nome do grupo</label>
               <input
                 {...register("name", { required: true })}
                 className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -141,7 +141,7 @@ export function GroupsClient() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Descrição (opcional)</label>
+              <label className="block text-sm font-medium text-app-text mb-1.5">Descrição (opcional)</label>
               <input
                 {...register("description")}
                 className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -262,7 +262,7 @@ export function GroupsClient() {
                 <div className="mt-3 p-3 bg-[var(--surface-raised)] rounded-lg">
                   <p className="text-xs text-slate-500 mb-1.5">Link de convite (válido por 7 dias):</p>
                   <div className="flex items-center gap-2">
-                    <code className="text-xs text-slate-700 flex-1 truncate">{inviteUrl}</code>
+                    <code className="text-xs text-app-text flex-1 truncate">{inviteUrl}</code>
                     <button onClick={copyInviteUrl} className="p-1.5 text-slate-400 hover:text-brand-600 transition">
                       {copied ? <Check size={14} className="text-income" /> : <Copy size={14} />}
                     </button>
