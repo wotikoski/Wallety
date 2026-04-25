@@ -193,7 +193,7 @@ export function RecurringClient() {
             onClick={() => materializeMutation.mutate()}
             disabled={materializeMutation.isPending}
             title="Gerar pendentes"
-            className="flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium px-3.5 h-9 rounded-lg transition disabled:opacity-60"
+            className="flex items-center gap-2 h-9 px-3.5 rounded-[10px] border-[1.5px] border-app-border text-[13px] font-semibold text-app-muted hover:bg-white hover:text-app-text transition disabled:opacity-60"
           >
             <Play size={14} />
             <span className="hidden sm:inline">
@@ -415,7 +415,7 @@ export function RecurringClient() {
         onClick={openNew}
         title="Nova recorrência"
         aria-label="Nova recorrência"
-        className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-brand-500 hover:bg-brand-700 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(99,102,241,.4)] transition"
+        className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(99,102,241,.4)] transition"
       >
         <Plus size={24} />
       </button>
@@ -639,7 +639,7 @@ function RecurringForm({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 h-9 px-4 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
+            className="flex-1 h-9 px-4 rounded-[10px] border-[1.5px] border-app-border text-[13px] font-semibold text-app-muted hover:bg-white hover:text-app-text transition"
           >
             Cancelar
           </button>
