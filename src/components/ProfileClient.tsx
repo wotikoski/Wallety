@@ -121,30 +121,30 @@ export function ProfileClient() {
         <div className="px-6 py-3.5 border-b border-app-border">
           <h2 className="text-sm font-semibold text-slate-700">Legal</h2>
         </div>
-        <div className="divide-y divide-[#f1f3f9]">
+        <div className="divide-y divide-app-border">
           <Link
             href="/termos"
             target="_blank"
-            className="flex items-center gap-3 px-6 py-4 hover:bg-slate-50 transition group"
+            className="flex items-center gap-3 px-6 py-4 hover:bg-[var(--surface-raised)] transition group"
           >
-            <FileText size={16} className="text-slate-400 group-hover:text-brand-600 transition shrink-0" />
+            <FileText size={16} className="text-app-muted group-hover:text-brand-600 transition shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-slate-700">Termos de Uso</p>
-              <p className="text-xs text-slate-400">Última atualização: 21 de abril de 2026</p>
+              <p className="text-sm font-medium text-app-text">Termos de Uso</p>
+              <p className="text-xs text-app-muted">Última atualização: 21 de abril de 2026</p>
             </div>
-            <span className="text-xs text-slate-400 group-hover:text-brand-600 transition">›</span>
+            <span className="text-xs text-app-muted group-hover:text-brand-600 transition">›</span>
           </Link>
           <Link
             href="/privacidade"
             target="_blank"
-            className="flex items-center gap-3 px-6 py-4 hover:bg-slate-50 transition group"
+            className="flex items-center gap-3 px-6 py-4 hover:bg-[var(--surface-raised)] transition group"
           >
-            <ShieldCheck size={16} className="text-slate-400 group-hover:text-brand-600 transition shrink-0" />
+            <ShieldCheck size={16} className="text-app-muted group-hover:text-brand-600 transition shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-slate-700">Política de Privacidade</p>
-              <p className="text-xs text-slate-400">Conforme a LGPD – Lei nº 13.709/2018</p>
+              <p className="text-sm font-medium text-app-text">Política de Privacidade</p>
+              <p className="text-xs text-app-muted">Conforme a LGPD – Lei nº 13.709/2018</p>
             </div>
-            <span className="text-xs text-slate-400 group-hover:text-brand-600 transition">›</span>
+            <span className="text-xs text-app-muted group-hover:text-brand-600 transition">›</span>
           </Link>
         </div>
       </div>
@@ -163,7 +163,7 @@ export function ProfileClient() {
           </div>
           <button
             onClick={() => { setConfirmEmail(""); setShowDeleteDialog(true); }}
-            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-app-border rounded-lg hover:bg-red-50 transition"
+            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 dark:border-[#2B284F] rounded-lg hover:bg-red-50 transition"
           >
             <Trash2 size={14} />
             Excluir conta
@@ -178,7 +178,7 @@ export function ProfileClient() {
           onClick={() => setShowDeleteDialog(false)}
         >
           <div
-            className="bg-white rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
+            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Icon + title */}
@@ -187,8 +187,8 @@ export function ProfileClient() {
                 <Trash2 size={18} className="text-red-600" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-slate-900">Excluir conta</h2>
-                <p className="text-sm text-slate-500 mt-1">
+                <h2 className="text-base font-semibold text-app-text">Excluir conta</h2>
+                <p className="text-sm text-app-muted mt-1">
                   Esta ação é <strong>permanente e irreversível</strong>. Todos os seus lançamentos,
                   categorias, recorrências e configurações serão apagados.
                 </p>
@@ -196,9 +196,9 @@ export function ProfileClient() {
             </div>
 
             {/* Email confirmation */}
-            <div className="bg-slate-50 rounded-xl p-4 space-y-2">
-              <p className="text-xs font-medium text-slate-600">
-                Para confirmar, digite seu e-mail: <span className="font-semibold text-slate-800">{user?.email}</span>
+            <div className="bg-[var(--surface-raised)] rounded-xl p-4 space-y-2">
+              <p className="text-xs font-medium text-app-muted">
+                Para confirmar, digite seu e-mail: <span className="font-semibold text-app-text">{user?.email}</span>
               </p>
               <input
                 type="email"
@@ -206,7 +206,7 @@ export function ProfileClient() {
                 onChange={(e) => setConfirmEmail(e.target.value)}
                 placeholder={user?.email}
                 autoFocus
-                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 bg-white"
+                className="w-full px-3 py-2 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 bg-[var(--surface-card)] text-app-text"
               />
             </div>
 
@@ -215,7 +215,7 @@ export function ProfileClient() {
               <button
                 type="button"
                 onClick={() => setShowDeleteDialog(false)}
-                className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition"
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-app-muted border border-app-border rounded-lg hover:bg-[var(--surface-raised)] hover:text-app-text transition"
               >
                 Cancelar
               </button>
