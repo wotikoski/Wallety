@@ -241,9 +241,9 @@ export function ReportsClient() {
                 {reportType === "income" ? "Receitas" : "Despesas"} por {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : "Usuário"}
               </h2>
               <p className="text-[11px] text-app-muted -mt-2 mb-4">Clique em um item para ver os lançamentos</p>
-              <div className="flex flex-col sm:flex-row gap-6">
+              <div className="flex flex-col sm:flex-row items-center gap-6">
                 {/* Donut chart */}
-                <div className="w-full sm:w-[160px] h-[160px] shrink-0 mx-auto sm:mx-0">
+                <div className="w-[160px] h-[160px] shrink-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -267,7 +267,9 @@ export function ReportsClient() {
                       </Pie>
                       <Tooltip
                         formatter={(v: number) => formatCurrency(v)}
-                        contentStyle={{ background: "var(--surface-card)", border: "1px solid var(--color-border)", borderRadius: 10, fontSize: 12 }}
+                        contentStyle={{ background: "var(--surface-card)", border: "1px solid var(--color-border)", borderRadius: 10, fontSize: 12, color: "var(--color-text)" }}
+                        labelStyle={{ color: "var(--color-text)" }}
+                        itemStyle={{ color: "var(--color-text)" }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
