@@ -6,16 +6,13 @@ import { useState, useRef, useEffect } from "react";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  PieChart,
+  Pie,
   Tooltip,
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight } from "lucide-react";
 import { ReportFilterSheet } from "./ReportFilterSheet";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 
@@ -62,7 +59,6 @@ export function ReportsClient() {
   const [groupBy, setGroupBy] = useState<"category" | "bank" | "user">("category");
   const [reportType, setReportType] = useState<"income" | "expense">("expense");
   const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const params = new URLSearchParams({ startDate, endDate, groupBy });
   if (activeGroupId) params.set("groupId", activeGroupId);
@@ -239,107 +235,80 @@ export function ReportsClient() {
               <p className="text-[12px] text-white/70 mt-1">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : "usuários"}</p>
             </div>
 
-            {/* Bar chart — desktop only */}
-            <div className="hidden md:block bg-white rounded-[14px] border border-app-border p-5 shadow-card">
-              <h2 className="text-[14px] font-bold text-app-text mb-1">
+            {/* Category chart — Dashboard style */}
+            <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border p-5 shadow-card">
+              <h2 className="text-[14px] font-bold text-app-text mb-4">
                 {reportType === "income" ? "Receitas" : "Despesas"} por {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : "Usuário"}
               </h2>
-              <p className="text-[11px] text-app-muted mb-4">Clique em uma barra ou card para ver os lançamentos</p>
-              <ResponsiveContainer width="100%" height={Math.max(260, items.length * 46)}>
-                <BarChart data={items} layout="vertical" margin={{ top: 0, right: 180, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f9" horizontal={false} />
-                  <XAxis type="number" hide />
-                  <YAxis type="category" dataKey="label" tick={{ fontSize: 12, fill: "#64748b" }} width={130} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    formatter={(v: number) => formatCurrency(v)}
-                    contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}
-                    cursor={false}
-                  />
-                  <Bar
-                    dataKey="total"
-                    radius={[0, 5, 5, 0]}
-                    cursor="pointer"
-                    isAnimationActive={false}
-                    onClick={(barData, index) => openDrilldown(barData as ReportItem, index)}
-                    onMouseEnter={(_, index) => setHoveredIndex(index)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                    label={({ x, y, width, height, value, index: i }: { x: number; y: number; width: number; height: number; value: number; index: number }) => {
-                      const item = items[i];
-                      if (!item) return <g />;
-                      return (
-                        <text x={x + width + 10} y={y + height / 2} fill="#64748b" fontSize={12} dominantBaseline="middle">
-                          {formatCurrency(value)}
-                          <tspan fill="var(--color-muted)" fontSize={11}> · {item.percentage.toFixed(1)}%</tspan>
-                        </text>
-                      );
-                    }}
-                  >
-                    {items.map((item, index) => {
-                      const isSelected = drilldown?.groupKey === item.groupKey;
-                      const isHovered = hoveredIndex === index;
-                      let opacity = 1;
-                      if (drilldown && !isSelected) opacity = 0.25;
-                      else if (!drilldown && hoveredIndex !== null && !isHovered) opacity = 0.6;
-                      return <Cell key={index} fill={COLORS[index % COLORS.length]} opacity={opacity} />;
-                    })}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+              <p className="text-[11px] text-app-muted -mt-2 mb-4">Clique em um item para ver os lançamentos</p>
+              <div className="flex flex-col sm:flex-row gap-6">
+                {/* Donut chart */}
+                <div className="w-full sm:w-[160px] h-[160px] shrink-0 mx-auto sm:mx-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={items}
+                        dataKey="total"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={48}
+                        outerRadius={72}
+                        paddingAngle={2}
+                        isAnimationActive={false}
+                      >
+                        {items.map((_, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]}
+                            opacity={drilldown && drilldown.groupKey !== items[index]?.groupKey ? 0.25 : 1}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(v: number) => formatCurrency(v)}
+                        contentStyle={{ background: "var(--surface-card)", border: "1px solid var(--color-border)", borderRadius: 10, fontSize: 12 }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
 
-            {/* Dashboard-style category cards — all screen sizes */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {items.map((item, index) => {
-                const color = COLORS[index % COLORS.length];
-                const isSelected = drilldown?.groupKey === item.groupKey;
-                return (
-                  <button
-                    key={index}
-                    onClick={() => isSelected ? closeDrilldown() : openDrilldown(item, index)}
-                    className="group w-full text-left bg-[var(--surface-card)] rounded-[14px] border border-app-border p-4 overflow-hidden relative transition-all duration-200 hover:-translate-y-0.5"
-                    style={
-                      isSelected
-                        ? { boxShadow: `0 8px 28px ${color}35`, borderColor: `${color}60` }
-                        : undefined
-                    }
-                    onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 28px rgba(0,0,0,0.10)"; }}
-                    onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = ""; }}
-                  >
-                    {/* Left color accent */}
-                    <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-[14px]" style={{ background: color }} />
-
-                    <div className="pl-3">
-                      {/* Header */}
-                      <div className="flex items-start justify-between gap-2 mb-2.5">
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-[13px] font-semibold truncate ${isSelected ? "text-brand-500" : "text-app-text"}`}>
+                {/* Category list */}
+                <div className="flex-1 min-w-0 space-y-1">
+                  {items.map((item, index) => {
+                    const color = COLORS[index % COLORS.length];
+                    const isSelected = drilldown?.groupKey === item.groupKey;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => isSelected ? closeDrilldown() : openDrilldown(item, index)}
+                        className="w-full text-left rounded-lg px-2.5 py-2 transition-all duration-150 hover:-translate-y-px"
+                        style={isSelected ? { background: color + "14", boxShadow: `0 4px 16px ${color}30` } : {}}
+                        onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)"; }}
+                        onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = ""; }}
+                      >
+                        {/* Row 1: dot + name + pct */}
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+                          <span className={`text-[12px] font-semibold truncate flex-1 ${isSelected ? "text-brand-500" : "text-app-text"}`}>
                             {item.label}
-                          </p>
-                          <p className="text-[11px] text-app-muted mt-0.5">
-                            {item.count} lançamento{item.count !== 1 ? "s" : ""}
-                          </p>
+                          </span>
+                          <span className="text-[11px] text-app-muted shrink-0">{item.percentage.toFixed(1)}%</span>
                         </div>
-                        <span
-                          className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 mt-0.5"
-                          style={{ background: color + "20", color }}
-                        >
-                          {item.percentage.toFixed(1)}%
-                        </span>
-                      </div>
-
-                      {/* Progress bar */}
-                      <div className="prog-track mb-2.5" style={{ height: 5 }}>
-                        <div className="prog-fill" style={{ width: `${item.percentage}%`, background: color }} />
-                      </div>
-
-                      {/* Total */}
-                      <p className={`text-[15px] font-bold font-mono ${reportType === "income" ? "text-income" : "text-expense"}`}>
-                        {formatCurrency(item.total)}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
+                        {/* Row 2: progress + value */}
+                        <div className="flex items-center gap-2 pl-3.5">
+                          <div className="prog-track flex-1" style={{ height: 4 }}>
+                            <div className="prog-fill" style={{ width: `${item.percentage}%`, background: color }} />
+                          </div>
+                          <span className="text-[12px] font-semibold text-app-muted font-mono shrink-0 tabular-nums">
+                            {formatCurrency(item.total)}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             {/* Drilldown panel — shown below cards when a category is selected */}
