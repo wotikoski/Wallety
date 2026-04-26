@@ -26,13 +26,13 @@ export function suggestPaletteColor(usedColors: (string | null | undefined)[]): 
   return COLOR_PALETTE[0];
 }
 
-/** Rotate strictly to the next palette color. Used by the "Sugerir" button
- * so repeated clicks always cycle through the full palette. */
+/** Pick a random palette color different from the current one.
+ * Used by the "Sugerir" button so each click feels genuinely random. */
 export function rotatePaletteColor(currentColor?: string | null): string {
-  if (!currentColor) return COLOR_PALETTE[0];
-  const idx = COLOR_PALETTE.findIndex((c) => c.toLowerCase() === currentColor.toLowerCase());
-  if (idx < 0) return COLOR_PALETTE[0];
-  return COLOR_PALETTE[(idx + 1) % COLOR_PALETTE.length];
+  const others = COLOR_PALETTE.filter(
+    (c) => !currentColor || c.toLowerCase() !== currentColor.toLowerCase(),
+  );
+  return others[Math.floor(Math.random() * others.length)];
 }
 
 export function ColorPicker({
@@ -49,7 +49,7 @@ export function ColorPicker({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <label className="text-sm font-medium text-app-text">Cor</label>
+        <label className="text-xs font-medium text-app-muted">Cor</label>
         {showSuggest && onSuggest && (
           <button
             type="button"
@@ -68,10 +68,10 @@ export function ColorPicker({
             key={c}
             type="button"
             onClick={() => onChange(c)}
-            className={`w-9 h-9 rounded-full border-2 transition shrink-0 ${
+            className={`w-9 h-9 rounded-full transition shrink-0 ${
               value?.toLowerCase() === c.toLowerCase()
-                ? "border-slate-900 scale-110 shadow-md"
-                : "border-transparent hover:scale-105"
+                ? "scale-110 shadow-md outline outline-2 outline-offset-2 outline-slate-800 dark:outline-white"
+                : "hover:scale-105"
             }`}
             style={{ backgroundColor: c }}
             title={c}
