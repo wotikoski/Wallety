@@ -623,7 +623,7 @@ function RecurringForm({
               onChange={(e) => setBankId(e.target.value)}
               className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             >
-              <option value="">—</option>
+              <option value="">Sem banco</option>
               {banks.map((b) => (
                 <option key={b.id} value={b.id}>{b.name}</option>
               ))}
@@ -636,7 +636,7 @@ function RecurringForm({
               onChange={(e) => setPaymentMethodId(e.target.value)}
               className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             >
-              <option value="">—</option>
+              <option value="">Selecionar...</option>
               {paymentMethods.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}

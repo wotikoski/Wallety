@@ -192,31 +192,31 @@ export function TransactionForm({ transaction, onClose }: Props) {
       )}
       {/* Type toggle */}
       <div>
-        <label className="block text-sm font-medium text-app-text mb-2">Tipo</label>
-        <div className="flex rounded-lg border border-app-border overflow-hidden">
-          <Controller
-            control={control}
-            name="type"
-            render={({ field }) => (
-              <>
+        <label className="block text-xs font-medium text-app-muted mb-1">Tipo</label>
+        <Controller
+          control={control}
+          name="type"
+          render={({ field }) => (
+            <div className="flex gap-2">
+              {(["expense", "income"] as const).map((t) => (
                 <button
+                  key={t}
                   type="button"
-                  onClick={() => field.onChange("income")}
-                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "income" ? "bg-[rgba(16,185,129,.15)] text-income font-semibold" : "text-app-muted hover:bg-[var(--surface-raised)]"}`}
+                  onClick={() => field.onChange(t)}
+                  className={`flex-1 h-9 px-3 text-sm rounded-lg border transition font-medium ${
+                    field.value === t
+                      ? t === "expense"
+                        ? "bg-[rgba(248,113,113,.15)] text-expense border-[rgba(248,113,113,.3)] font-semibold"
+                        : "bg-[rgba(16,185,129,.15)] text-income border-[rgba(16,185,129,.3)] font-semibold"
+                      : "bg-[var(--surface-raised)] text-app-muted border-app-border"
+                  }`}
                 >
-                  + Receita
+                  {t === "expense" ? "Despesa" : "Receita"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => field.onChange("expense")}
-                  className={`flex-1 py-2.5 text-sm font-medium transition ${field.value === "expense" ? "bg-[rgba(248,113,113,.15)] text-expense font-semibold" : "text-app-muted hover:bg-[var(--surface-raised)]"}`}
-                >
-                  - Despesa
-                </button>
-              </>
-            )}
-          />
-        </div>
+              ))}
+            </div>
+          )}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -258,7 +258,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
         <input
           {...register("description")}
           type="text"
-          placeholder="Ex: Supermercado Pão de Açúcar"
+          placeholder="Ex: Supermercado Extrabom"
           className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
         />
         {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
@@ -273,7 +273,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
             step="0.01"
             min="0"
             placeholder="0,00"
-            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text font-mono"
+            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           {errors.value && <p className="text-red-500 text-xs mt-1">{errors.value.message}</p>}
         </div>
