@@ -4,9 +4,6 @@ import { db } from "@/lib/db";
 import { recurringTransactions, transactions } from "@/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
-// Fields from a recurring rule that should be mirrored to every already-
-// materialized transaction when the rule is edited.
-const PROPAGATABLE = ["type", "categoryId", "description", "value", "paymentMethodId", "bankId", "notes"] as const;
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -39,12 +36,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     // Propagate template changes to already-materialized transactions so that
     // reports and the transaction list reflect the edit immediately.
-    const txPatch: Record<string, unknown> = {};
-    for (const field of PROPAGATABLE) {
-      if (field in patch) txPatch[field] = patch[field];
-    }
+    // Use explicit typed fields so Drizzle maps camelCase → snake_case correctly.
+    const txPatch: Partial<typeof transactions.$inferInsert> = {};
+    if ("type" in body) txPatch.type = body.type;
+    if ("categoryId" in body) txPatch.categoryId = body.categoryId ?? null;
+    if ("description" in body) txPatch.description = body.description;
+    if ("value" in body && typeof body.value === "number") txPatch.value = body.value.toFixed(2);
+    if ("paymentMethodId" in body) txPatch.paymentMethodId = body.paymentMethodId ?? null;
+    if ("bankId" in body) txPatch.bankId = body.bankId ?? null;
+    if ("notes" in body) txPatch.notes = body.notes ?? null;
+
     if (Object.keys(txPatch).length > 0) {
-      if (typeof txPatch.value === "number") txPatch.value = (txPatch.value as number).toFixed(2);
       await db
         .update(transactions)
         .set(txPatch)
