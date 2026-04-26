@@ -81,6 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Toaster />
           <Analytics />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
