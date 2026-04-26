@@ -139,8 +139,8 @@ export function ReportFilterSheet({
               className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             >
               <option value="category">Categoria</option>
-              <option value="bank">Banco</option>
               <option value="paymentMethod">Forma de Pagamento</option>
+              <option value="bank">Banco</option>
               {activeGroupId && <option value="user">Usuário</option>}
             </select>
           </div>

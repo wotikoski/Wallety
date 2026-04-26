@@ -204,8 +204,8 @@ export function ReportsClient() {
           className="h-9 text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white text-app-text"
         >
           <option value="category">Por Categoria</option>
-          <option value="bank">Por Banco</option>
           <option value="paymentMethod">Por Forma de Pagamento</option>
+          <option value="bank">Por Banco</option>
           {activeGroupId && <option value="user">Por Usuário</option>}
         </select>
         {/* Month nav */}
