@@ -43,7 +43,7 @@ const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 export function CalendarClient() {
   const { activeGroupId } = useActiveGroup();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const [selectedDay, setSelectedDay] = useState<Date | null>(new Date());
 
   const start = format(startOfMonth(currentDate), "yyyy-MM-dd");
   const end = format(endOfMonth(currentDate), "yyyy-MM-dd");
