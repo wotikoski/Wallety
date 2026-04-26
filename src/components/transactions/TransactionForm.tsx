@@ -52,7 +52,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
       type: (transaction?.type as "income" | "expense") ?? "expense",
       categoryId: transaction?.categoryId ?? null,
       description: transaction?.description ?? "",
-      value: transaction ? parseFloat(transaction.value) : 0,
+      value: transaction ? parseFloat(transaction.value) : (undefined as unknown as number),
       paymentMethodId: transaction?.paymentMethodId ?? null,
       bankId: transaction?.bankId ?? null,
       installmentTotal: transaction?.installmentTotal ?? null,
@@ -397,9 +397,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
           disabled={saveMutation.isPending}
           className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 rounded-lg text-sm transition disabled:opacity-50"
         >
-          {saveMutation.isPending ? "Salvando..." : isEdit ? "Atualizar" : (
-            <><span className="sm:hidden">Criar</span><span className="hidden sm:inline">Criar Lançamento</span></>
-          )}
+          {saveMutation.isPending ? "Salvando..." : isEdit ? "Atualizar" : "Salvar"}
         </button>
       </div>
     </form>

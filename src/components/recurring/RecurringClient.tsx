@@ -50,6 +50,7 @@ interface Recurring {
   endDate: string | null;
   isActive: boolean;
   lastGeneratedDate: string | null;
+  notes: string | null;
 }
 
 const FREQ_LABEL: Record<string, string> = {
@@ -478,6 +479,7 @@ function RecurringForm({
   const [categoryId, setCategoryId] = useState<string>(editing?.categoryId ?? "");
   const [bankId, setBankId] = useState<string>(editing?.bankId ?? "");
   const [paymentMethodId, setPaymentMethodId] = useState<string>(editing?.paymentMethodId ?? "");
+  const [notes, setNotes] = useState<string>(editing?.notes ?? "");
   const [frequency, setFrequency] = useState<"monthly" | "weekly" | "yearly">(
     editing?.frequency ?? "monthly",
   );
@@ -524,6 +526,7 @@ function RecurringForm({
           dayOfMonth: frequency === "monthly" ? dayOfMonth : null,
           startDate,
           endDate: endDate || null,
+          notes: notes.trim() || null,
           groupId: groupId ?? undefined,
         }),
       });
@@ -550,7 +553,7 @@ function RecurringForm({
         className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
       >
         <h2 className="text-lg font-semibold text-app-text">
-          {editing ? "Editar recorrência" : "Nova recorrência"}
+          {editing ? "Editar Recorrência" : "Nova Recorrência"}
         </h2>
 
         <div className="flex gap-2">
@@ -602,7 +605,7 @@ function RecurringForm({
               onChange={(e) => setCategoryId(e.target.value)}
               className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             >
-              <option value="">—</option>
+              <option value="">Sem categoria</option>
               {filteredCats.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -697,6 +700,17 @@ function RecurringForm({
               className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-app-muted mb-1">Notas (opcional)</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+            placeholder="Alguma observação..."
+            className="w-full px-3 py-2 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text resize-none"
+          />
         </div>
 
         <div className="flex gap-2 pt-2">
