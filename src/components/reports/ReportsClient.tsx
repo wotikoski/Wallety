@@ -66,10 +66,11 @@ export function ReportsClient() {
     sessionStorage.setItem(key, String(Date.now()));
     fetch("/api/recurring/materialize", { method: "POST" })
       .then((r) => (r.ok ? r.json() : null))
-      .then((res) => {
-        if (res && res.created > 0) {
-          queryClient.invalidateQueries({ queryKey: ["report"] });
-        }
+      .then(() => {
+        // Always invalidate so the report re-fetches after materialization,
+        // regardless of how many transactions were created. This closes the
+        // race condition where the report query fires before materialize finishes.
+        queryClient.invalidateQueries({ queryKey: ["report"] });
       })
       .catch(() => {});
   }, [queryClient]);

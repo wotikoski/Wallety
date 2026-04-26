@@ -28,30 +28,26 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       patch.lastGeneratedDate = null;
     }
 
+    const now = new Date();
+
+    // Soft-delete all previously materialized transactions so the next
+    // materialize recreates them fresh from the updated rule. This is simpler
+    // and more reliable than trying to patch individual columns, and also
+    // handles date changes (dayOfMonth / startDate) correctly.
+    await db
+      .update(transactions)
+      .set({ deletedAt: now })
+      .where(and(eq(transactions.recurrenceGroupId, id), isNull(transactions.deletedAt)));
+
+    // Reset lastGeneratedDate so the materialize endpoint re-evaluates all
+    // occurrences from startDate and re-inserts them with the updated fields.
+    patch.lastGeneratedDate = null;
+
     const [updated] = await db
       .update(recurringTransactions)
       .set(patch)
       .where(eq(recurringTransactions.id, id))
       .returning();
-
-    // Propagate template changes to already-materialized transactions so that
-    // reports and the transaction list reflect the edit immediately.
-    // Use explicit typed fields so Drizzle maps camelCase → snake_case correctly.
-    const txPatch: Partial<typeof transactions.$inferInsert> = {};
-    if ("type" in body) txPatch.type = body.type;
-    if ("categoryId" in body) txPatch.categoryId = body.categoryId ?? null;
-    if ("description" in body) txPatch.description = body.description;
-    if ("value" in body && typeof body.value === "number") txPatch.value = body.value.toFixed(2);
-    if ("paymentMethodId" in body) txPatch.paymentMethodId = body.paymentMethodId ?? null;
-    if ("bankId" in body) txPatch.bankId = body.bankId ?? null;
-    if ("notes" in body) txPatch.notes = body.notes ?? null;
-
-    if (Object.keys(txPatch).length > 0) {
-      await db
-        .update(transactions)
-        .set(txPatch)
-        .where(and(eq(transactions.recurrenceGroupId, id), isNull(transactions.deletedAt)));
-    }
 
     return NextResponse.json({ recurring: updated });
   } catch (e) {

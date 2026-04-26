@@ -434,9 +434,11 @@ export function RecurringClient() {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["dashboard"] });
             toast({ title: wasEditing ? "Recorrência atualizada!" : "Recorrência criada!" });
-            if (!wasEditing) {
-              materializeMutation.mutate();
-            }
+            // Always materialize: for new rules this creates transactions for the
+            // first time; for edits the PATCH already soft-deleted the old
+            // transactions and reset lastGeneratedDate, so this re-creates them
+            // with the updated fields immediately instead of waiting for Reports.
+            materializeMutation.mutate();
           }}
           onError={(msg) => toast({ title: "Erro", description: msg, variant: "destructive" })}
         />
