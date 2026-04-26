@@ -5,13 +5,6 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState, useRef, useEffect } from "react";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
-import {
-  PieChart,
-  Pie,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
 import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight } from "lucide-react";
 import { ReportFilterSheet } from "./ReportFilterSheet";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
@@ -235,81 +228,71 @@ export function ReportsClient() {
               <p className="text-[12px] text-white/70 mt-1">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : "usuários"}</p>
             </div>
 
-            {/* Category chart — Dashboard style */}
+            {/* Custom horizontal bar chart */}
             <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border p-5 shadow-card">
-              <h2 className="text-[14px] font-bold text-app-text mb-4">
-                {reportType === "income" ? "Receitas" : "Despesas"} por {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : "Usuário"}
-              </h2>
-              <p className="text-[11px] text-app-muted -mt-2 mb-4">Clique em um item para ver os lançamentos</p>
-              <div className="flex flex-col sm:flex-row items-center gap-6">
-                {/* Donut chart */}
-                <div className="w-[160px] h-[160px] shrink-0">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={items}
-                        dataKey="total"
-                        nameKey="label"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={48}
-                        outerRadius={72}
-                        paddingAngle={2}
-                        isAnimationActive={false}
-                      >
-                        {items.map((_, index) => (
-                          <Cell
-                            key={index}
-                            fill={COLORS[index % COLORS.length]}
-                            opacity={drilldown && drilldown.groupKey !== items[index]?.groupKey ? 0.25 : 1}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(v: number) => formatCurrency(v)}
-                        contentStyle={{ background: "var(--surface-card)", border: "1px solid var(--color-border)", borderRadius: 10, fontSize: 12, color: "var(--color-text)" }}
-                        labelStyle={{ color: "var(--color-text)" }}
-                        itemStyle={{ color: "var(--color-text)" }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
+              <div className="flex items-center justify-between mb-1">
+                <h2 className="text-[14px] font-bold text-app-text">
+                  {reportType === "income" ? "Receitas" : "Despesas"} por {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : "Usuário"}
+                </h2>
+                <span className="text-[11px] text-app-muted">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : "usuários"}</span>
+              </div>
+              <p className="text-[11px] text-app-muted mb-5">Clique em um item para ver os lançamentos</p>
 
-                {/* Category list */}
-                <div className="flex-1 min-w-0 space-y-1">
-                  {items.map((item, index) => {
-                    const color = COLORS[index % COLORS.length];
-                    const isSelected = drilldown?.groupKey === item.groupKey;
-                    return (
-                      <button
-                        key={index}
-                        onClick={() => isSelected ? closeDrilldown() : openDrilldown(item, index)}
-                        className="w-full text-left rounded-lg px-2.5 py-2 transition-all duration-150 hover:-translate-y-px"
-                        style={isSelected ? { background: color + "14", boxShadow: `0 4px 16px ${color}30` } : {}}
-                        onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)"; }}
-                        onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = ""; }}
+              <div className="space-y-1.5">
+                {items.map((item, index) => {
+                  const color = COLORS[index % COLORS.length];
+                  const isSelected = drilldown?.groupKey === item.groupKey;
+                  const isDimmed = !!drilldown && !isSelected;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => isSelected ? closeDrilldown() : openDrilldown(item, index)}
+                      className="w-full text-left rounded-xl px-3.5 py-3 transition-all duration-150"
+                      style={{
+                        opacity: isDimmed ? 0.4 : 1,
+                        ...(isSelected
+                          ? { background: color + "12", boxShadow: `0 4px 20px ${color}28` }
+                          : {}),
+                      }}
+                      onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 12px rgba(0,0,0,0.08)"; }}
+                      onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = ""; }}
+                    >
+                      {/* Top row: name · count  |  value  pct-badge */}
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-[3px] h-3.5 rounded-full shrink-0" style={{ background: color }} />
+                        <span className={`text-[13px] font-semibold truncate flex-1 ${isSelected ? "text-brand-500" : "text-app-text"}`}>
+                          {item.label}
+                        </span>
+                        <span className="text-[11px] text-app-muted shrink-0 font-mono tabular-nums">
+                          {item.count} lanç.
+                        </span>
+                        <span className="text-[12px] font-mono font-semibold tabular-nums shrink-0" style={{ color }}>
+                          {formatCurrency(item.total)}
+                        </span>
+                        <span
+                          className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 tabular-nums"
+                          style={{ background: color + "20", color }}
+                        >
+                          {item.percentage.toFixed(1)}%
+                        </span>
+                      </div>
+
+                      {/* Bar track */}
+                      <div
+                        className="h-[7px] w-full rounded-full overflow-hidden"
+                        style={{ background: "var(--surface-raised)" }}
                       >
-                        {/* Row 1: dot + name + pct */}
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                          <span className={`text-[12px] font-semibold truncate flex-1 ${isSelected ? "text-brand-500" : "text-app-text"}`}>
-                            {item.label}
-                          </span>
-                          <span className="text-[11px] text-app-muted shrink-0">{item.percentage.toFixed(1)}%</span>
-                        </div>
-                        {/* Row 2: progress + value */}
-                        <div className="flex items-center gap-2 pl-3.5">
-                          <div className="prog-track flex-1" style={{ height: 4 }}>
-                            <div className="prog-fill" style={{ width: `${item.percentage}%`, background: color }} />
-                          </div>
-                          <span className="text-[12px] font-semibold text-app-muted font-mono shrink-0 tabular-nums">
-                            {formatCurrency(item.total)}
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${item.percentage}%`,
+                            background: `linear-gradient(90deg, ${color}cc, ${color})`,
+                          }}
+                        />
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
