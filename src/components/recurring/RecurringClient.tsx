@@ -25,12 +25,25 @@ interface Category {
   icon: string | null;
 }
 
+interface Bank {
+  id: string;
+  name: string;
+}
+
+interface PaymentMethod {
+  id: string;
+  name: string;
+  type: string;
+}
+
 interface Recurring {
   id: string;
   type: "income" | "expense";
   description: string;
   value: string;
   categoryId: string | null;
+  bankId: string | null;
+  paymentMethodId: string | null;
   frequency: "monthly" | "weekly" | "yearly";
   dayOfMonth: string | null;
   startDate: string;
@@ -110,6 +123,16 @@ export function RecurringClient() {
     queryFn: () => fetch(`/api/categories?${params}`).then((r) => r.json()),
   });
 
+  const { data: banksData } = useQuery<{ banks: Bank[] }>({
+    queryKey: ["banks", activeGroupId],
+    queryFn: () => fetch(`/api/banks?${params}`).then((r) => r.json()),
+  });
+
+  const { data: pmsData } = useQuery<{ paymentMethods: PaymentMethod[] }>({
+    queryKey: ["payment-methods", activeGroupId],
+    queryFn: () => fetch(`/api/payment-methods?${params}`).then((r) => r.json()),
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/recurring/${id}`, { method: "DELETE" });
@@ -157,6 +180,8 @@ export function RecurringClient() {
   const rows = data?.recurring ?? [];
   const categories = catsData?.categories ?? [];
   const catMap = new Map(categories.map((c) => [c.id, c]));
+  const banks = banksData?.banks ?? [];
+  const paymentMethods = pmsData?.paymentMethods ?? [];
 
   function openNew() {
     setEditingRule(null);
@@ -387,6 +412,8 @@ export function RecurringClient() {
       {showForm && (
         <RecurringForm
           categories={categories}
+          banks={banks}
+          paymentMethods={paymentMethods}
           groupId={activeGroupId ?? null}
           editing={editingRule}
           onClose={closeForm}
@@ -425,6 +452,8 @@ export function RecurringClient() {
 
 function RecurringForm({
   categories,
+  banks,
+  paymentMethods,
   groupId,
   editing,
   onClose,
@@ -432,6 +461,8 @@ function RecurringForm({
   onError,
 }: {
   categories: Category[];
+  banks: Bank[];
+  paymentMethods: PaymentMethod[];
   groupId: string | null;
   editing: Recurring | null;
   onClose: () => void;
@@ -445,6 +476,8 @@ function RecurringForm({
     editing ? String(parseFloat(editing.value)).replace(".", ",") : "",
   );
   const [categoryId, setCategoryId] = useState<string>(editing?.categoryId ?? "");
+  const [bankId, setBankId] = useState<string>(editing?.bankId ?? "");
+  const [paymentMethodId, setPaymentMethodId] = useState<string>(editing?.paymentMethodId ?? "");
   const [frequency, setFrequency] = useState<"monthly" | "weekly" | "yearly">(
     editing?.frequency ?? "monthly",
   );
@@ -485,6 +518,8 @@ function RecurringForm({
           description: description.trim(),
           value,
           categoryId: categoryId || null,
+          bankId: bankId || null,
+          paymentMethodId: paymentMethodId || null,
           frequency,
           dayOfMonth: frequency === "monthly" ? dayOfMonth : null,
           startDate,
@@ -572,6 +607,35 @@ function RecurringForm({
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-app-muted mb-1">Banco</label>
+            <select
+              value={bankId}
+              onChange={(e) => setBankId(e.target.value)}
+              className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+            >
+              <option value="">—</option>
+              {banks.map((b) => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-app-muted mb-1">Forma de Pagamento</label>
+            <select
+              value={paymentMethodId}
+              onChange={(e) => setPaymentMethodId(e.target.value)}
+              className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+            >
+              <option value="">—</option>
+              {paymentMethods.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>
           </div>
