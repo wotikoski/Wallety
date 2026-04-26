@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
 import { recurringTransactions, transactions } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
+
+// Fields from a recurring rule that should be mirrored to every already-
+// materialized transaction when the rule is edited.
+const PROPAGATABLE = ["type", "categoryId", "description", "value", "paymentMethodId", "bankId", "notes"] as const;
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -32,6 +36,21 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       .set(patch)
       .where(eq(recurringTransactions.id, id))
       .returning();
+
+    // Propagate template changes to already-materialized transactions so that
+    // reports and the transaction list reflect the edit immediately.
+    const txPatch: Record<string, unknown> = {};
+    for (const field of PROPAGATABLE) {
+      if (field in patch) txPatch[field] = patch[field];
+    }
+    if (Object.keys(txPatch).length > 0) {
+      if (typeof txPatch.value === "number") txPatch.value = (txPatch.value as number).toFixed(2);
+      await db
+        .update(transactions)
+        .set(txPatch)
+        .where(and(eq(transactions.recurrenceGroupId, id), isNull(transactions.deletedAt)));
+    }
+
     return NextResponse.json({ recurring: updated });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();

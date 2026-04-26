@@ -145,6 +145,7 @@ export function RecurringClient() {
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
       queryClient.invalidateQueries({ queryKey: ["recurring-projected"] });
+      queryClient.invalidateQueries({ queryKey: ["report"] });
       toast({ title: "Recorrência e lançamentos removidos" });
     },
     onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
@@ -420,15 +421,20 @@ export function RecurringClient() {
           onClose={closeForm}
           onSaved={(wasEditing) => {
             closeForm();
+            // Always clear the session throttle so Reports re-materializes on
+            // the next visit and picks up any template changes immediately.
+            if (typeof window !== "undefined") {
+              sessionStorage.removeItem("recurring_materialized_at");
+            }
             queryClient.invalidateQueries({ queryKey: ["recurring"] });
             queryClient.invalidateQueries({ queryKey: ["recurring-projected"] });
             queryClient.invalidateQueries({ queryKey: ["recurring-projected-budgets"] });
             queryClient.invalidateQueries({ queryKey: ["recurring-projected-calendar"] });
+            queryClient.invalidateQueries({ queryKey: ["report"] });
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+            queryClient.invalidateQueries({ queryKey: ["dashboard"] });
             toast({ title: wasEditing ? "Recorrência atualizada!" : "Recorrência criada!" });
             if (!wasEditing) {
-              if (typeof window !== "undefined") {
-                sessionStorage.removeItem("recurring_materialized_at");
-              }
               materializeMutation.mutate();
             }
           }}
