@@ -607,9 +607,7 @@ function RecurringForm({
             >
               <option value="">Sem categoria</option>
               {filteredCats.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
+                <option key={c.id} value={c.id}>{c.name}{c.icon ? ` ${c.icon}` : ""}</option>
               ))}
             </select>
           </div>

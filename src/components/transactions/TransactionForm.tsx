@@ -245,7 +245,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
               >
                 <option value="">Sem categoria</option>
                 {categories.map((c: { id: string; name: string; icon: string }) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                  <option key={c.id} value={c.id}>{c.name}{c.icon ? ` ${c.icon}` : ""}</option>
                 ))}
               </select>
             )}
