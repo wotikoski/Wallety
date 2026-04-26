@@ -55,6 +55,7 @@ import Link from "next/link";
 import {
   Plus, ArrowUpRight, ArrowDownRight, CheckCircle2, Circle,
   Trash2, Edit, ChevronLeft, ChevronRight, Layers, Download, Clock,
+  TrendingUp, TrendingDown,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -309,15 +310,24 @@ export function TransactionsClient() {
       {/* Filters — desktop only (mobile uses FilterSheet) */}
       <div className="hidden md:flex flex-wrap gap-2 items-center">
         {/* Chip type filters */}
-        {(["", "income", "expense"] as const).map((v) => (
-          <button
-            key={v}
-            onClick={() => { setType(v); setPage(1); }}
-            className={`chip-filter${type === v ? " active" : ""}`}
-          >
-            {v === "" ? "Todos" : v === "income" ? "Receitas" : "Despesas"}
-          </button>
-        ))}
+        <button
+          onClick={() => { setType(""); setPage(1); }}
+          className={`chip-filter${type === "" ? " active" : ""}`}
+        >
+          <Layers size={12} className="inline mr-1" />Todos
+        </button>
+        <button
+          onClick={() => { setType("income"); setPage(1); }}
+          className={`chip-filter${type === "income" ? " active" : ""}`}
+        >
+          <TrendingUp size={12} className="inline mr-1" />Receitas
+        </button>
+        <button
+          onClick={() => { setType("expense"); setPage(1); }}
+          className={`chip-filter${type === "expense" ? " active" : ""}`}
+        >
+          <TrendingDown size={12} className="inline mr-1" />Despesas
+        </button>
         <div className="w-px h-5 bg-app-border mx-1" />
         {/* Date range */}
         <input
