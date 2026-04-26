@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { PAYMENT_METHOD_TYPES } from "@/lib/constants/payment-method-types";
-import { X } from "lucide-react";
+import { X, TrendingUp, TrendingDown } from "lucide-react";
 
 interface Props {
   onClose?: () => void;
@@ -192,28 +192,29 @@ export function TransactionForm({ transaction, onClose }: Props) {
       )}
       {/* Type toggle */}
       <div>
-        <label className="block text-xs font-medium text-app-muted mb-1">Tipo</label>
         <Controller
           control={control}
           name="type"
           render={({ field }) => (
-            <div className="flex gap-2">
-              {(["expense", "income"] as const).map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => field.onChange(t)}
-                  className={`flex-1 h-9 px-3 text-sm rounded-lg border transition font-medium ${
-                    field.value === t
-                      ? t === "expense"
-                        ? "bg-[rgba(248,113,113,.15)] text-expense border-[rgba(248,113,113,.3)] font-semibold"
-                        : "bg-[rgba(16,185,129,.15)] text-income border-[rgba(16,185,129,.3)] font-semibold"
-                      : "bg-[var(--surface-raised)] text-app-muted border-app-border"
-                  }`}
-                >
-                  {t === "expense" ? "Despesa" : "Receita"}
-                </button>
-              ))}
+            <div className="flex rounded-xl border border-app-border overflow-hidden h-[42px]">
+              <button
+                type="button"
+                onClick={() => field.onChange("income")}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+                  field.value === "income" ? "bg-income text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                }`}
+              >
+                <TrendingUp size={14} /> Receita
+              </button>
+              <button
+                type="button"
+                onClick={() => field.onChange("expense")}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+                  field.value === "expense" ? "bg-expense text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                }`}
+              >
+                <TrendingDown size={14} /> Despesa
+              </button>
             </div>
           )}
         />

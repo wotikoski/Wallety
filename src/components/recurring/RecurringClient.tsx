@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Plus, RefreshCcw, Trash2, Play, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Plus, RefreshCcw, Trash2, Play, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SwipeableRow } from "@/components/transactions/SwipeableRow";
 
@@ -564,23 +564,25 @@ function RecurringForm({
           {editing ? "Editar Recorrência" : "Nova Recorrência"}
         </h2>
 
-        <div className="flex gap-2">
-          {(["expense", "income"] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setType(t)}
-              className={`flex-1 h-9 px-3 text-sm rounded-lg border ${
-                type === t
-                  ? t === "expense"
-                    ? "bg-[rgba(248,113,113,.15)] text-expense border-[rgba(248,113,113,.3)] font-semibold"
-                    : "bg-[rgba(16,185,129,.15)] text-income border-[rgba(16,185,129,.3)] font-semibold"
-                  : "bg-[var(--surface-raised)] text-app-muted border-app-border"
-              }`}
-            >
-              {t === "expense" ? "Despesa" : "Receita"}
-            </button>
-          ))}
+        <div className="flex rounded-xl border border-app-border overflow-hidden h-[42px]">
+          <button
+            type="button"
+            onClick={() => setType("income")}
+            className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+              type === "income" ? "bg-income text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+            }`}
+          >
+            <TrendingUp size={14} /> Receita
+          </button>
+          <button
+            type="button"
+            onClick={() => setType("expense")}
+            className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+              type === "expense" ? "bg-expense text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+            }`}
+          >
+            <TrendingDown size={14} /> Despesa
+          </button>
         </div>
 
         <div>
