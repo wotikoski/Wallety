@@ -221,7 +221,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-app-text mb-1.5">Data</label>
+          <label className="block text-xs font-medium text-app-muted mb-1">Data</label>
           <input
             {...register("date")}
             type="date"
@@ -230,7 +230,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
           {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-app-text mb-1.5">Categoria</label>
+          <label className="block text-xs font-medium text-app-muted mb-1">Categoria</label>
           {/* Controlled so the rendered value always tracks RHF state, even
               when the categories list loads asynchronously after mount. */}
           <Controller
@@ -254,7 +254,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-app-text mb-1.5">Descrição</label>
+        <label className="block text-xs font-medium text-app-muted mb-1">Descrição</label>
         <input
           {...register("description")}
           type="text"
@@ -266,7 +266,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-app-text mb-1.5">Valor total (R$)</label>
+          <label className="block text-xs font-medium text-app-muted mb-1">Valor total (R$)</label>
           <input
             {...register("value", { valueAsNumber: true })}
             type="number"
@@ -278,7 +278,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
           {errors.value && <p className="text-red-500 text-xs mt-1">{errors.value.message}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-app-text mb-1.5">Forma de Pagamento</label>
+          <label className="block text-xs font-medium text-app-muted mb-1">Forma de Pagamento</label>
           <Controller
             control={control}
             name="paymentMethodId"
@@ -300,7 +300,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-app-text mb-1.5">Banco</label>
+        <label className="block text-xs font-medium text-app-muted mb-1">Banco</label>
         <Controller
           control={control}
           name="bankId"
@@ -325,7 +325,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
         <p className="text-sm font-medium text-app-text">Parcelamento</p>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs text-slate-500 mb-1">Nº de parcelas</label>
+            <label className="block text-xs font-medium text-app-muted mb-1">Nº de parcelas</label>
             <input
               {...register("installmentTotal", { valueAsNumber: true })}
               type="number"
@@ -336,7 +336,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
             />
           </div>
           <div>
-            <label className="block text-xs text-slate-500 mb-1">Valor da parcela (R$)</label>
+            <label className="block text-xs font-medium text-app-muted mb-1">Valor da parcela (R$)</label>
             <input
               {...register("installmentValue", { valueAsNumber: true })}
               type="number"
@@ -375,7 +375,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-app-text mb-1.5">Notas (opcional)</label>
+        <label className="block text-xs font-medium text-app-muted mb-1">Notas (opcional)</label>
         <textarea
           {...register("notes")}
           rows={2}

@@ -145,7 +145,7 @@ export function GroupsClient() {
             </div>
             <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-app-text mb-1.5">Nome do grupo</label>
+                <label className="block text-xs font-medium text-app-muted mb-1">Nome do grupo</label>
                 <input
                   {...register("name", { required: true })}
                   className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
@@ -153,7 +153,7 @@ export function GroupsClient() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-app-text mb-1.5">Descrição (opcional)</label>
+                <label className="block text-xs font-medium text-app-muted mb-1">Descrição (opcional)</label>
                 <input
                   {...register("description")}
                   className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"

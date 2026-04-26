@@ -124,7 +124,7 @@ export function BanksClient() {
             </div>
             <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-3 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-app-text mb-1.5">Nome do banco</label>
+                <label className="block text-xs font-medium text-app-muted mb-1">Nome do banco</label>
                 <input
                   {...nameReg}
                   onChange={(e) => {
@@ -139,7 +139,7 @@ export function BanksClient() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-app-text mb-1.5">Código COMPE</label>
+                <label className="block text-xs font-medium text-app-muted mb-1">Código COMPE</label>
                 <input
                   {...register("code")}
                   className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"

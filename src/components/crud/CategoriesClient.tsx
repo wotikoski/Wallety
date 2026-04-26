@@ -164,7 +164,7 @@ export function CategoriesClient() {
             </div>
             <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-app-text mb-1.5">Nome</label>
+                <label className="block text-xs font-medium text-app-muted mb-1">Nome</label>
                 <input
                   {...register("name", { required: true })}
                   className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
@@ -172,7 +172,7 @@ export function CategoriesClient() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-app-text mb-1.5">Tipo</label>
+                <label className="block text-xs font-medium text-app-muted mb-1">Tipo</label>
                 <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
                   <option value="expense">Despesa</option>
                   <option value="income">Receita</option>
@@ -180,7 +180,7 @@ export function CategoriesClient() {
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-app-text mb-2">Ícone</label>
+                <label className="block text-xs font-medium text-app-muted mb-1">Ícone</label>
                 <div className="flex items-start gap-3">
                   <div
                     className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0 border border-app-border"
