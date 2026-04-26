@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState, useRef, useEffect } from "react";
 import { formatCurrency } from "@/lib/utils/currency";
@@ -45,6 +45,7 @@ const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Jul
 
 export function ReportsClient() {
   const { activeGroupId } = useActiveGroup();
+  const queryClient = useQueryClient();
   const now = new Date();
 
   const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
@@ -52,6 +53,26 @@ export function ReportsClient() {
   const [groupBy, setGroupBy] = useState<"category" | "bank" | "paymentMethod" | "user">("category");
   const [reportType, setReportType] = useState<"income" | "expense">("expense");
   const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
+
+  // Materialize pending recurring transactions on load (same throttle as Dashboard).
+  // Without this, recurring rules created after the last Dashboard visit would
+  // be invisible in the report — they exist as rules but not yet as transactions.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const key = "recurring_materialized_at";
+    const last = sessionStorage.getItem(key);
+    const ONE_HOUR = 60 * 60 * 1000;
+    if (last && Date.now() - parseInt(last) < ONE_HOUR) return;
+    sessionStorage.setItem(key, String(Date.now()));
+    fetch("/api/recurring/materialize", { method: "POST" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((res) => {
+        if (res && res.created > 0) {
+          queryClient.invalidateQueries({ queryKey: ["report"] });
+        }
+      })
+      .catch(() => {});
+  }, [queryClient]);
 
   const params = new URLSearchParams({ startDate, endDate, groupBy });
   if (activeGroupId) params.set("groupId", activeGroupId);
