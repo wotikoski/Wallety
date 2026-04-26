@@ -20,8 +20,9 @@ export async function GET(req: NextRequest) {
     const effectiveStartDate = searchParams.get("effectiveStartDate");
     const effectiveEndDate = searchParams.get("effectiveEndDate");
     const type = searchParams.get("type");
-    const categoryId = searchParams.get("categoryId"); // "__none__" → NULL
-    const bankId = searchParams.get("bankId");         // "__none__" → NULL
+    const categoryId = searchParams.get("categoryId");       // "__none__" → NULL
+    const bankId = searchParams.get("bankId");               // "__none__" → NULL
+    const paymentMethodId = searchParams.get("paymentMethodId"); // "__none__" → NULL
     const isPaid = searchParams.get("isPaid");
     const hideFuture = searchParams.get("hideFuture") === "true";
     const page = parseInt(searchParams.get("page") ?? "1");
@@ -47,6 +48,8 @@ export async function GET(req: NextRequest) {
     else if (categoryId) conditions.push(eq(transactions.categoryId, categoryId));
     if (bankId === "__none__") conditions.push(isNull(transactions.bankId));
     else if (bankId) conditions.push(eq(transactions.bankId, bankId));
+    if (paymentMethodId === "__none__") conditions.push(isNull(transactions.paymentMethodId));
+    else if (paymentMethodId) conditions.push(eq(transactions.paymentMethodId, paymentMethodId));
     if (isPaid !== null && isPaid !== undefined) {
       conditions.push(eq(transactions.isPaid, isPaid === "true"));
     }

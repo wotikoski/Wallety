@@ -9,8 +9,8 @@ interface ReportFilterSheetProps {
   setStartDate: (v: string) => void;
   endDate: string;
   setEndDate: (v: string) => void;
-  groupBy: "category" | "bank" | "user";
-  setGroupBy: (v: "category" | "bank" | "user") => void;
+  groupBy: "category" | "bank" | "paymentMethod" | "user";
+  setGroupBy: (v: "category" | "bank" | "paymentMethod" | "user") => void;
   navigateMonth: (delta: -1 | 1) => void;
   activeGroupId: string | null;
   onFilterChange: (fn: () => void) => void;
@@ -135,11 +135,12 @@ export function ReportFilterSheet({
             <label className="block text-xs font-medium text-app-muted mb-1.5">Agrupar por</label>
             <select
               value={draftGroupBy}
-              onChange={(e) => setDraftGroupBy(e.target.value as "category" | "bank" | "user")}
+              onChange={(e) => setDraftGroupBy(e.target.value as "category" | "bank" | "paymentMethod" | "user")}
               className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             >
               <option value="category">Categoria</option>
               <option value="bank">Banco</option>
+              <option value="paymentMethod">Forma de Pagamento</option>
               {activeGroupId && <option value="user">Usuário</option>}
             </select>
           </div>

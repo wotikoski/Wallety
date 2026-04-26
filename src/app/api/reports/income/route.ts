@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
-import { transactions, categories, banks, users } from "@/lib/db/schema";
+import { transactions, categories, banks, users, paymentMethods } from "@/lib/db/schema";
 import { and, eq, gte, lte, isNull, sql } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
@@ -64,6 +64,16 @@ export async function GET(req: NextRequest) {
       for (const t of txns) {
         const key = t.userId;
         const label = userMap[t.userId] ?? "Usuário";
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
+        groups[key].total += parseFloat(t.value);
+        groups[key].count++;
+      }
+    } else if (groupBy === "paymentMethod") {
+      const pms = await db.select({ id: paymentMethods.id, name: paymentMethods.name }).from(paymentMethods).where(isNull(paymentMethods.deletedAt));
+      const pmMap = Object.fromEntries(pms.map((p) => [p.id, p.name]));
+      for (const t of txns) {
+        const key = t.paymentMethodId ?? "__none__";
+        const label = t.paymentMethodId ? (pmMap[t.paymentMethodId] ?? "Outra Forma") : "Sem Forma de Pagamento";
         if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;

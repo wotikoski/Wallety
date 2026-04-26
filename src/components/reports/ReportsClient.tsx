@@ -49,7 +49,7 @@ export function ReportsClient() {
 
   const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
-  const [groupBy, setGroupBy] = useState<"category" | "bank" | "user">("category");
+  const [groupBy, setGroupBy] = useState<"category" | "bank" | "paymentMethod" | "user">("category");
   const [reportType, setReportType] = useState<"income" | "expense">("expense");
   const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
 
@@ -73,6 +73,7 @@ export function ReportsClient() {
   if (drilldown) {
     if (groupBy === "category") drillParams.set("categoryId", drilldown.groupKey);
     else if (groupBy === "bank") drillParams.set("bankId", drilldown.groupKey);
+    else if (groupBy === "paymentMethod") drillParams.set("paymentMethodId", drilldown.groupKey);
   }
   if (activeGroupId) drillParams.set("groupId", activeGroupId);
 
@@ -182,6 +183,7 @@ export function ReportsClient() {
         >
           <option value="category">Por Categoria</option>
           <option value="bank">Por Banco</option>
+          <option value="paymentMethod">Por Forma de Pagamento</option>
           {activeGroupId && <option value="user">Por Usuário</option>}
         </select>
         {/* Month nav */}
@@ -206,7 +208,7 @@ export function ReportsClient() {
         {/* Print header */}
         <div className="hidden print:block print-only mb-6">
           <h1 className="text-2xl font-bold">Wallety — Relatório de {reportType === "income" ? "Receitas" : "Despesas"}</h1>
-          <p className="text-sm text-slate-500">Período: {startDate} a {endDate} · Agrupado por: {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : "Usuário"}</p>
+          <p className="text-sm text-slate-500">Período: {startDate} a {endDate} · Agrupado por: {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : groupBy === "paymentMethod" ? "Forma de Pagamento" : "Usuário"}</p>
         </div>
 
         {isLoading ? (
@@ -225,16 +227,16 @@ export function ReportsClient() {
             >
               <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-white/80 mb-1.5">Total de {reportType === "income" ? "Receitas" : "Despesas"}</p>
               <p className="text-[28px] font-bold font-mono text-white">{formatCurrency(data?.grandTotal ?? 0)}</p>
-              <p className="text-[12px] text-white/70 mt-1">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : "usuários"}</p>
+              <p className="text-[12px] text-white/70 mt-1">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : groupBy === "paymentMethod" ? "formas de pagamento" : "usuários"}</p>
             </div>
 
             {/* Custom horizontal bar chart */}
             <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border p-5 shadow-card">
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-[14px] font-bold text-app-text">
-                  {reportType === "income" ? "Receitas" : "Despesas"} por {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : "Usuário"}
+                  {reportType === "income" ? "Receitas" : "Despesas"} por {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : groupBy === "paymentMethod" ? "Forma de Pagamento" : "Usuário"}
                 </h2>
-                <span className="text-[11px] text-app-muted">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : "usuários"}</span>
+                <span className="text-[11px] text-app-muted">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : groupBy === "paymentMethod" ? "formas de pagamento" : "usuários"}</span>
               </div>
               <p className="text-[11px] text-app-muted mb-5">Clique em um item para ver os lançamentos</p>
 
