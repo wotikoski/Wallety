@@ -349,10 +349,11 @@ export function TransactionForm({ transaction, onClose }: Props) {
               type="number"
               min="1"
               max="120"
-              placeholder="1 = à vista"
+              placeholder="Ex: 12"
               onWheel={(e) => e.currentTarget.blur()}
               className="w-full h-9 px-3 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             />
+            <p className="text-[11px] text-app-muted mt-1">Deixe em branco para à vista</p>
           </div>
           <div>
             <label className="block text-xs font-medium text-app-muted mb-1">Valor da parcela (R$)</label>
@@ -367,9 +368,9 @@ export function TransactionForm({ transaction, onClose }: Props) {
             />
           </div>
         </div>
-        {installmentTotal && installmentTotal > 1 && value && (
+        {Number.isFinite(installmentTotal) && installmentTotal! > 1 && Number.isFinite(value) && (
           <p className="text-xs text-brand-600">
-            {installmentTotal}x de {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value / installmentTotal)}
+            {installmentTotal}x de {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value! / installmentTotal!)}
           </p>
         )}
       </div>
