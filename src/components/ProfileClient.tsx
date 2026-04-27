@@ -150,6 +150,24 @@ export function ProfileClient() {
         </div>
       </div>
 
+      {/* Admin: one-time migration */}
+      <div className="bg-[var(--surface-card)] rounded-xl border border-app-border p-5 space-y-3">
+        <p className="text-sm font-semibold text-app-text">Manutenção</p>
+        <p className="text-xs text-app-muted">Se as formas de pagamento não aparecerem, clique para aplicar a atualização do banco de dados.</p>
+        <button
+          type="button"
+          onClick={async () => {
+            const res = await fetch("/api/admin/migrate", { method: "POST" });
+            const json = await res.json();
+            if (res.ok) alert("Atualização aplicada com sucesso!");
+            else alert("Erro: " + (json.error ?? "desconhecido"));
+          }}
+          className="px-4 py-2 text-sm font-medium bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition"
+        >
+          Aplicar atualização
+        </button>
+      </div>
+
       {/* Danger zone */}
       <div className="bg-amber-50 dark:bg-blue-50 rounded-xl border border-amber-200 dark:border-blue-200 shadow-sm overflow-hidden">
         <div className="px-6 py-3.5 border-b border-amber-200 dark:border-blue-200">
