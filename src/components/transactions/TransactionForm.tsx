@@ -274,6 +274,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
             step="0.01"
             min="0"
             placeholder="0,00"
+            onWheel={(e) => e.currentTarget.blur()}
             className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           {errors.value && <p className="text-red-500 text-xs mt-1">{errors.value.message}</p>}
@@ -333,6 +334,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
               min="1"
               max="120"
               placeholder="1 = à vista"
+              onWheel={(e) => e.currentTarget.blur()}
               className="w-full h-9 px-3 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             />
           </div>
@@ -343,6 +345,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
               type="number"
               step="0.01"
               placeholder="Calculado automaticamente"
+              onWheel={(e) => e.currentTarget.blur()}
               readOnly={!!installmentTotal && installmentTotal > 1}
               className="w-full h-9 px-3 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-hover)] text-app-muted font-mono"
             />
