@@ -244,8 +244,7 @@ export function ReportsClient() {
           <>
             {/* Summary */}
             <div
-              className="rounded-[14px] p-5"
-              style={{ background: reportType === "income" ? "#10b981" : "#f87171" }}
+              className={`rounded-[14px] p-5 ${reportType === "income" ? "bg-emerald-500 dark:bg-emerald-700" : "bg-red-400 dark:bg-red-700"}`}
             >
               <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-white/80 mb-1.5">Total de {reportType === "income" ? "Receitas" : "Despesas"}</p>
               <p className="text-[28px] font-bold font-mono text-white">{formatCurrency(data?.grandTotal ?? 0)}</p>

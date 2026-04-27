@@ -62,8 +62,7 @@ export function DailyLimitClient() {
         <>
           {/* Hero card */}
           <div
-            className="rounded-[14px] p-5 text-white"
-            style={{ background: isOverBudget ? "#f87171" : "#6366f1" }}
+            className={`rounded-[14px] p-5 text-white ${isOverBudget ? "bg-red-400 dark:bg-red-700" : "bg-indigo-500 dark:bg-indigo-700"}`}
           >
             <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-white/80 mb-1.5">
               {isOverBudget ? "Saldo insuficiente" : "Limite diário"}
