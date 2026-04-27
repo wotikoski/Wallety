@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { PAYMENT_METHOD_TYPES } from "@/lib/constants/payment-method-types";
+import { parseCurrency } from "@/lib/utils/currency";
 import { X, TrendingUp, TrendingDown } from "lucide-react";
 
 interface Props {
@@ -269,13 +270,11 @@ export function TransactionForm({ transaction, onClose }: Props) {
         <div>
           <label className="block text-xs font-medium text-app-muted mb-1">Valor total (R$)</label>
           <input
-            {...register("value", { valueAsNumber: true })}
-            type="number"
-            step="0.01"
-            min="0"
+            {...register("value", { setValueAs: (v) => parseCurrency(String(v ?? "")) })}
+            type="text"
+            inputMode="decimal"
             placeholder="0,00"
-            onWheel={(e) => e.currentTarget.blur()}
-            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text font-mono"
           />
           {errors.value && <p className="text-red-500 text-xs mt-1">{errors.value.message}</p>}
         </div>
