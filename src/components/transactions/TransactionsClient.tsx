@@ -580,9 +580,6 @@ export function TransactionsClient() {
           </>
         )}
 
-        {/* Mobile spacer: keeps the FAB from covering the last row and pagination */}
-        <div className="md:hidden h-20" />
-
         {txns.length > 0 && (
           <div className="flex items-center justify-between px-5 py-3 border-t border-[#f1f3f9]">
             <span className="text-[12px] text-app-muted">{txns.length} lançamentos</span>
@@ -606,6 +603,9 @@ export function TransactionsClient() {
           </div>
         )}
       </div>
+
+      {/* Mobile spacer so the FAB never covers the pagination row */}
+      <div className="md:hidden h-14" />
 
       <ConfirmDialog {...dialogProps} loading={deleteTransaction.isPending} />
 

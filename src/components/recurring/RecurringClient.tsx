@@ -410,9 +410,10 @@ export function RecurringClient() {
           </>
         )}
 
-        {/* Mobile spacer: keeps the FAB from covering the last recurring rule's actions */}
-        <div className="md:hidden h-20" />
       </div>
+
+      {/* Mobile spacer so the FAB never covers the last row's action buttons */}
+      <div className="md:hidden h-14" />
 
       {showForm && (
         <RecurringForm
