@@ -4,8 +4,23 @@ import { db } from "@/lib/db";
 import { paymentMethods } from "@/lib/db/schema";
 import { paymentMethodSchema } from "@/lib/validations/payment-method";
 import { and, eq, isNull, or } from "drizzle-orm";
+import { neon } from "@neondatabase/serverless";
+
+// Ensure the supports_installments column exists (safe to run on every cold start).
+async function ensureSchema() {
+  try {
+    const sql = neon(process.env.DATABASE_URL!);
+    await sql`
+      ALTER TABLE payment_methods
+        ADD COLUMN IF NOT EXISTS supports_installments boolean NOT NULL DEFAULT false
+    `;
+  } catch {
+    // Column already exists or other non-critical error — ignore.
+  }
+}
 
 export async function GET(req: NextRequest) {
+  await ensureSchema();
   try {
     const auth = await requireAuth(req);
     const { searchParams } = new URL(req.url);
