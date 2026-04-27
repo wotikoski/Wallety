@@ -185,8 +185,8 @@ export function TransactionForm({ transaction, onClose }: Props) {
   const selectedPm = paymentMethods.find(
     (pm: { id: string; supportsInstallments: boolean }) => pm.id === paymentMethodId
   );
-  // Show installments section when: no PM selected yet, or the selected PM supports installments
-  const showInstallments = !paymentMethodId || !!selectedPm?.supportsInstallments;
+  // Show installments section only when the selected PM explicitly supports installments
+  const showInstallments = !!selectedPm?.supportsInstallments;
 
   // Clear installment fields when switching to a PM that doesn't support installments
   useEffect(() => {
