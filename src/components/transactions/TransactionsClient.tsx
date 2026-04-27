@@ -301,7 +301,7 @@ export function TransactionsClient() {
       <button
         onClick={() => setShowNewForm(true)}
         title="Novo Lançamento"
-        className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-lg transition"
+        className="md:hidden fixed right-4 z-50 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-lg transition" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)" }}
         aria-label="Novo Lançamento"
       >
         <Plus size={24} />
@@ -579,6 +579,9 @@ export function TransactionsClient() {
             </table>
           </>
         )}
+
+        {/* Mobile spacer: keeps the FAB from covering the last row and pagination */}
+        <div className="md:hidden h-20" />
 
         {txns.length > 0 && (
           <div className="flex items-center justify-between px-5 py-3 border-t border-[#f1f3f9]">

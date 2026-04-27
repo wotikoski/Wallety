@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
@@ -409,6 +409,9 @@ export function RecurringClient() {
             </table>
           </>
         )}
+
+        {/* Mobile spacer: keeps the FAB from covering the last recurring rule's actions */}
+        <div className="md:hidden h-20" />
       </div>
 
       {showForm && (
@@ -451,7 +454,7 @@ export function RecurringClient() {
         onClick={openNew}
         title="Nova recorrência"
         aria-label="Nova recorrência"
-        className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(99,102,241,.4)] transition"
+        className="md:hidden fixed right-4 z-50 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(99,102,241,.4)] transition" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)" }}
       >
         <Plus size={24} />
       </button>
