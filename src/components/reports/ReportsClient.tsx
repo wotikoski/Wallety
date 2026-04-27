@@ -325,67 +325,59 @@ export function ReportsClient() {
                       </button>
                     </div>
 
-                    {/* Cost-type drilldown panel */}
+                    {/* Cost-type drilldown — same inline style as category drilldown */}
                     {costDrilldown && (
-                      <div ref={costDrillRef} className="mt-4 border-t border-app-border pt-4 animate-fade-in">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            {costDrilldown === "fixed"
-                              ? <Repeat2 size={13} className="text-violet-500" />
-                              : <Shuffle size={13} className="text-sky-500" />}
-                            <span className="text-[13px] font-semibold text-app-text">
-                              Lançamentos {costDrilldown === "fixed" ? "Fixos" : "Variáveis"}
-                            </span>
+                      (() => {
+                        const color = costDrilldown === "fixed" ? "#8b5cf6" : "#38bdf8";
+                        return (
+                          <div ref={costDrillRef} className="mt-3 mx-0 rounded-xl border animate-fade-in overflow-hidden" style={{ borderColor: color + "40", background: color + "08" }}>
+                            {costDrillLoading ? (
+                              <p className="text-[12px] text-app-muted py-4 text-center">Carregando...</p>
+                            ) : !costDrillData?.transactions?.length ? (
+                              <p className="text-[12px] text-app-muted py-4 text-center">Nenhum lançamento encontrado</p>
+                            ) : (
+                              <table className="w-full">
+                                <thead>
+                                  <tr className="border-b" style={{ borderColor: color + "30" }}>
+                                    <th className="text-left px-3.5 py-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Data</th>
+                                    <th className="text-left py-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Descrição</th>
+                                    <th className="text-right px-3.5 py-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Valor</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y" style={{ borderColor: color + "20" }}>
+                                  {costDrillData.transactions.map((t) => (
+                                    <tr key={t.id} className="hover:bg-black/5 transition">
+                                      <td className="px-3.5 py-2 text-[12px] text-app-muted whitespace-nowrap w-24">{formatDate(t.effectiveDate ?? t.date)}</td>
+                                      <td className="py-2 text-[13px] text-app-text font-medium">
+                                        {t.description}
+                                        {t.notes && <p className="text-[11px] text-app-muted font-normal mt-0.5">{t.notes}</p>}
+                                      </td>
+                                      <td className="px-3.5 py-2 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                          <span className="text-[13px] font-mono font-semibold text-expense">
+                                            −{formatCurrency(t.value)}
+                                          </span>
+                                          {t.isPaid ? <CheckCircle2 size={13} className="text-income shrink-0" /> : <Circle size={13} className="text-app-muted shrink-0" />}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                                <tfoot className="border-t" style={{ borderColor: color + "30" }}>
+                                  <tr>
+                                    <td colSpan={2} className="px-3.5 py-2 text-[12px] font-semibold text-app-text">{costDrillData.transactions.length} lançamento(s)</td>
+                                    <td className="px-3.5 py-2 text-right">
+                                      <span className="text-[13px] font-mono font-bold text-expense">
+                                        −{formatCurrency(costDrillData.transactions.reduce((a, t) => a + parseFloat(t.value), 0))}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                              </table>
+                            )}
                           </div>
-                          <button
-                            onClick={() => setCostDrilldown(null)}
-                            className="text-[11px] text-app-muted hover:text-app-text transition px-2 py-1 rounded-lg hover:bg-[var(--surface-raised)]"
-                          >
-                            Fechar ✕
-                          </button>
-                        </div>
-                        {costDrillLoading ? (
-                          <p className="text-[12px] text-app-muted py-3 text-center">Carregando...</p>
-                        ) : !costDrillData?.transactions?.length ? (
-                          <p className="text-[12px] text-app-muted py-3 text-center">Nenhum lançamento encontrado</p>
-                        ) : (
-                          <table className="w-full">
-                            <thead>
-                              <tr className="border-b border-app-border">
-                                <th className="text-left pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Data</th>
-                                <th className="text-left pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Descrição</th>
-                                <th className="text-right pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Valor</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-[var(--surface-divider)]">
-                              {costDrillData.transactions.map((t) => (
-                                <tr key={t.id} className="hover:bg-[var(--surface-raised)] transition">
-                                  <td className="py-2.5 text-[12px] text-app-muted whitespace-nowrap pr-4 w-24">{formatDate(t.effectiveDate ?? t.date)}</td>
-                                  <td className="py-2.5 text-[13px] text-app-text font-medium">
-                                    {t.description}
-                                    {t.notes && <p className="text-[11px] text-app-muted font-normal mt-0.5">{t.notes}</p>}
-                                  </td>
-                                  <td className="py-2.5 text-right">
-                                    <span className="text-[13px] font-mono font-semibold text-expense">
-                                      −{formatCurrency(t.value)}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                            <tfoot className="border-t border-app-border">
-                              <tr>
-                                <td colSpan={2} className="pt-2.5 text-[12px] font-semibold text-app-text">{costDrillData.transactions.length} lançamento(s)</td>
-                                <td className="pt-2.5 text-right">
-                                  <span className="text-[13px] font-mono font-bold text-expense">
-                                    −{formatCurrency(costDrillData.transactions.reduce((a, t) => a + parseFloat(t.value), 0))}
-                                  </span>
-                                </td>
-                              </tr>
-                            </tfoot>
-                          </table>
-                        )}
-                      </div>
+                        );
+                      })()
                     )}
                   </div>
                 );
