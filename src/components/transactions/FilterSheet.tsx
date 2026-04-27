@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Clock, Filter, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Filter, Layers, TrendingUp, TrendingDown, X } from "lucide-react";
 
 interface FilterSheetProps {
   type: string;
@@ -111,18 +111,38 @@ export function FilterSheet({
 
         {/* Body */}
         <div className="px-5 py-4 space-y-4">
-          {/* Tipo */}
+          {/* Tipo de lançamento */}
           <div>
-            <label className="block text-xs font-medium text-app-muted mb-1.5">Tipo</label>
-            <select
-              value={draftType}
-              onChange={(e) => setDraftType(e.target.value)}
-              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-            >
-              <option value="">Todos</option>
-              <option value="income">Receitas</option>
-              <option value="expense">Despesas</option>
-            </select>
+            <label className="block text-xs font-medium text-app-muted mb-1.5">Tipo de lançamento</label>
+            <div className="flex rounded-xl border border-app-border overflow-hidden h-[42px]">
+              <button
+                type="button"
+                onClick={() => setDraftType("")}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+                  draftType === "" ? "bg-brand-600 text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                }`}
+              >
+                <Layers size={14} /> Todos
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftType("income")}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+                  draftType === "income" ? "bg-income text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                }`}
+              >
+                <TrendingUp size={14} /> Receitas
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftType("expense")}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+                  draftType === "expense" ? "bg-expense text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                }`}
+              >
+                <TrendingDown size={14} /> Despesas
+              </button>
+            </div>
           </div>
 
           {/* Navegação de mês */}
