@@ -6,7 +6,8 @@ import { paymentMethodSchema } from "@/lib/validations/payment-method";
 import { and, eq, isNull, or } from "drizzle-orm";
 import { neon } from "@neondatabase/serverless";
 
-// Ensure the supports_installments column exists (safe to run on every cold start).
+// Ensure the supports_installments column exists and backfill credit cards.
+// Safe to run on every cold start (IF NOT EXISTS / WHERE already true).
 async function ensureSchema() {
   try {
     const sql = neon(process.env.DATABASE_URL!);
@@ -14,8 +15,14 @@ async function ensureSchema() {
       ALTER TABLE payment_methods
         ADD COLUMN IF NOT EXISTS supports_installments boolean NOT NULL DEFAULT false
     `;
+    // Backfill: credit cards should default to true for existing rows.
+    await sql`
+      UPDATE payment_methods
+        SET supports_installments = true
+        WHERE type = 'credit_card' AND supports_installments = false
+    `;
   } catch {
-    // Column already exists or other non-critical error — ignore.
+    // Non-critical — ignore.
   }
 }
 
