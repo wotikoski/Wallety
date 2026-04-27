@@ -31,7 +31,7 @@ export function Topbar() {
   const activeGroup = groups.find((g) => g.id === activeGroupId);
 
   return (
-    <header className="h-14 bg-white border-b border-app-border flex items-center px-5 gap-3 no-print shrink-0">
+    <header className="sticky top-0 z-30 h-14 bg-white border-b border-app-border flex items-center px-5 gap-3 no-print shrink-0">
       {/* Group selector */}
       <div className="relative">
         <button
