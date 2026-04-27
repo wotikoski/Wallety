@@ -68,11 +68,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      {/* Anti-flicker: reads localStorage before first paint and applies dark class */}
+      {/* Anti-flicker: applies dark class before first paint based on system preference.
+          Light mode is the default; dark is applied only when the OS is in dark mode. */}
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+            __html: `(function(){try{localStorage.removeItem('theme');if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark');}}catch(e){}})();`,
           }}
         />
       </head>
