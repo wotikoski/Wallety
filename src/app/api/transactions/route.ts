@@ -5,7 +5,7 @@ import { transactions, paymentMethods, categories } from "@/lib/db/schema";
 import { transactionSchema } from "@/lib/validations/transaction";
 import { generateInstallments } from "@/lib/utils/installments";
 import { computeEffectiveDate } from "@/lib/utils/invoice";
-import { and, eq, gte, lte, isNull, desc, or, sql } from "drizzle-orm";
+import { and, eq, gte, lte, isNull, isNotNull, desc, or, sql } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
     const bankId = searchParams.get("bankId");               // "__none__" → NULL
     const paymentMethodId = searchParams.get("paymentMethodId"); // "__none__" → NULL
     const isPaid = searchParams.get("isPaid");
+    const costType = searchParams.get("costType"); // "fixed" | "variable"
     const hideFuture = searchParams.get("hideFuture") === "true";
     const page = parseInt(searchParams.get("page") ?? "1");
     const limit = parseInt(searchParams.get("limit") ?? "50");
@@ -52,6 +53,11 @@ export async function GET(req: NextRequest) {
     else if (paymentMethodId) conditions.push(eq(transactions.paymentMethodId, paymentMethodId));
     if (isPaid !== null && isPaid !== undefined) {
       conditions.push(eq(transactions.isPaid, isPaid === "true"));
+    }
+    if (costType === "fixed") {
+      conditions.push(or(isNotNull(transactions.recurrenceGroupId), eq(transactions.isFixed, true))!);
+    } else if (costType === "variable") {
+      conditions.push(and(isNull(transactions.recurrenceGroupId), eq(transactions.isFixed, false))!);
     }
     if (hideFuture) {
       const todayStr = new Date().toISOString().slice(0, 10);

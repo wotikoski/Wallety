@@ -55,6 +55,7 @@ export function ReportsClient() {
   const [groupBy, setGroupBy] = useState<"category" | "bank" | "paymentMethod" | "user">("category");
   const [reportType, setReportType] = useState<"income" | "expense">("expense");
   const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
+  const [costDrilldown, setCostDrilldown] = useState<"fixed" | "variable" | null>(null);
 
   // Materialize pending recurring transactions on load (same throttle as Dashboard).
   // Without this, recurring rules created after the last Dashboard visit would
@@ -88,6 +89,34 @@ export function ReportsClient() {
 
   // Drill-down: fetch individual transactions for the selected group,
   // using effectiveDate range to match the report's bucketing logic.
+  // Cost-type drilldown query (fixed / variable)
+  const costDrillParams = new URLSearchParams({
+    effectiveStartDate: startDate,
+    effectiveEndDate: endDate,
+    type: "expense",
+    limit: "500",
+    costType: costDrilldown ?? "",
+  });
+  if (activeGroupId) costDrillParams.set("groupId", activeGroupId);
+
+  const { data: costDrillData, isLoading: costDrillLoading } = useQuery<{ transactions: DrillTransaction[] }>({
+    queryKey: ["report-cost-drilldown", costDrilldown, startDate, endDate, activeGroupId],
+    queryFn: () => fetch(`/api/transactions?${costDrillParams}`).then((r) => r.json()),
+    enabled: !!costDrilldown,
+  });
+
+  const costDrillRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!costDrilldown || !costDrillRef.current) return;
+    const el = costDrillRef.current;
+    const timer = setTimeout(() => {
+      const scrollParent = el.closest<HTMLElement>(".overflow-y-auto") ?? document.documentElement;
+      const top = el.getBoundingClientRect().top + scrollParent.scrollTop - 80;
+      scrollParent.scrollTo({ top, behavior: "smooth" });
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [costDrilldown]);
+
   const drillParams = new URLSearchParams({
     effectiveStartDate: startDate,
     effectiveEndDate: endDate,
@@ -134,6 +163,7 @@ export function ReportsClient() {
   // Reset drilldown when filters change
   function handleFilterChange(fn: () => void) {
     closeDrilldown();
+    setCostDrilldown(null);
     fn();
   }
 
@@ -270,23 +300,94 @@ export function ReportsClient() {
                       <div className="h-full bg-sky-400 transition-all duration-500" style={{ width: `${varPct}%` }} />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-violet-50 dark:bg-violet-950/30 rounded-xl p-4">
+                      <button
+                        type="button"
+                        onClick={() => setCostDrilldown(costDrilldown === "fixed" ? null : "fixed")}
+                        className={`text-left rounded-xl p-4 transition-all ${costDrilldown === "fixed" ? "bg-violet-100 ring-2 ring-violet-400" : "bg-violet-50 hover:bg-violet-100"} dark:bg-violet-950/30`}
+                      >
                         <div className="flex items-center gap-1.5 mb-2">
                           <Repeat2 size={13} className="text-violet-500" />
                           <span className="text-[11px] font-bold uppercase tracking-wide text-violet-600">Fixos</span>
                         </div>
                         <p className="text-[18px] font-bold font-mono text-violet-700 dark:text-violet-300">{formatCurrency(fixed)}</p>
                         <p className="text-[11px] text-violet-500 mt-0.5">{fixedPct.toFixed(1)}% do total</p>
-                      </div>
-                      <div className="bg-sky-50 dark:bg-sky-950/30 rounded-xl p-4">
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCostDrilldown(costDrilldown === "variable" ? null : "variable")}
+                        className={`text-left rounded-xl p-4 transition-all ${costDrilldown === "variable" ? "bg-sky-100 ring-2 ring-sky-400" : "bg-sky-50 hover:bg-sky-100"} dark:bg-sky-950/30`}
+                      >
                         <div className="flex items-center gap-1.5 mb-2">
                           <Shuffle size={13} className="text-sky-500" />
                           <span className="text-[11px] font-bold uppercase tracking-wide text-sky-600">Variáveis</span>
                         </div>
                         <p className="text-[18px] font-bold font-mono text-sky-700 dark:text-sky-300">{formatCurrency(variable)}</p>
                         <p className="text-[11px] text-sky-500 mt-0.5">{varPct.toFixed(1)}% do total</p>
-                      </div>
+                      </button>
                     </div>
+
+                    {/* Cost-type drilldown panel */}
+                    {costDrilldown && (
+                      <div ref={costDrillRef} className="mt-4 border-t border-app-border pt-4 animate-fade-in">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            {costDrilldown === "fixed"
+                              ? <Repeat2 size={13} className="text-violet-500" />
+                              : <Shuffle size={13} className="text-sky-500" />}
+                            <span className="text-[13px] font-semibold text-app-text">
+                              Lançamentos {costDrilldown === "fixed" ? "Fixos" : "Variáveis"}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setCostDrilldown(null)}
+                            className="text-[11px] text-app-muted hover:text-app-text transition px-2 py-1 rounded-lg hover:bg-[var(--surface-raised)]"
+                          >
+                            Fechar ✕
+                          </button>
+                        </div>
+                        {costDrillLoading ? (
+                          <p className="text-[12px] text-app-muted py-3 text-center">Carregando...</p>
+                        ) : !costDrillData?.transactions?.length ? (
+                          <p className="text-[12px] text-app-muted py-3 text-center">Nenhum lançamento encontrado</p>
+                        ) : (
+                          <table className="w-full">
+                            <thead>
+                              <tr className="border-b border-app-border">
+                                <th className="text-left pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Data</th>
+                                <th className="text-left pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Descrição</th>
+                                <th className="text-right pb-2 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Valor</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[var(--surface-divider)]">
+                              {costDrillData.transactions.map((t) => (
+                                <tr key={t.id} className="hover:bg-[var(--surface-raised)] transition">
+                                  <td className="py-2.5 text-[12px] text-app-muted whitespace-nowrap pr-4 w-24">{formatDate(t.effectiveDate ?? t.date)}</td>
+                                  <td className="py-2.5 text-[13px] text-app-text font-medium">
+                                    {t.description}
+                                    {t.notes && <p className="text-[11px] text-app-muted font-normal mt-0.5">{t.notes}</p>}
+                                  </td>
+                                  <td className="py-2.5 text-right">
+                                    <span className="text-[13px] font-mono font-semibold text-expense">
+                                      −{formatCurrency(t.value)}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                            <tfoot className="border-t border-app-border">
+                              <tr>
+                                <td colSpan={2} className="pt-2.5 text-[12px] font-semibold text-app-text">{costDrillData.transactions.length} lançamento(s)</td>
+                                <td className="pt-2.5 text-right">
+                                  <span className="text-[13px] font-mono font-bold text-expense">
+                                    −{formatCurrency(costDrillData.transactions.reduce((a, t) => a + parseFloat(t.value), 0))}
+                                  </span>
+                                </td>
+                              </tr>
+                            </tfoot>
+                          </table>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })()
