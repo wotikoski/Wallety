@@ -52,9 +52,7 @@ export function PaymentMethodsClient() {
     queryFn: () => fetch(`/api/banks?${params}`).then((r) => r.json()),
   });
 
-  const { register, handleSubmit, reset, watch } = useForm<FormData>({
-    defaultValues: { type: "bank_account" },
-  });
+  const { register, handleSubmit, reset, watch } = useForm<FormData>();
   const watchedType = watch("type");
 
   const saveMutation = useMutation({
@@ -152,6 +150,7 @@ export function PaymentMethodsClient() {
               <div>
                 <label className="block text-xs font-medium text-app-muted mb-1">Tipo</label>
                 <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
+                  <option value="">Selecionar...</option>
                   {PAYMENT_METHOD_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>{t.label}</option>
                   ))}
