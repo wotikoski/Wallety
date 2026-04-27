@@ -5,7 +5,7 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState, useRef, useEffect } from "react";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
-import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight } from "lucide-react";
+import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight, Repeat2, Shuffle } from "lucide-react";
 import { ReportFilterSheet } from "./ReportFilterSheet";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 
@@ -21,6 +21,8 @@ interface ReportData {
   items: ReportItem[];
   grandTotal: number;
   groupBy: string;
+  fixedTotal?: number;
+  variableTotal?: number;
 }
 
 interface DrillTransaction {
@@ -250,6 +252,45 @@ export function ReportsClient() {
               <p className="text-[28px] font-bold font-mono text-white">{formatCurrency(data?.grandTotal ?? 0)}</p>
               <p className="text-[12px] text-white/70 mt-1">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : groupBy === "paymentMethod" ? "formas de pagamento" : "usuários"}</p>
             </div>
+
+            {/* Fixed vs Variable — expenses only */}
+            {reportType === "expense" && (data?.fixedTotal !== undefined) && (
+              (() => {
+                const fixed = data.fixedTotal ?? 0;
+                const variable = data.variableTotal ?? 0;
+                const total = fixed + variable;
+                const fixedPct = total > 0 ? (fixed / total) * 100 : 0;
+                const varPct = total > 0 ? (variable / total) * 100 : 0;
+                return (
+                  <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border p-5 shadow-card">
+                    <h2 className="text-[14px] font-bold text-app-text mb-4">Fixos vs Variáveis</h2>
+                    {/* Split bar */}
+                    <div className="h-3 w-full rounded-full overflow-hidden flex mb-4">
+                      <div className="h-full bg-violet-500 transition-all duration-500" style={{ width: `${fixedPct}%` }} />
+                      <div className="h-full bg-sky-400 transition-all duration-500" style={{ width: `${varPct}%` }} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-violet-50 dark:bg-violet-950/30 rounded-xl p-4">
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <Repeat2 size={13} className="text-violet-500" />
+                          <span className="text-[11px] font-bold uppercase tracking-wide text-violet-600">Fixos</span>
+                        </div>
+                        <p className="text-[18px] font-bold font-mono text-violet-700 dark:text-violet-300">{formatCurrency(fixed)}</p>
+                        <p className="text-[11px] text-violet-500 mt-0.5">{fixedPct.toFixed(1)}% do total</p>
+                      </div>
+                      <div className="bg-sky-50 dark:bg-sky-950/30 rounded-xl p-4">
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <Shuffle size={13} className="text-sky-500" />
+                          <span className="text-[11px] font-bold uppercase tracking-wide text-sky-600">Variáveis</span>
+                        </div>
+                        <p className="text-[18px] font-bold font-mono text-sky-700 dark:text-sky-300">{formatCurrency(variable)}</p>
+                        <p className="text-[11px] text-sky-500 mt-0.5">{varPct.toFixed(1)}% do total</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()
+            )}
 
             {/* Custom horizontal bar chart */}
             <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border p-5 shadow-card">
