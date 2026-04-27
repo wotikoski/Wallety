@@ -4,23 +4,21 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-[100dvh] md:h-[100dvh] bg-app-bg">
+    <div className="flex h-[100dvh] bg-app-bg">
       <Sidebar />
       {/*
-        Mobile: body scrolls naturally (most reliable on iOS/Safari).
-          – Topbar is sticky so it stays visible while scrolling.
-          – pb-32 ensures last item clears the bottom nav (nav ≈ 4rem + safe area) on all devices.
-        Desktop: the inner <main> is the scroll container (unchanged).
+        Both mobile and desktop: the inner <main> is the scroll container.
+        The bottom nav sits in the flex column below <main> — never overlaps content.
       */}
-      <div className="flex-1 flex flex-col min-w-0 md:overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Topbar />
-        <main className="flex-1 md:overflow-y-auto md:overscroll-y-contain">
-          <div className="px-4 py-5 md:px-6 max-w-5xl mx-auto pb-32 md:pb-6">
+        <main className="flex-1 overflow-y-auto overscroll-y-contain">
+          <div className="px-4 py-5 md:px-6 max-w-5xl mx-auto pb-4 md:pb-6">
             {children}
           </div>
         </main>
+        <MobileBottomNav />
       </div>
-      <MobileBottomNav />
     </div>
   );
 }
