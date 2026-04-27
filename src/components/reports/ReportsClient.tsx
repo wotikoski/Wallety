@@ -381,10 +381,8 @@ export function ReportsClient() {
               </div>
             )}
 
-            {/* Extra breathing room on mobile */}
-            <div className="h-6 md:hidden" />
 
-          </>
+</>
         )}
       </div>
     </div>
