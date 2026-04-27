@@ -104,6 +104,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
   const type = watch("type");
   const value = watch("value");
   const installmentTotal = watch("installmentTotal");
+  const paymentMethodId = watch("paymentMethodId");
 
   // Auto-calculate installment value
   useEffect(() => {
@@ -180,6 +181,21 @@ export function TransactionForm({ transaction, onClose }: Props) {
   const categories = categoriesData?.categories ?? [];
   const banks = banksData?.banks ?? [];
   const paymentMethods = pmData?.paymentMethods ?? [];
+
+  const selectedPm = paymentMethods.find(
+    (pm: { id: string; supportsInstallments: boolean }) => pm.id === paymentMethodId
+  );
+  // Show installments section when: no PM selected yet, or the selected PM supports installments
+  const showInstallments = !paymentMethodId || !!selectedPm?.supportsInstallments;
+
+  // Clear installment fields when switching to a PM that doesn't support installments
+  useEffect(() => {
+    if (paymentMethodId && selectedPm && !selectedPm.supportsInstallments) {
+      setValue("installmentTotal", null);
+      setValue("installmentValue", null);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentMethodId]);
 
   return (
     <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="bg-white rounded-[14px] border border-app-border shadow-card p-6 space-y-5">
@@ -291,7 +307,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
                 className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
               >
                 <option value="">Selecionar...</option>
-                {paymentMethods.map((pm: { id: string; name: string; type: string }) => (
+                {paymentMethods.map((pm: { id: string; name: string; type: string; supportsInstallments: boolean }) => (
                   <option key={pm.id} value={pm.id}>{pm.name}</option>
                 ))}
               </select>
@@ -321,7 +337,8 @@ export function TransactionForm({ transaction, onClose }: Props) {
         />
       </div>
 
-      {/* Installments */}
+      {/* Installments — only shown when the selected payment method supports installments */}
+      {showInstallments && (
       <div className="p-4 bg-[var(--surface-raised)] rounded-lg border border-app-border space-y-4">
         <p className="text-sm font-medium text-app-text">Parcelamento</p>
         <div className="grid grid-cols-2 gap-4">
@@ -356,6 +373,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
           </p>
         )}
       </div>
+      )}
 
       {/* Flags */}
       <div className="flex gap-6">

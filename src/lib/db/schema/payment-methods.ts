@@ -14,6 +14,7 @@ export const paymentMethods = pgTable("payment_methods", {
   // Credit card invoice info: only meaningful when type === 'credit_card'.
   closingDay: integer("closing_day"), // 1-31, day of month the invoice closes
   dueDay: integer("due_day"),          // 1-31, day of month the invoice is due
+  supportsInstallments: boolean("supports_installments").notNull().default(false),
   isDefault: boolean("is_default").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   deletedAt: timestamp("deleted_at", { withTimezone: true }),

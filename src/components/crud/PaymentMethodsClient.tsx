@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -19,6 +19,7 @@ interface PaymentMethod {
   bankId: string | null;
   closingDay: number | null;
   dueDay: number | null;
+  supportsInstallments: boolean;
   isDefault: boolean;
 }
 
@@ -28,6 +29,7 @@ interface FormData {
   bankId: string;
   closingDay: string;
   dueDay: string;
+  supportsInstallments: boolean;
 }
 
 export function PaymentMethodsClient() {
@@ -52,8 +54,15 @@ export function PaymentMethodsClient() {
     queryFn: () => fetch(`/api/banks?${params}`).then((r) => r.json()),
   });
 
-  const { register, handleSubmit, reset, watch } = useForm<FormData>();
+  const { register, handleSubmit, reset, watch, setValue } = useForm<FormData>();
   const watchedType = watch("type");
+
+  // Auto-enable installments for credit cards; user can still override
+  useEffect(() => {
+    if (watchedType === "credit_card") {
+      setValue("supportsInstallments", true);
+    }
+  }, [watchedType, setValue]);
 
   const saveMutation = useMutation({
     mutationFn: async (d: FormData) => {
@@ -69,6 +78,7 @@ export function PaymentMethodsClient() {
           bankId: d.bankId || null,
           closingDay: isCredit && d.closingDay ? parseInt(d.closingDay) : null,
           dueDay: isCredit && d.dueDay ? parseInt(d.dueDay) : null,
+          supportsInstallments: d.supportsInstallments ?? false,
           groupId: activeGroupId,
         }),
       });
@@ -191,6 +201,18 @@ export function PaymentMethodsClient() {
                   </div>
                 </>
               )}
+              {/* Installments toggle — full width, spans both columns */}
+              <label className="col-span-2 flex items-center justify-between gap-3 p-3 rounded-lg border border-app-border bg-[var(--surface-raised)] cursor-pointer select-none">
+                <div>
+                  <p className="text-sm font-medium text-app-text">Permite parcelamento</p>
+                  <p className="text-[11px] text-app-muted mt-0.5">Ao selecionar esta forma, o campo de parcelas abre em Novo Lançamento</p>
+                </div>
+                <input
+                  {...register("supportsInstallments")}
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-app-border text-brand-600 focus:ring-brand-500 shrink-0"
+                />
+              </label>
               <button
                 type="button"
                 onClick={() => { setShowForm(false); setEditing(null); reset(); }}
@@ -241,6 +263,7 @@ export function PaymentMethodsClient() {
                       bankId: pm.bankId ?? "",
                       closingDay: pm.closingDay?.toString() ?? "",
                       dueDay: pm.dueDay?.toString() ?? "",
+                      supportsInstallments: pm.supportsInstallments,
                     });
                     setShowForm(true);
                   }}

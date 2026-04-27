@@ -6,6 +6,7 @@ export const paymentMethodSchema = z.object({
   bankId: z.string().uuid().optional().nullable(),
   closingDay: z.number().int().min(1).max(31).optional().nullable(),
   dueDay: z.number().int().min(1).max(31).optional().nullable(),
+  supportsInstallments: z.boolean().optional().default(false),
   groupId: z.string().uuid().optional().nullable(),
 });
 
