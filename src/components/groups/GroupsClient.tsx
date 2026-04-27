@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Portal } from "@/components/ui/Portal";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Users, Crown, Trash2, UserPlus, Copy, Check, X } from "lucide-react";
 import Link from "next/link";
@@ -129,6 +130,7 @@ export function GroupsClient() {
       </div>
 
       {showForm && (
+        <Portal>
         <div
           className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => { setShowForm(false); reset(); }}
@@ -169,6 +171,7 @@ export function GroupsClient() {
             </form>
           </div>
         </div>
+        </Portal>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

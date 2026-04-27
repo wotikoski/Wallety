@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { AlertTriangle, X } from "lucide-react";
+import { Portal } from "./Portal";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -39,6 +40,7 @@ export function ConfirmDialog({
   if (!open) return null;
 
   return (
+    <Portal>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-fade-in"
       onClick={() => !loading && onCancel()}
@@ -90,5 +92,6 @@ export function ConfirmDialog({
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

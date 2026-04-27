@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
@@ -61,6 +61,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
+import { Portal } from "@/components/ui/Portal";
 import { FilterSheet } from "./FilterSheet";
 import { SwipeableRow } from "./SwipeableRow";
 import { usePullToRefresh } from "@/lib/hooks/usePullToRefresh";
@@ -623,17 +624,19 @@ export function TransactionsClient() {
       )}
 
       {showNewForm && (
-        <div
-          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setShowNewForm(false)}
-        >
+        <Portal>
           <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowNewForm(false)}
           >
-            <TransactionForm onClose={() => setShowNewForm(false)} />
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              <TransactionForm onClose={() => setShowNewForm(false)} />
+            </div>
           </div>
-        </div>
+        </Portal>
       )}
     </div>
   );
@@ -676,6 +679,7 @@ function InstallmentDeleteDialog({
   ];
 
   return (
+    <Portal>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-fade-in"
       onClick={() => !loading && onCancel()}
@@ -735,5 +739,6 @@ function InstallmentDeleteDialog({
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

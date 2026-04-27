@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Portal } from "@/components/ui/Portal";
 import { Plus, RefreshCcw, Trash2, Play, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SwipeableRow } from "@/components/transactions/SwipeableRow";
@@ -555,6 +556,7 @@ function RecurringForm({
   };
 
   return (
+    <Portal>
     <div
       className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
@@ -743,5 +745,6 @@ function RecurringForm({
         </div>
       </form>
     </div>
+    </Portal>
   );
 }

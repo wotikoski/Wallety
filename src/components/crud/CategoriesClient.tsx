@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Portal } from "@/components/ui/Portal";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, X, Check } from "lucide-react";
@@ -148,6 +149,7 @@ export function CategoriesClient() {
 
       {/* Form modal */}
       {showForm && (
+        <Portal>
         <div
           className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => { setShowForm(false); setEditing(null); reset(); }}
@@ -234,6 +236,7 @@ export function CategoriesClient() {
             </form>
           </div>
         </div>
+        </Portal>
       )}
 
       {isLoading ? (

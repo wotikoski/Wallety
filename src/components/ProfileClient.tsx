@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import { FileText, ShieldCheck, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { Portal } from "@/components/ui/Portal";
 import { useRouter } from "next/navigation";
 
 interface User {
@@ -173,6 +174,7 @@ export function ProfileClient() {
 
       {/* Delete confirmation modal */}
       {showDeleteDialog && (
+        <Portal>
         <div
           className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setShowDeleteDialog(false)}
@@ -230,6 +232,7 @@ export function ProfileClient() {
             </div>
           </div>
         </div>
+        </Portal>
       )}
     </div>
   );
