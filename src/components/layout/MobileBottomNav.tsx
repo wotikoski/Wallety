@@ -28,7 +28,10 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-sidebar-bg border-t border-[#2B284F] z-40 flex h-16">
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-sidebar-bg border-t border-[#2B284F] z-40 flex"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)", minHeight: "4rem" }}
+      >
         {mainItems.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
