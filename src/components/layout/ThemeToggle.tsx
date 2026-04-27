@@ -4,9 +4,13 @@ import { Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 
 /**
- * Reflects the OS color-scheme preference in real time.
- * The app no longer supports manual theme overrides — the system setting
- * is the source of truth (light by default, dark when the OS is dark).
+ * Theme toggle with three-tier priority:
+ *   1. Manual override stored in localStorage ("theme" key)
+ *   2. OS/system prefers-color-scheme preference
+ *   3. Light mode as default
+ * Clicking cycles between dark and light and saves the choice.
+ * If the system preference changes and no manual override is set, the
+ * app follows the system automatically.
  */
 export function ThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -14,29 +18,37 @@ export function ThemeToggle() {
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
 
-    function apply(matches: boolean) {
-      setDark(matches);
-      if (matches) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+    function applyTheme(isDark: boolean) {
+      setDark(isDark);
+      document.documentElement.classList.toggle("dark", isDark);
     }
 
-    // Sync immediately with current system preference
-    apply(mq.matches);
+    // Initial state: stored override → system → light
+    const stored = localStorage.getItem("theme");
+    applyTheme(stored === "dark" || (stored === null && mq.matches));
 
-    // Keep in sync if the user changes their OS setting while the app is open
-    mq.addEventListener("change", (e) => apply(e.matches));
-    return () => mq.removeEventListener("change", (e) => apply(e.matches));
+    // Follow system changes only when no manual override is set
+    function onSystemChange(e: MediaQueryListEvent) {
+      if (localStorage.getItem("theme") === null) applyTheme(e.matches);
+    }
+    mq.addEventListener("change", onSystemChange);
+    return () => mq.removeEventListener("change", onSystemChange);
   }, []);
 
+  function toggle() {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  }
+
   return (
-    <div
-      title={dark ? "Modo escuro (sistema)" : "Modo claro (sistema)"}
-      className="w-8 h-8 flex items-center justify-center rounded-[10px] border border-app-border text-app-muted"
+    <button
+      onClick={toggle}
+      title={dark ? "Mudar para modo claro" : "Mudar para modo escuro"}
+      className="w-8 h-8 flex items-center justify-center rounded-[10px] border border-app-border text-app-muted hover:text-app-text hover:bg-[var(--surface-raised)] transition"
     >
-      {dark ? <Moon size={15} /> : <Sun size={15} />}
-    </div>
+      {dark ? <Sun size={15} /> : <Moon size={15} />}
+    </button>
   );
 }
