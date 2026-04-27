@@ -1,15 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Capriola, IBM_Plex_Mono } from "next/font/google";
+import { Space_Grotesk, Capriola, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
 
-const plusJakarta = Plus_Jakarta_Sans({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-inter", // keeps the same CSS var so Tailwind picks it up
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const brandFont = Capriola({
@@ -19,7 +19,7 @@ const brandFont = Capriola({
   display: "swap",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
@@ -75,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${plusJakarta.variable} ${brandFont.variable} ${ibmPlexMono.variable} font-sans antialiased`}>
+      <body className={`${spaceGrotesk.variable} ${brandFont.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <Providers>
           {children}
           <Toaster />
