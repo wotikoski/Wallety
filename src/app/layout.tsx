@@ -1,22 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Capriola, JetBrains_Mono } from "next/font/google";
+import { Sora, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
 
-const spaceGrotesk = Space_Grotesk({
+// Sora is used for both the main UI font and the brand font.
+const sora = Sora({
   subsets: ["latin"],
   variable: "--font-inter", // keeps the same CSS var so Tailwind picks it up
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const brandFont = Capriola({
+const soraForBrand = Sora({
   subsets: ["latin"],
-  weight: "400",
   variable: "--font-brand",
   display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -75,7 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${spaceGrotesk.variable} ${brandFont.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+      <body className={`${sora.variable} ${soraForBrand.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <Providers>
           {children}
           <Toaster />
