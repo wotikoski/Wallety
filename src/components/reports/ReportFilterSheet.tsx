@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Filter, X, TrendingUp, TrendingDown } from "lucide-react";
+import { Portal } from "@/components/ui/Portal";
 
 interface ReportFilterSheetProps {
   reportType: "income" | "expense";
@@ -75,20 +76,21 @@ export function ReportFilterSheet({
         )}
       </button>
 
-      {/* Backdrop */}
-      {open && (
-        <div
-          className="md:hidden fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm"
-          onClick={() => setOpen(false)}
-        />
-      )}
+      <Portal>
+        {/* Backdrop */}
+        {open && (
+          <div
+            className="md:hidden fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+        )}
 
-      {/* Slide-up sheet */}
-      <div
-        className={`md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--surface-card)] rounded-t-2xl shadow-2xl transition-transform duration-300 ${
-          open ? "translate-y-0" : "translate-y-full"
-        }`}
-      >
+        {/* Slide-up sheet */}
+        <div
+          className={`md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--surface-card)] rounded-t-2xl shadow-2xl transition-transform duration-300 ${
+            open ? "translate-y-0" : "translate-y-full"
+          }`}
+        >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-app-border" />
@@ -207,7 +209,8 @@ export function ReportFilterSheet({
             Aplicar
           </button>
         </div>
-      </div>
+        </div>
+      </Portal>
     </>
   );
 }
