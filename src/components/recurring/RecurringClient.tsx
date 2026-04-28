@@ -8,7 +8,7 @@ import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Portal } from "@/components/ui/Portal";
-import { Plus, RefreshCcw, Trash2, Play, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
+import { Plus, RefreshCcw, Trash2, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SwipeableRow } from "@/components/transactions/SwipeableRow";
 
@@ -217,17 +217,6 @@ export function RecurringClient() {
           <p className="text-app-muted text-[13px] mt-0.5 font-medium">Receitas e despesas automáticas</p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => materializeMutation.mutate()}
-            disabled={materializeMutation.isPending}
-            title="Gerar pendentes"
-            className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition disabled:opacity-60"
-          >
-            <Play size={14} />
-            <span className="hidden sm:inline">
-              {materializeMutation.isPending ? "Gerando..." : "Gerar Pendentes"}
-            </span>
-          </button>
           <button
             onClick={openNew}
             title="Nova recorrência"
