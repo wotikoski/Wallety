@@ -122,9 +122,9 @@ export function DashboardClient() {
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-6">
-        <div className="h-8 bg-slate-200 rounded w-48" />
+        <div className="h-8 bg-[var(--surface-raised)] rounded w-48" />
         <div className="grid grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => <div key={i} className="h-28 bg-slate-200 rounded-xl" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-28 bg-[var(--surface-raised)] rounded-xl" />)}
         </div>
       </div>
     );
