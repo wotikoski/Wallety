@@ -51,7 +51,6 @@ function SummaryChip({
 import { formatDate } from "@/lib/utils/date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
-import Link from "next/link";
 import {
   Plus, ArrowUpRight, ArrowDownRight, CheckCircle2, Circle,
   Trash2, Edit, ChevronLeft, ChevronRight, Layers, Download, Clock,
@@ -66,6 +65,7 @@ import { FilterSheet } from "./FilterSheet";
 import { SwipeableRow } from "./SwipeableRow";
 import { usePullToRefresh } from "@/lib/hooks/usePullToRefresh";
 import { TransactionForm } from "./TransactionForm";
+import { TransactionEditClient } from "./TransactionEditClient";
 
 interface Transaction {
   id: string;
@@ -105,6 +105,7 @@ export function TransactionsClient() {
   const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
   const [showFuture, setShowFuture] = useState(false);
   const [showNewForm, setShowNewForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Pull-to-refresh: ref on the mobile card list container
   const listRef = useRef<HTMLDivElement>(null);
@@ -430,13 +431,13 @@ export function TransactionsClient() {
                   key={t.id}
                   actions={
                     <div className="flex h-full w-full">
-                      <Link
-                        href={`/lancamentos/${t.id}`}
+                      <button
+                        onClick={() => setEditingId(t.id)}
                         className="flex-1 flex flex-col items-center justify-center gap-1 bg-brand-500 text-white text-xs font-medium"
                       >
                         <Edit size={16} />
                         Editar
-                      </Link>
+                      </button>
                       <button
                         onClick={() => askDelete(t)}
                         className="flex-1 flex flex-col items-center justify-center gap-1 bg-expense text-white text-xs font-medium"
@@ -560,12 +561,12 @@ export function TransactionsClient() {
                     </td>
                     <td className="px-5 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Link
-                          href={`/lancamentos/${t.id}`}
+                        <button
+                          onClick={() => setEditingId(t.id)}
                           className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
                         >
                           <Edit size={14} />
-                        </Link>
+                        </button>
                         <button
                           onClick={() => askDelete(t)}
                           className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
@@ -634,6 +635,22 @@ export function TransactionsClient() {
               className="w-full max-w-md max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               <TransactionForm onClose={() => setShowNewForm(false)} />
+            </div>
+          </div>
+        </Portal>
+      )}
+
+      {editingId && (
+        <Portal>
+          <div
+            className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setEditingId(null)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              <TransactionEditClient id={editingId} onClose={() => setEditingId(null)} />
             </div>
           </div>
         </Portal>

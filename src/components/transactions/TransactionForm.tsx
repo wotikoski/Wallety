@@ -201,7 +201,9 @@ export function TransactionForm({ transaction, onClose }: Props) {
     <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="bg-white rounded-[14px] border border-app-border shadow-card p-6 space-y-5">
       {onClose && (
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-app-text">Novo Lançamento</h2>
+          <h2 className="text-lg font-semibold text-app-text">
+            {isEdit ? "Editar Lançamento" : "Novo Lançamento"}
+          </h2>
           <button type="button" onClick={onClose} className="p-1 text-app-muted hover:text-app-text rounded-lg transition">
             <X size={18} />
           </button>

@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { TransactionForm } from "./TransactionForm";
 
-export function TransactionEditClient({ id }: { id: string }) {
+export function TransactionEditClient({ id, onClose }: { id: string; onClose?: () => void }) {
   // Always hit the network when opening the edit page. Without this, returning
   // to edit the same row after a save would render the form from a stale
   // cache, and the next PUT would silently revert unrelated fields.
@@ -23,5 +23,5 @@ export function TransactionEditClient({ id }: { id: string }) {
   // effect inside TransactionForm.
   const t = data?.transaction;
   const formKey = t ? `${t.id}:${t.updatedAt ?? ""}` : "empty";
-  return <TransactionForm key={formKey} transaction={t} />;
+  return <TransactionForm key={formKey} transaction={t} onClose={onClose} />;
 }
