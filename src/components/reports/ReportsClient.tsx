@@ -5,7 +5,7 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState, useRef, useEffect } from "react";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
-import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight, Repeat2, Shuffle } from "lucide-react";
+import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight, ChevronDown, Repeat2, Shuffle } from "lucide-react";
 import { ReportFilterSheet } from "./ReportFilterSheet";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 
@@ -343,83 +343,114 @@ export function ReportsClient() {
                 )}
                 <div className="space-y-1.5">
                   {items.map((item, index) => {
-                    const color = COLORS[index % COLORS.length];
+                    const color      = COLORS[index % COLORS.length];
                     const isSelected = drilldown?.groupKey === item.groupKey;
-                    const isDimmed = !!drilldown && !isSelected;
+                    const sign       = reportType === "income" ? "+" : "−";
+                    const valueColor = reportType === "income" ? "text-income" : "text-expense";
+
                     return (
-                      <button
-                        key={index}
-                        onClick={() => isSelected ? closeDrilldown() : openDrilldown(item, index)}
-                        className="w-full text-left rounded-xl px-3.5 py-3 transition-all duration-150"
-                        style={{
-                          opacity: isDimmed ? 0.4 : 1,
-                          ...(isSelected ? { background: color + "12", boxShadow: `0 4px 20px ${color}28` } : {}),
-                        }}
-                        onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 12px rgba(0,0,0,0.08)"; }}
-                        onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.boxShadow = ""; }}
-                      >
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-[3px] h-3.5 rounded-full shrink-0" style={{ background: color }} />
-                          <span className={`text-[13px] font-semibold truncate flex-1 ${isSelected ? "text-brand-500" : "text-app-text"}`}>{item.label}</span>
-                          <span className="text-[11px] text-app-muted shrink-0 font-mono tabular-nums">{item.count} lanç.</span>
-                          <span className="text-[12px] font-mono font-semibold tabular-nums shrink-0" style={{ color }}>{formatCurrency(item.total)}</span>
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 tabular-nums" style={{ background: color + "20", color }}>{item.percentage.toFixed(1)}%</span>
-                        </div>
-                        <div className="h-[7px] w-full rounded-full overflow-hidden" style={{ background: "var(--surface-raised)" }}>
-                          <div className="h-full rounded-full" style={{ width: `${item.percentage}%`, background: `linear-gradient(90deg, ${color}cc, ${color})` }} />
-                        </div>
-                      </button>
+                      <div key={index} className="rounded-xl overflow-hidden">
+                        {/* ── Row button ── */}
+                        <button
+                          onClick={() => isSelected ? closeDrilldown() : openDrilldown(item, index)}
+                          className={[
+                            "w-full text-left px-3.5 py-3 transition-colors duration-150",
+                            isSelected
+                              ? "rounded-t-xl"
+                              : "rounded-xl hover:bg-[var(--surface-raised)]",
+                          ].join(" ")}
+                          style={isSelected ? { background: color + "14" } : {}}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-[3px] h-3.5 rounded-full shrink-0" style={{ background: color }} />
+                            <span className={`text-[13px] font-semibold truncate flex-1 ${isSelected ? "text-brand-500" : "text-app-text"}`}>
+                              {item.label}
+                            </span>
+                            <span className="text-[11px] text-app-muted shrink-0 font-mono tabular-nums">{item.count} lanç.</span>
+                            <span className="text-[12px] font-mono font-semibold tabular-nums shrink-0" style={{ color }}>
+                              {formatCurrency(item.total)}
+                            </span>
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 tabular-nums" style={{ background: color + "20", color }}>
+                              {item.percentage.toFixed(1)}%
+                            </span>
+                            <ChevronDown
+                              size={14}
+                              className={`text-app-muted shrink-0 transition-transform duration-200 ${isSelected ? "rotate-180" : ""}`}
+                            />
+                          </div>
+                          <div className="h-[6px] w-full rounded-full overflow-hidden" style={{ background: "var(--surface-raised)" }}>
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{ width: `${item.percentage}%`, background: color }}
+                            />
+                          </div>
+                        </button>
+
+                        {/* ── Inline accordion panel ── */}
+                        {isSelected && (
+                          <div
+                            ref={drilldownRef}
+                            className="animate-fade-in rounded-b-xl overflow-hidden border border-t-0"
+                            style={{ borderColor: color + "35" }}
+                          >
+                            {drillLoading ? (
+                              <p className="text-[12px] text-app-muted py-6 text-center bg-[var(--surface-raised)]">
+                                Carregando lançamentos...
+                              </p>
+                            ) : drillTxns.length === 0 ? (
+                              <p className="text-[12px] text-app-muted py-6 text-center bg-[var(--surface-raised)]">
+                                Nenhum lançamento encontrado
+                              </p>
+                            ) : (
+                              <>
+                                {/* Scrollable list — capped at ~5 rows */}
+                                <div
+                                  className="overflow-y-auto divide-y divide-[var(--surface-divider)]"
+                                  style={{ maxHeight: 260 }}
+                                >
+                                  {drillTxns.map((t) => (
+                                    <div
+                                      key={t.id}
+                                      className="flex items-center gap-3 px-4 py-3 bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] transition"
+                                    >
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-[12px] font-medium text-app-text truncate">{t.description}</p>
+                                        {t.notes && <p className="text-[11px] text-app-muted truncate">{t.notes}</p>}
+                                        <p className="text-[11px] text-app-muted mt-0.5">{formatDate(t.effectiveDate ?? t.date)}</p>
+                                      </div>
+                                      <div className="flex items-center gap-1.5 shrink-0">
+                                        <span className={`text-[12px] font-mono font-semibold tabular-nums ${valueColor}`}>
+                                          {sign}{formatCurrency(t.value)}
+                                        </span>
+                                        {t.isPaid
+                                          ? <CheckCircle2 size={12} className="text-income" />
+                                          : <Circle      size={12} className="text-app-muted" />}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {/* Summary footer */}
+                                <div
+                                  className="flex items-center justify-between px-4 py-2.5 border-t"
+                                  style={{ background: color + "10", borderColor: color + "25" }}
+                                >
+                                  <span className="text-[11px] font-semibold text-app-muted">
+                                    {drillTxns.length} lançamento(s)
+                                  </span>
+                                  <span className={`text-[12px] font-mono font-bold tabular-nums ${valueColor}`}>
+                                    {sign}{formatCurrency(drillTxns.reduce((a, t) => a + parseFloat(t.value), 0))}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
               </div>
-
-              {/* Drilldown — full-width at the bottom of this card */}
-              {drilldown && (
-                <div ref={drilldownRef} className="border-t border-app-border animate-fade-in">
-                  {drillLoading ? (
-                    <p className="text-[12px] text-app-muted py-6 text-center">Carregando lançamentos...</p>
-                  ) : drillTxns.length === 0 ? (
-                    <p className="text-[12px] text-app-muted py-6 text-center">Nenhum lançamento encontrado</p>
-                  ) : (
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-app-border bg-[var(--surface-raised)]">
-                          <th className="text-left px-5 py-2.5 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Data</th>
-                          <th className="text-left py-2.5 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Descrição</th>
-                          <th className="text-right px-5 py-2.5 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] whitespace-nowrap">Valor</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[var(--surface-divider)]">
-                        {drillTxns.map((t) => (
-                          <tr key={t.id} className="hover:bg-[var(--surface-raised)] transition">
-                            <td className="px-5 py-3 text-[12px] text-app-muted whitespace-nowrap w-24">{formatDate(t.effectiveDate ?? t.date)}</td>
-                            <td className="py-3 text-[13px] text-app-text font-medium pr-3">{t.description}{t.notes && <p className="text-[11px] text-app-muted font-normal mt-0.5">{t.notes}</p>}</td>
-                            <td className="px-5 py-3 text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                <span className={`text-[13px] font-mono font-semibold ${reportType === "income" ? "text-income" : "text-expense"}`}>
-                                  {reportType === "income" ? "+" : "−"}{formatCurrency(t.value)}
-                                </span>
-                                {t.isPaid ? <CheckCircle2 size={13} className="text-income shrink-0" /> : <Circle size={13} className="text-app-muted shrink-0" />}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      <tfoot className="border-t border-app-border bg-[var(--surface-raised)]">
-                        <tr>
-                          <td colSpan={2} className="px-5 py-3 text-[12px] font-semibold text-app-text">{drillTxns.length} lançamento(s)</td>
-                          <td className="px-5 py-3 text-right">
-                            <span className={`text-[13px] font-mono font-bold ${reportType === "income" ? "text-income" : "text-expense"}`}>
-                              {reportType === "income" ? "+" : "−"}{formatCurrency(drillTxns.reduce((a, t) => a + parseFloat(t.value), 0))}
-                            </span>
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  )}
-                </div>
-              )}
             </div>
           </>
         )}
