@@ -403,11 +403,7 @@ export function ReportsClient() {
                               </p>
                             ) : (
                               <>
-                                {/* Scrollable list — capped at ~5 rows */}
-                                <div
-                                  className="overflow-y-auto divide-y divide-[var(--surface-divider)]"
-                                  style={{ maxHeight: 260 }}
-                                >
+                                <div className="divide-y divide-[var(--surface-divider)]">
                                   {drillTxns.map((t) => (
                                     <div
                                       key={t.id}
