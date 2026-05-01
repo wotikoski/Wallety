@@ -75,6 +75,12 @@ export async function POST(req: NextRequest) {
       // Deduplicate: skip dates that already have a (non-deleted) transaction
       // for this rule. This is needed when lastGeneratedDate is reset after a
       // retroactive startDate edit — we don't want to double-insert past rows.
+      //
+      // For monthly/yearly rules we deduplicate by PERIOD (YYYY-MM or YYYY)
+      // rather than exact date. This prevents the materializer from re-inserting
+      // the original scheduled date when the user manually edits an individual
+      // transaction's date (e.g. moves Feb 1 → Feb 27: the month is already
+      // covered, so we must not generate Feb 1 again).
       const existingRows = await db
         .select({ date: transactions.date })
         .from(transactions)
@@ -84,8 +90,13 @@ export async function POST(req: NextRequest) {
             isNull(transactions.deletedAt),
           ),
         );
-      const existingDates = new Set(existingRows.map((r) => r.date));
-      const newDates = dates.filter((d) => !existingDates.has(d));
+      const toKey = (dateStr: string) => {
+        if (rule.frequency === "monthly") return dateStr.slice(0, 7); // YYYY-MM
+        if (rule.frequency === "yearly")  return dateStr.slice(0, 4); // YYYY
+        return dateStr; // weekly: exact date
+      };
+      const existingKeys = new Set(existingRows.map((r) => toKey(r.date)));
+      const newDates = dates.filter((d) => !existingKeys.has(toKey(d)));
 
       if (newDates.length > 0) {
         await db.insert(transactions).values(
