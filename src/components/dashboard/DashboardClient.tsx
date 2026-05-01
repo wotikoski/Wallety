@@ -303,7 +303,7 @@ export function DashboardClient() {
           </div>
 
           {/* Chart */}
-          <div className="flex-1">
+          <div className="flex-1 flex items-center justify-center">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart
                 data={data?.monthlyTrend ?? []}
@@ -311,16 +311,6 @@ export function DashboardClient() {
                 barGap={3}
                 margin={{ top: 4, right: 4, left: -8, bottom: 0 }}
               >
-                <defs>
-                  <linearGradient id="gradIncome" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#10b981" stopOpacity={0.55} />
-                  </linearGradient>
-                  <linearGradient id="gradExpense" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#f87171" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#f87171" stopOpacity={0.55} />
-                  </linearGradient>
-                </defs>
                 <CartesianGrid
                   vertical={false}
                   stroke={chartTheme.grid}
@@ -351,8 +341,8 @@ export function DashboardClient() {
                     />
                   )}
                 />
-                <Bar dataKey="income" name="Receitas" fill="url(#gradIncome)" radius={[5, 5, 3, 3]} maxBarSize={28} />
-                <Bar dataKey="expenses" name="Despesas" fill="url(#gradExpense)" radius={[5, 5, 3, 3]} maxBarSize={28} />
+                <Bar dataKey="income" name="Receitas" fill="#10b981" radius={[5, 5, 3, 3]} maxBarSize={28} />
+                <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[5, 5, 3, 3]} maxBarSize={28} />
               </BarChart>
             </ResponsiveContainer>
           </div>
