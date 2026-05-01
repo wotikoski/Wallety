@@ -11,7 +11,23 @@ export function formatCurrency(value: number | string | null | undefined): strin
 }
 
 export function parseCurrency(value: string): number {
-  return parseFloat(value.replace(/[^\d,]/g, "").replace(",", ".")) || 0;
+  // Remove tudo que não seja dígito, vírgula ou ponto
+  const s = value.replace(/[^\d,.]/g, "");
+  if (!s) return 0;
+
+  const hasComma = s.includes(",");
+  const hasDot   = s.includes(".");
+
+  if (hasComma && hasDot) {
+    // "1.234,56" → ponto = milhar, vírgula = decimal (pt-BR)
+    return parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
+  }
+  if (hasComma) {
+    // "24,30" → vírgula = decimal (pt-BR)
+    return parseFloat(s.replace(",", ".")) || 0;
+  }
+  // "24.3" ou "24.30" → ponto = decimal (JavaScript nativo)
+  return parseFloat(s) || 0;
 }
 
 export function formatNumber(value: number): string {

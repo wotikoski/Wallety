@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { PAYMENT_METHOD_TYPES } from "@/lib/constants/payment-method-types";
-import { parseCurrency } from "@/lib/utils/currency";
+import { parseCurrency, formatNumber } from "@/lib/utils/currency";
 import { X, TrendingUp, TrendingDown } from "lucide-react";
 
 interface Props {
@@ -53,11 +53,11 @@ export function TransactionForm({ transaction, onClose }: Props) {
       type: (transaction?.type as "income" | "expense") ?? "expense",
       categoryId: transaction?.categoryId ?? null,
       description: transaction?.description ?? "",
-      value: transaction ? parseFloat(transaction.value) : (undefined as unknown as number),
+      value: transaction ? (formatNumber(parseFloat(transaction.value)) as unknown as number) : (undefined as unknown as number),
       paymentMethodId: transaction?.paymentMethodId ?? null,
       bankId: transaction?.bankId ?? null,
       installmentTotal: transaction?.installmentTotal ?? null,
-      installmentValue: transaction?.installmentValue ? parseFloat(transaction.installmentValue) : null,
+      installmentValue: transaction?.installmentValue ? (formatNumber(parseFloat(transaction.installmentValue)) as unknown as number) : null,
       isPaid: transaction?.isPaid ?? false,
       isFixed: transaction?.isFixed ?? false,
       groupId: activeGroupId ?? null,
@@ -74,11 +74,11 @@ export function TransactionForm({ transaction, onClose }: Props) {
       type: transaction.type as "income" | "expense",
       categoryId: transaction.categoryId,
       description: transaction.description,
-      value: parseFloat(transaction.value),
+      value: formatNumber(parseFloat(transaction.value)) as unknown as number,
       paymentMethodId: transaction.paymentMethodId,
       bankId: transaction.bankId,
       installmentTotal: transaction.installmentTotal,
-      installmentValue: transaction.installmentValue ? parseFloat(transaction.installmentValue) : null,
+      installmentValue: transaction.installmentValue ? (formatNumber(parseFloat(transaction.installmentValue)) as unknown as number) : null,
       isPaid: transaction.isPaid,
       isFixed: transaction.isFixed,
       groupId: activeGroupId ?? null,
