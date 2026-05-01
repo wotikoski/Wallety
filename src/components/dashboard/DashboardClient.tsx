@@ -24,7 +24,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from "recharts";
 import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
@@ -53,12 +52,99 @@ const MONTHS = [
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
 
+/* ── Chart theme hook ─────────────────────────────────────────────────── */
+// Recharts renders SVG so it can't read CSS variables directly.
+// This hook watches the <html> class list and returns resolved color values.
+function useChartTheme() {
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    const el = document.documentElement;
+    const sync = () => setIsDark(el.classList.contains("dark"));
+    sync();
+    const obs = new MutationObserver(sync);
+    obs.observe(el, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+  return {
+    isDark,
+    grid:          isDark ? "#2B284F" : "#EEEDF8",
+    axis:          isDark ? "#8B88C0" : "#9490C8",
+    tooltipBg:     isDark ? "#1C1845" : "#FFFFFF",
+    tooltipBorder: isDark ? "#2B284F" : "#E2E0F4",
+    tooltipText:   isDark ? "#E8E6FF" : "#0F0D2E",
+    tooltipMuted:  isDark ? "#8B88C0" : "#706DA0",
+  };
+}
+
+/* ── Custom Bar Chart Tooltip ─────────────────────────────────────────── */
+function BarTooltip({ active, payload, label, theme }: {
+  active?: boolean;
+  payload?: { name: string; value: number; fill: string }[];
+  label?: string;
+  theme: ReturnType<typeof useChartTheme>;
+}) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{
+      background: theme.tooltipBg,
+      border: `1px solid ${theme.tooltipBorder}`,
+      borderRadius: 12,
+      padding: "10px 14px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
+      minWidth: 160,
+    }}>
+      <p style={{ color: theme.tooltipMuted, fontWeight: 700, marginBottom: 8, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+        {label}
+      </p>
+      {payload.map((p) => (
+        <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: p.fill, flexShrink: 0 }} />
+          <span style={{ color: theme.tooltipMuted, fontSize: 12, flex: 1 }}>{p.name}</span>
+          <span style={{ color: theme.tooltipText, fontWeight: 700, fontSize: 12, fontFamily: "monospace" }}>
+            {formatCurrency(p.value)}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── Custom Pie / Donut Tooltip ───────────────────────────────────────── */
+function PieTooltip({ active, payload, theme }: {
+  active?: boolean;
+  payload?: { name: string; value: number; payload: { color: string } }[];
+  theme: ReturnType<typeof useChartTheme>;
+}) {
+  if (!active || !payload?.length) return null;
+  const { name, value, payload: { color } } = payload[0];
+  return (
+    <div style={{
+      background: theme.tooltipBg,
+      border: `1px solid ${theme.tooltipBorder}`,
+      borderRadius: 10,
+      padding: "8px 12px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
+      fontSize: 12,
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+    }}>
+      <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
+      <span style={{ color: theme.tooltipMuted }}>{name}:</span>
+      <span style={{ color: theme.tooltipText, fontWeight: 700, fontFamily: "monospace" }}>
+        {formatCurrency(value)}
+      </span>
+    </div>
+  );
+}
+
 export function DashboardClient() {
   const { activeGroupId } = useActiveGroup();
   const queryClient = useQueryClient();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
+  const chartTheme = useChartTheme();
 
   // Lazy-materialize recurring transactions on dashboard load.
   // Fire-and-forget: if anything new is created, refresh dashboard + lançamentos.
@@ -197,86 +283,165 @@ export function DashboardClient() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        {/* Monthly Trend */}
-        <div className="bg-white rounded-[14px] border border-app-border p-4 shadow-card flex flex-col">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[14px] font-bold text-app-text">Receitas vs Despesas</h2>
-            <div className="flex items-center gap-3">
-              {[["#10b981", "Receitas"], ["#f87171", "Despesas"]].map(([c, l]) => (
-                <div key={l} className="flex items-center gap-1.5">
-                  <div className="w-5 h-[2.5px] rounded-full" style={{ background: c }} />
-                  <span className="text-[11px] text-app-muted font-medium">{l}</span>
+
+        {/* ── Bar Chart: Receitas vs Despesas ── */}
+        <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h2 className="text-[14px] font-bold text-app-text leading-tight">Receitas vs Despesas</h2>
+              <p className="text-[11px] text-app-muted mt-0.5">Últimos 6 meses</p>
+            </div>
+            <div className="flex items-center gap-4">
+              {([["#10b981", "Receitas"], ["#f87171", "Despesas"]] as const).map(([c, l]) => (
+                <div key={l} className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-sm" style={{ background: c }} />
+                  <span className="text-[11px] text-app-muted font-semibold">{l}</span>
                 </div>
               ))}
             </div>
           </div>
-          <div className="flex-1 flex items-center">
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={data?.monthlyTrend ?? []} barCategoryGap="35%">
-                <CartesianGrid vertical={false} stroke="#f1f3f9" />
-                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "var(--color-muted)" }} axisLine={false} tickLine={false} interval={0} />
-                <YAxis tick={{ fontSize: 11, fill: "var(--color-muted)" }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
-                <Tooltip
-                  formatter={(v: number) => formatCurrency(v)}
-                  contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,.08)" }}
+
+          {/* Chart */}
+          <div className="flex-1">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart
+                data={data?.monthlyTrend ?? []}
+                barCategoryGap="30%"
+                barGap={3}
+                margin={{ top: 4, right: 4, left: -8, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="gradIncome" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity={0.55} />
+                  </linearGradient>
+                  <linearGradient id="gradExpense" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#f87171" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#f87171" stopOpacity={0.55} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  vertical={false}
+                  stroke={chartTheme.grid}
+                  strokeDasharray="3 0"
                 />
-                <Bar dataKey="income" name="Receitas" fill="#10b981" radius={[5, 5, 5, 5]} />
-                <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[5, 5, 5, 5]} />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fontSize: 10, fill: chartTheme.axis, fontWeight: 600 }}
+                  axisLine={false}
+                  tickLine={false}
+                  interval={0}
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: chartTheme.axis }}
+                  tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+                  axisLine={false}
+                  tickLine={false}
+                  width={36}
+                />
+                <Tooltip
+                  cursor={{ fill: chartTheme.isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", radius: 6 }}
+                  content={(props) => (
+                    <BarTooltip
+                      active={props.active}
+                      payload={props.payload as { name: string; value: number; fill: string }[]}
+                      label={props.label as string}
+                      theme={chartTheme}
+                    />
+                  )}
+                />
+                <Bar dataKey="income" name="Receitas" fill="url(#gradIncome)" radius={[5, 5, 3, 3]} maxBarSize={28} />
+                <Bar dataKey="expenses" name="Despesas" fill="url(#gradExpense)" radius={[5, 5, 3, 3]} maxBarSize={28} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Expenses by Category */}
-        <div className="bg-white rounded-[14px] border border-app-border p-4 shadow-card">
-          <h2 className="text-[14px] font-bold text-app-text mb-4">Despesas por Categoria</h2>
-          {(data?.expensesByCategory?.length ?? 0) > 0 ? (
-            <div className="flex items-center gap-5">
-              <div className="w-[140px] h-[140px] shrink-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={data?.expensesByCategory ?? []} dataKey="total" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={66} paddingAngle={2}>
-                      {(data?.expensesByCategory ?? []).map((entry, index) => (
-                        <Cell key={index} fill={entry.color || `hsl(${index * 37}, 70%, 50%)`} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(v: number) => formatCurrency(v)}
-                      contentStyle={{ background: "#fff", border: "1px solid #e2e5ef", borderRadius: 10, fontSize: 12 }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="flex-1 min-w-0 space-y-2.5">
-                {(data?.expensesByCategory ?? []).map((cat) => {
-                  const total = (data?.expensesByCategory ?? []).reduce((s, c) => s + c.total, 0);
-                  const pct = total > 0 ? Math.round((cat.total / total) * 100) : 0;
-                  return (
-                    <div key={cat.name}>
-                      {/* Line 1: bullet + name + pct */}
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
-                        <span className="text-[12px] font-semibold text-app-text truncate flex-1 min-w-0">{cat.name}</span>
-                        <span className="text-[11px] text-app-muted shrink-0">{pct}%</span>
-                      </div>
-                      {/* Line 2: progress bar + value */}
-                      <div className="flex items-center gap-2">
-                        <div className="prog-track flex-1" style={{ height: 4 }}>
-                          <div className="prog-fill" style={{ width: `${pct}%`, background: cat.color }} />
+        {/* ── Donut Chart: Despesas por Categoria ── */}
+        <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card flex flex-col">
+          <div className="mb-4">
+            <h2 className="text-[14px] font-bold text-app-text leading-tight">Despesas por Categoria</h2>
+            <p className="text-[11px] text-app-muted mt-0.5">Distribuição do mês</p>
+          </div>
+
+          {(data?.expensesByCategory?.length ?? 0) > 0 ? (() => {
+            const cats = data!.expensesByCategory;
+            const catTotal = cats.reduce((s, c) => s + c.total, 0);
+            return (
+              <div className="flex items-center gap-4 sm:gap-6">
+                {/* Donut */}
+                <div className="relative shrink-0" style={{ width: 168, height: 168 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={cats}
+                        dataKey="total"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={52}
+                        outerRadius={76}
+                        paddingAngle={3}
+                        strokeWidth={0}
+                      >
+                        {cats.map((entry, i) => (
+                          <Cell key={i} fill={entry.color || `hsl(${i * 47}, 68%, 52%)`} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        content={(props) => (
+                          <PieTooltip
+                            active={props.active}
+                            payload={props.payload as { name: string; value: number; payload: { color: string } }[]}
+                            theme={chartTheme}
+                          />
+                        )}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  {/* Center label */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-[9px] font-bold text-app-muted uppercase tracking-[0.09em] leading-tight">Total</span>
+                    <span className="text-[13px] font-bold font-mono text-app-text leading-tight mt-0.5">
+                      {formatCurrencyShort(catTotal)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Legend */}
+                <div className="flex-1 min-w-0 space-y-2">
+                  {cats.map((cat) => {
+                    const pct = catTotal > 0 ? Math.round((cat.total / catTotal) * 100) : 0;
+                    return (
+                      <div key={cat.name}>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
+                          <span className="text-[11px] font-semibold text-app-text truncate flex-1 min-w-0">{cat.name}</span>
+                          <span className="text-[10px] font-bold text-app-muted shrink-0 tabular-nums">{pct}%</span>
                         </div>
-                        <span className="text-[11px] font-semibold text-app-muted font-mono tabular-nums shrink-0">{formatCurrency(cat.total)}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="prog-track flex-1" style={{ height: 3 }}>
+                            <div className="prog-fill" style={{ width: `${pct}%`, background: cat.color }} />
+                          </div>
+                          <span className="text-[10px] font-semibold text-app-muted font-mono tabular-nums shrink-0">
+                            {formatCurrencyShort(cat.total)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-52 text-app-muted text-sm">
-              Nenhuma despesa no período
+            );
+          })() : (
+            <div className="flex-1 flex flex-col items-center justify-center gap-2 text-app-muted py-10">
+              <div className="w-12 h-12 rounded-full bg-[var(--surface-raised)] flex items-center justify-center text-xl">📊</div>
+              <p className="text-sm font-medium">Nenhuma despesa no período</p>
             </div>
           )}
         </div>
+
       </div>
 
       {/* Recent Transactions */}
