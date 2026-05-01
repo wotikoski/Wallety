@@ -288,70 +288,136 @@ export function ReportsClient() {
                 const fixed = data.fixedTotal ?? 0;
                 const variable = data.variableTotal ?? 0;
                 const total = fixed + variable;
-                const fixedPct = total > 0 ? (fixed / total) * 100 : 0;
-                const varPct = total > 0 ? (variable / total) * 100 : 0;
-                const costColor = costDrilldown === "fixed" ? "#8b5cf6" : "#38bdf8";
-                const costTxns = costDrillData?.transactions ?? [];
+                const fixedPct  = total > 0 ? (fixed    / total) * 100 : 0;
+                const varPct    = total > 0 ? (variable / total) * 100 : 0;
+                const costTxns  = costDrillData?.transactions ?? [];
+                const costTotal = costTxns.reduce((a, t) => a + parseFloat(t.value), 0);
+                const accentColor = costDrilldown === "fixed" ? "#8b5cf6" : "#38bdf8";
+
                 return (
                   <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border shadow-card overflow-hidden">
-                    <div className="p-5">
-                      <h2 className="text-[14px] font-bold text-app-text mb-4">Fixos vs Variáveis</h2>
-                      <div className="h-3 w-full rounded-full overflow-hidden flex mb-4">
-                        <div className="h-full bg-violet-500 transition-all duration-500" style={{ width: `${fixedPct}%` }} />
-                        <div className="h-full bg-sky-400 transition-all duration-500" style={{ width: `${varPct}%` }} />
+
+                    {/* ── Stats header ── */}
+                    <div className="p-5 pb-4 space-y-4">
+                      <h2 className="text-[14px] font-bold text-app-text">Fixos vs Variáveis</h2>
+
+                      {/* Split bar */}
+                      <div className="h-2 w-full rounded-full overflow-hidden flex gap-px bg-[var(--surface-raised)]">
+                        <div className="h-full rounded-full bg-violet-500 transition-all duration-500" style={{ width: `${fixedPct}%` }} />
+                        <div className="h-full rounded-full bg-sky-400 transition-all duration-500" style={{ width: `${varPct}%` }} />
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button type="button" onClick={() => setCostDrilldown(costDrilldown === "fixed" ? null : "fixed")}
-                          className={`text-left rounded-xl p-4 transition-all ${costDrilldown === "fixed" ? "bg-violet-100 ring-2 ring-violet-400" : "bg-violet-50 hover:bg-violet-100"}`}>
-                          <div className="flex items-center gap-1.5 mb-2"><Repeat2 size={13} className="text-violet-500" /><span className="text-[11px] font-bold uppercase tracking-wide text-violet-600">Fixos</span></div>
-                          <p className="text-[18px] font-bold font-mono text-violet-700">{formatCurrency(fixed)}</p>
-                          <p className="text-[11px] text-violet-500 mt-0.5">{fixedPct.toFixed(1)}% do total</p>
-                        </button>
-                        <button type="button" onClick={() => setCostDrilldown(costDrilldown === "variable" ? null : "variable")}
-                          className={`text-left rounded-xl p-4 transition-all ${costDrilldown === "variable" ? "bg-sky-100 ring-2 ring-sky-400" : "bg-sky-50 hover:bg-sky-100"}`}>
-                          <div className="flex items-center gap-1.5 mb-2"><Shuffle size={13} className="text-sky-500" /><span className="text-[11px] font-bold uppercase tracking-wide text-sky-600">Variáveis</span></div>
-                          <p className="text-[18px] font-bold font-mono text-sky-700">{formatCurrency(variable)}</p>
-                          <p className="text-[11px] text-sky-500 mt-0.5">{varPct.toFixed(1)}% do total</p>
-                        </button>
+
+                      {/* Two stat rows */}
+                      <div className="space-y-3">
+                        {/* Fixed */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-2.5 h-2.5 rounded-full bg-violet-500 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-baseline justify-between gap-2 mb-1">
+                              <span className="text-[12px] font-semibold text-app-text flex items-center gap-1.5">
+                                <Repeat2 size={11} className="text-violet-500" /> Fixos
+                              </span>
+                              <span className="text-[13px] font-bold font-mono text-app-text tabular-nums">{formatCurrency(fixed)}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-1.5 rounded-full bg-[var(--surface-raised)] overflow-hidden">
+                                <div className="h-full rounded-full bg-violet-500 transition-all duration-500" style={{ width: `${fixedPct}%` }} />
+                              </div>
+                              <span className="text-[10px] font-bold text-violet-500 tabular-nums w-9 text-right">{fixedPct.toFixed(0)}%</span>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Variable */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-2.5 h-2.5 rounded-full bg-sky-400 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-baseline justify-between gap-2 mb-1">
+                              <span className="text-[12px] font-semibold text-app-text flex items-center gap-1.5">
+                                <Shuffle size={11} className="text-sky-400" /> Variáveis
+                              </span>
+                              <span className="text-[13px] font-bold font-mono text-app-text tabular-nums">{formatCurrency(variable)}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-1.5 rounded-full bg-[var(--surface-raised)] overflow-hidden">
+                                <div className="h-full rounded-full bg-sky-400 transition-all duration-500" style={{ width: `${varPct}%` }} />
+                              </div>
+                              <span className="text-[10px] font-bold text-sky-500 tabular-nums w-9 text-right">{varPct.toFixed(0)}%</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    {/* Drilldown — full-width at the bottom of this card */}
+
+                    {/* ── Tab bar ── */}
+                    <div className="flex border-t border-app-border">
+                      {(["fixed", "variable"] as const).map((key) => {
+                        const isActive = costDrilldown === key;
+                        const label = key === "fixed" ? "Fixos" : "Variáveis";
+                        const Icon  = key === "fixed" ? Repeat2 : Shuffle;
+                        const pct   = key === "fixed" ? fixedPct : varPct;
+                        const activeBg    = key === "fixed" ? "bg-violet-500/10 dark:bg-violet-500/20" : "bg-sky-400/10 dark:bg-sky-400/20";
+                        const activeText  = key === "fixed" ? "text-violet-600 dark:text-violet-400" : "text-sky-600 dark:text-sky-400";
+                        const activeBorder= key === "fixed" ? "border-violet-500" : "border-sky-400";
+                        const badgeBg     = key === "fixed" ? "bg-violet-500/15 text-violet-600 dark:text-violet-400" : "bg-sky-400/15 text-sky-600 dark:text-sky-400";
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => setCostDrilldown(isActive ? null : key)}
+                            className={[
+                              "flex-1 flex items-center justify-center gap-2 py-3 text-[12px] font-semibold transition-colors border-b-2",
+                              isActive
+                                ? `${activeBg} ${activeText} ${activeBorder}`
+                                : "border-transparent text-app-muted hover:text-app-text hover:bg-[var(--surface-raised)]",
+                              key === "variable" ? "border-l border-l-app-border" : "",
+                            ].join(" ")}
+                          >
+                            <Icon size={13} />
+                            {label}
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? badgeBg : "bg-[var(--surface-raised)] text-app-muted"}`}>
+                              {pct.toFixed(0)}%
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* ── Transaction list ── */}
                     {costDrilldown && (
-                      <div ref={costDrillRef} className="border-t border-app-border animate-fade-in">
+                      <div ref={costDrillRef} className="animate-fade-in border-t border-app-border">
                         {costDrillLoading ? (
-                          <p className="text-[12px] text-app-muted py-6 text-center">Carregando lançamentos...</p>
+                          <p className="text-[12px] text-app-muted py-8 text-center">Carregando lançamentos...</p>
                         ) : costTxns.length === 0 ? (
-                          <p className="text-[12px] text-app-muted py-6 text-center">Nenhum lançamento encontrado</p>
+                          <p className="text-[12px] text-app-muted py-8 text-center">Nenhum lançamento encontrado</p>
                         ) : (
-                          <table className="w-full">
-                            <thead>
-                              <tr className="border-b border-app-border bg-[var(--surface-raised)]">
-                                <th className="text-left px-5 py-2.5 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Data</th>
-                                <th className="text-left py-2.5 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Descrição</th>
-                                <th className="text-right px-5 py-2.5 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] whitespace-nowrap">Valor</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-[var(--surface-divider)]">
+                          <>
+                            <div className="divide-y divide-[var(--surface-divider)]">
                               {costTxns.map((t) => (
-                                <tr key={t.id} className="hover:bg-[var(--surface-raised)] transition">
-                                  <td className="px-5 py-3 text-[12px] text-app-muted whitespace-nowrap w-24">{formatDate(t.effectiveDate ?? t.date)}</td>
-                                  <td className="py-3 text-[13px] text-app-text font-medium pr-3">{t.description}{t.notes && <p className="text-[11px] text-app-muted font-normal mt-0.5">{t.notes}</p>}</td>
-                                  <td className="px-5 py-3 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                      <span className="text-[13px] font-mono font-semibold text-expense" style={{ color: costColor }}>−{formatCurrency(t.value)}</span>
-                                      {t.isPaid ? <CheckCircle2 size={13} className="text-income shrink-0" /> : <Circle size={13} className="text-app-muted shrink-0" />}
-                                    </div>
-                                  </td>
-                                </tr>
+                                <div key={t.id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-[var(--surface-raised)] transition">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[13px] font-medium text-app-text truncate">{t.description}</p>
+                                    {t.notes && <p className="text-[11px] text-app-muted truncate">{t.notes}</p>}
+                                    <p className="text-[11px] text-app-muted mt-0.5">{formatDate(t.effectiveDate ?? t.date)}</p>
+                                  </div>
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <span className="text-[13px] font-mono font-semibold tabular-nums" style={{ color: accentColor }}>
+                                      −{formatCurrency(t.value)}
+                                    </span>
+                                    {t.isPaid
+                                      ? <CheckCircle2 size={13} className="text-income" />
+                                      : <Circle size={13} className="text-app-muted" />}
+                                  </div>
+                                </div>
                               ))}
-                            </tbody>
-                            <tfoot className="border-t border-app-border bg-[var(--surface-raised)]">
-                              <tr>
-                                <td colSpan={2} className="px-5 py-3 text-[12px] font-semibold text-app-text">{costTxns.length} lançamento(s)</td>
-                                <td className="px-5 py-3 text-right"><span className="text-[13px] font-mono font-bold text-expense">−{formatCurrency(costTxns.reduce((a, t) => a + parseFloat(t.value), 0))}</span></td>
-                              </tr>
-                            </tfoot>
-                          </table>
+                            </div>
+                            {/* Footer summary */}
+                            <div className="flex items-center justify-between px-5 py-3 border-t border-app-border bg-[var(--surface-raised)]">
+                              <span className="text-[12px] font-semibold text-app-text">{costTxns.length} lançamento(s)</span>
+                              <span className="text-[13px] font-mono font-bold" style={{ color: accentColor }}>
+                                −{formatCurrency(costTotal)}
+                              </span>
+                            </div>
+                          </>
                         )}
                       </div>
                     )}
