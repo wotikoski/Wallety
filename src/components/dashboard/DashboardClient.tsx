@@ -87,7 +87,7 @@ export function DashboardClient() {
 
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ["dashboard", month, year, activeGroupId],
-    queryFn: () => fetch(`/api/dashboard?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/dashboard?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   // Projected (not-yet-materialized) recurring occurrences for the visible
@@ -102,7 +102,7 @@ export function DashboardClient() {
 
   const { data: projData } = useQuery<{ projected: { date: string; effectiveDate: string | null; type: string; value: string }[] }>({
     queryKey: ["recurring-projected", month, year, activeGroupId],
-    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const projected = projData?.projected ?? [];

@@ -20,7 +20,7 @@ export function DailyLimitClient() {
 
   const { data, isLoading } = useQuery<DailyLimitResult>({
     queryKey: ["daily-limit", month, year, activeGroupId],
-    queryFn: () => fetch(`/api/daily-limit?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/daily-limit?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const adjustedDailyLimit = data?.adjustedDailyLimit ?? 0;

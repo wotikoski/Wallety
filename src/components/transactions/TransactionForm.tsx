@@ -118,7 +118,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
     queryFn: () => {
       const p = new URLSearchParams({ type });
       if (activeGroupId) p.set("groupId", activeGroupId);
-      return fetch(`/api/categories?${p}`).then((r) => r.json());
+      return fetch(`/api/categories?${p}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); });
     },
   });
 
@@ -127,7 +127,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
     queryFn: () => {
       const p = new URLSearchParams();
       if (activeGroupId) p.set("groupId", activeGroupId);
-      return fetch(`/api/banks?${p}`).then((r) => r.json());
+      return fetch(`/api/banks?${p}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); });
     },
   });
 
@@ -136,7 +136,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
     queryFn: () => {
       const p = new URLSearchParams();
       if (activeGroupId) p.set("groupId", activeGroupId);
-      return fetch(`/api/payment-methods?${p}`).then((r) => r.json());
+      return fetch(`/api/payment-methods?${p}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); });
     },
   });
 

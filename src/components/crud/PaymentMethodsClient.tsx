@@ -44,14 +44,14 @@ export function PaymentMethodsClient() {
 
   const { data: pmData, isLoading } = useQuery<{ paymentMethods: PaymentMethod[] }>({
     queryKey: ["paymentMethods", "all", activeGroupId],
-    queryFn: () => fetch(`/api/payment-methods?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/payment-methods?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const { confirm, dialogProps } = useConfirm();
 
   const { data: banksData } = useQuery<{ banks: { id: string; name: string }[] }>({
     queryKey: ["banks", "all", activeGroupId],
-    queryFn: () => fetch(`/api/banks?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/banks?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const { register, handleSubmit, reset, watch, setValue } = useForm<FormData>();

@@ -24,7 +24,7 @@ export function Topbar() {
 
   const { data } = useQuery<{ groups: Group[] }>({
     queryKey: ["groups"],
-    queryFn: () => fetch("/api/groups").then((r) => r.json()),
+    queryFn: () => fetch("/api/groups").then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const groups = data?.groups ?? [];

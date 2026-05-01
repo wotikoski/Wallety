@@ -53,7 +53,7 @@ export function CalendarClient() {
 
   const { data } = useQuery<{ transactions: Transaction[] }>({
     queryKey: ["transactions-calendar", start, end, activeGroupId],
-    queryFn: () => fetch(`/api/transactions?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/transactions?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const projParams = new URLSearchParams({ from: start, to: end });
@@ -61,7 +61,7 @@ export function CalendarClient() {
 
   const { data: projData } = useQuery<{ projected: ProjectedOccurrence[] }>({
     queryKey: ["recurring-projected-calendar", start, end, activeGroupId],
-    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   // Merge real transactions with projected occurrences. Projected rows are

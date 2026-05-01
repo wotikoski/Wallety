@@ -40,12 +40,12 @@ export function GroupsClient() {
 
   const { data: groupsData } = useQuery<{ groups: Group[] }>({
     queryKey: ["groups"],
-    queryFn: () => fetch("/api/groups").then((r) => r.json()),
+    queryFn: () => fetch("/api/groups").then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const { data: memberData } = useQuery<{ group: Group; members: Member[] }>({
     queryKey: ["group-detail", selectedGroup],
-    queryFn: () => fetch(`/api/groups/${selectedGroup}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/groups/${selectedGroup}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
     enabled: !!selectedGroup,
   });
 

@@ -117,22 +117,22 @@ export function RecurringClient() {
 
   const { data, isLoading } = useQuery<{ recurring: Recurring[] }>({
     queryKey: ["recurring", activeGroupId],
-    queryFn: () => fetch(`/api/recurring?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/recurring?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const { data: catsData } = useQuery<{ categories: Category[] }>({
     queryKey: ["categories", "all", activeGroupId],
-    queryFn: () => fetch(`/api/categories?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/categories?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const { data: banksData } = useQuery<{ banks: Bank[] }>({
     queryKey: ["banks", activeGroupId],
-    queryFn: () => fetch(`/api/banks?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/banks?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const { data: pmsData } = useQuery<{ paymentMethods: PaymentMethod[] }>({
     queryKey: ["payment-methods", activeGroupId],
-    queryFn: () => fetch(`/api/payment-methods?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/payment-methods?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const deleteMutation = useMutation({

@@ -44,7 +44,7 @@ export function BudgetsClient() {
 
   const { data: budgetsData, isLoading } = useQuery<{ budgets: Budget[] }>({
     queryKey: ["budgets", year, month, activeGroupId],
-    queryFn: () => fetch(`/api/budgets?${budgetParams}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/budgets?${budgetParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
@@ -57,7 +57,7 @@ export function BudgetsClient() {
     projected: { categoryId: string | null; type: string; value: string; date: string; effectiveDate: string | null }[];
   }>({
     queryKey: ["recurring-projected-budgets", year, month, activeGroupId],
-    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const projectedByCat = new Map<string, number>();
@@ -72,7 +72,7 @@ export function BudgetsClient() {
   if (activeGroupId) catParams.set("groupId", activeGroupId);
   const { data: catsData } = useQuery<{ categories: Category[] }>({
     queryKey: ["categories", "all", activeGroupId],
-    queryFn: () => fetch(`/api/categories?${catParams}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/categories?${catParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const saveMutation = useMutation({

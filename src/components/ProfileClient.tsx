@@ -27,7 +27,7 @@ export function ProfileClient() {
 
   const { data, isLoading } = useQuery<{ user: User }>({
     queryKey: ["me"],
-    queryFn: () => fetch("/api/users/me").then((r) => r.json()),
+    queryFn: () => fetch("/api/users/me").then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const { register, handleSubmit } = useForm({

@@ -153,7 +153,7 @@ export function TransactionsClient() {
 
   const { data, isLoading } = useQuery<{ transactions: Transaction[] }>({
     queryKey: ["transactions", page, type, startDate, endDate, activeGroupId, showFuture],
-    queryFn: () => fetch(`/api/transactions?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/transactions?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
     placeholderData: (prev) => prev,
   });
 

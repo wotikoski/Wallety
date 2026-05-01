@@ -84,7 +84,7 @@ export function ReportsClient() {
   const { data, isLoading } = useQuery<ReportData>({
     queryKey: ["report", reportType, startDate, endDate, groupBy, activeGroupId],
     queryFn: () =>
-      fetch(`/api/reports/${reportType === "income" ? "income" : "expenses"}?${params}`).then((r) => r.json()),
+      fetch(`/api/reports/${reportType === "income" ? "income" : "expenses"}?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   // Drill-down: fetch individual transactions for the selected group,
@@ -101,7 +101,7 @@ export function ReportsClient() {
 
   const { data: costDrillData, isLoading: costDrillLoading } = useQuery<{ transactions: DrillTransaction[] }>({
     queryKey: ["report-cost-drilldown", costDrilldown, startDate, endDate, activeGroupId],
-    queryFn: () => fetch(`/api/transactions?${costDrillParams}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/transactions?${costDrillParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
     enabled: !!costDrilldown,
   });
 
@@ -132,7 +132,7 @@ export function ReportsClient() {
 
   const { data: drillData, isLoading: drillLoading } = useQuery<{ transactions: DrillTransaction[] }>({
     queryKey: ["report-drilldown", drilldown?.groupKey, reportType, startDate, endDate, groupBy, activeGroupId],
-    queryFn: () => fetch(`/api/transactions?${drillParams}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/transactions?${drillParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
     enabled: !!drilldown,
   });
 

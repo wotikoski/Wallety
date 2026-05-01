@@ -9,7 +9,7 @@ export function TransactionEditClient({ id }: { id: string }) {
   // cache, and the next PUT would silently revert unrelated fields.
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["transaction", id],
-    queryFn: () => fetch(`/api/transactions/${id}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/transactions/${id}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
     staleTime: 0,
     refetchOnMount: "always",
   });

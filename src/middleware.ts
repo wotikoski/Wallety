@@ -97,8 +97,17 @@ export async function middleware(req: NextRequest) {
   if (isAuthenticated) {
     if (pendingRefresh) {
       const newAccessToken = await signAccessToken(pendingRefresh);
-      const response = NextResponse.next();
       const cookieDomain = process.env.COOKIE_DOMAIN;
+
+      // Rewrite the Cookie header in the forwarded request so that route
+      // handlers (which read from req.cookies, not from the response) see the
+      // fresh access token instead of the expired one.
+      const reqHeaders = new Headers(req.headers);
+      const existing = reqHeaders.get("cookie") ?? "";
+      const updated = existing.replace(/\baccess_token=[^;]*/g, "").replace(/;{2,}/g, ";").replace(/^;|;$/g, "").trim();
+      reqHeaders.set("cookie", updated ? `${updated}; access_token=${newAccessToken}` : `access_token=${newAccessToken}`);
+
+      const response = NextResponse.next({ request: { headers: reqHeaders } });
       response.cookies.set("access_token", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",

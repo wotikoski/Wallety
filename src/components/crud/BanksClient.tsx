@@ -33,7 +33,7 @@ export function BanksClient() {
 
   const { data, isLoading } = useQuery<{ banks: Bank[] }>({
     queryKey: ["banks", "all", activeGroupId],
-    queryFn: () => fetch(`/api/banks?${params}`).then((r) => r.json()),
+    queryFn: () => fetch(`/api/banks?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   const { confirm, dialogProps } = useConfirm();
