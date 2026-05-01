@@ -84,17 +84,24 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     // Recompute effectiveDate if date or paymentMethod changed.
-    const newDate = (data.date as string | undefined) ?? existing.date;
-    const newPmId = data.paymentMethodId !== undefined ? data.paymentMethodId : existing.paymentMethodId;
-    if (newPmId) {
-      const [pm] = await db
-        .select({ type: paymentMethods.type, closingDay: paymentMethods.closingDay, dueDay: paymentMethods.dueDay })
-        .from(paymentMethods)
-        .where(eq(paymentMethods.id, newPmId))
-        .limit(1);
-      updateData.effectiveDate = computeEffectiveDate(newDate, pm ?? null);
-    } else {
+    // Installment transactions always keep effectiveDate = null — the installment
+    // date itself is the effective date for cash-flow bucketing (see POST route).
+    // Recomputing here would shift each installment into the wrong billing month.
+    if (existing.installmentGroupId) {
       updateData.effectiveDate = null;
+    } else {
+      const newDate = (data.date as string | undefined) ?? existing.date;
+      const newPmId = data.paymentMethodId !== undefined ? data.paymentMethodId : existing.paymentMethodId;
+      if (newPmId) {
+        const [pm] = await db
+          .select({ type: paymentMethods.type, closingDay: paymentMethods.closingDay, dueDay: paymentMethods.dueDay })
+          .from(paymentMethods)
+          .where(eq(paymentMethods.id, newPmId))
+          .limit(1);
+        updateData.effectiveDate = computeEffectiveDate(newDate, pm ?? null);
+      } else {
+        updateData.effectiveDate = null;
+      }
     }
 
     if (scope === "single" || !existing.installmentGroupId) {

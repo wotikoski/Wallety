@@ -24,6 +24,8 @@ interface Props {
     paymentMethodId: string | null;
     bankId: string | null;
     installmentTotal: number | null;
+    installmentCurrent: number | null;
+    installmentGroupId: string | null;
     installmentValue: string | null;
     isPaid: boolean;
     isFixed: boolean;
@@ -37,6 +39,8 @@ export function TransactionForm({ transaction, onClose }: Props) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const isEdit = !!transaction;
+  const isInstallment = isEdit && !!transaction?.installmentGroupId;
+  const [installmentScope, setInstallmentScope] = useState<"single" | "this_and_future" | "all">("single");
 
   const {
     register,
@@ -144,10 +148,12 @@ export function TransactionForm({ transaction, onClose }: Props) {
     mutationFn: async (data: TransactionInput) => {
       const url = isEdit ? `/api/transactions/${transaction.id}` : "/api/transactions";
       const method = isEdit ? "PUT" : "POST";
+      const body: Record<string, unknown> = { ...data, groupId: activeGroupId };
+      if (isInstallment) body.scope = installmentScope;
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, groupId: activeGroupId }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("Erro ao salvar");
       return res.json();
@@ -417,6 +423,34 @@ export function TransactionForm({ transaction, onClose }: Props) {
           className="w-full px-3.5 py-2 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text resize-none"
         />
       </div>
+
+      {/* Installment scope picker — shown when editing a parcelado transaction */}
+      {isInstallment && (
+        <div className="p-3 bg-[var(--surface-raised)] rounded-lg border border-app-border space-y-2">
+          <p className="text-xs font-medium text-app-muted">Aplicar alteração em:</p>
+          <div className="flex flex-col gap-1.5">
+            {(
+              [
+                { value: "single", label: `Somente a parcela ${transaction!.installmentCurrent ?? ""}/${transaction!.installmentTotal ?? ""}` },
+                { value: "this_and_future", label: "Esta e as próximas parcelas" },
+                { value: "all", label: "Todas as parcelas" },
+              ] as const
+            ).map((opt) => (
+              <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="radio"
+                  name="installmentScope"
+                  value={opt.value}
+                  checked={installmentScope === opt.value}
+                  onChange={() => setInstallmentScope(opt.value)}
+                  className="w-4 h-4 text-brand-600 border-app-border focus:ring-brand-500"
+                />
+                <span className="text-sm text-app-text">{opt.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-3 pt-2">
         <button
