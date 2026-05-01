@@ -489,11 +489,11 @@ function RecurringForm({
     editing?.dayOfMonth ?? String(new Date().getDate()),
   );
   const [startDate, setStartDate] = useState(editing?.startDate ?? today);
-  // When startDate changes on a NEW rule (not editing), sync dayOfMonth to the
-  // chosen day so the user doesn't have to update two fields manually.
+  // When startDate changes, sync dayOfMonth to the chosen day so the user
+  // doesn't have to update two fields manually (applies to both new and edit).
   const handleStartDateChange = (val: string) => {
     setStartDate(val);
-    if (!editing && val) {
+    if (val && dayOfMonth !== "last") {
       const day = parseInt(val.split("-")[2], 10);
       if (!isNaN(day)) setDayOfMonth(String(day));
     }
