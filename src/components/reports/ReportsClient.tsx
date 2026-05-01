@@ -55,7 +55,12 @@ export function ReportsClient() {
   const [groupBy, setGroupBy] = useState<"category" | "bank" | "paymentMethod" | "user">("category");
   const [reportType, setReportType] = useState<"income" | "expense">("expense");
   const [drilldown, setDrilldown] = useState<Drilldown | null>(null);
-  const [costDrilldown, setCostDrilldown] = useState<"fixed" | "variable" | null>(null);
+  const [costTypeFilter, setCostTypeFilter] = useState<"all" | "fixed" | "variable">("all");
+
+  // Reset cost-type filter when switching to income mode (filter is expense-only).
+  useEffect(() => {
+    if (reportType === "income") setCostTypeFilter("all");
+  }, [reportType]);
 
   // Materialize pending recurring transactions on load (same throttle as Dashboard).
   // Without this, recurring rules created after the last Dashboard visit would
@@ -80,42 +85,16 @@ export function ReportsClient() {
 
   const params = new URLSearchParams({ startDate, endDate, groupBy });
   if (activeGroupId) params.set("groupId", activeGroupId);
+  if (reportType === "expense" && costTypeFilter !== "all") params.set("costType", costTypeFilter);
 
   const { data, isLoading } = useQuery<ReportData>({
-    queryKey: ["report", reportType, startDate, endDate, groupBy, activeGroupId],
+    queryKey: ["report", reportType, startDate, endDate, groupBy, activeGroupId, costTypeFilter],
     queryFn: () =>
       fetch(`/api/reports/${reportType === "income" ? "income" : "expenses"}?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
   // Drill-down: fetch individual transactions for the selected group,
   // using effectiveDate range to match the report's bucketing logic.
-  // Cost-type drilldown query (fixed / variable)
-  const costDrillParams = new URLSearchParams({
-    effectiveStartDate: startDate,
-    effectiveEndDate: endDate,
-    type: "expense",
-    limit: "500",
-    costType: costDrilldown ?? "",
-  });
-  if (activeGroupId) costDrillParams.set("groupId", activeGroupId);
-
-  const { data: costDrillData, isLoading: costDrillLoading } = useQuery<{ transactions: DrillTransaction[] }>({
-    queryKey: ["report-cost-drilldown", costDrilldown, startDate, endDate, activeGroupId],
-    queryFn: () => fetch(`/api/transactions?${costDrillParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
-    enabled: !!costDrilldown,
-  });
-
-  const costDrillRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!costDrilldown || !costDrillRef.current) return;
-    const el = costDrillRef.current;
-    const timer = setTimeout(() => {
-      const scrollParent = el.closest<HTMLElement>(".overflow-y-auto") ?? document.documentElement;
-      const top = el.getBoundingClientRect().top + scrollParent.scrollTop - 80;
-      scrollParent.scrollTo({ top, behavior: "smooth" });
-    }, 200);
-    return () => clearTimeout(timer);
-  }, [costDrilldown]);
 
   const drillParams = new URLSearchParams({
     effectiveStartDate: startDate,
@@ -162,7 +141,7 @@ export function ReportsClient() {
   // Reset drilldown when filters change
   function handleFilterChange(fn: () => void) {
     closeDrilldown();
-    setCostDrilldown(null);
+    setCostTypeFilter("all");
     fn();
   }
 
@@ -282,149 +261,45 @@ export function ReportsClient() {
               <p className="text-[12px] text-white/70 mt-1">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : groupBy === "paymentMethod" ? "formas de pagamento" : "usuários"}</p>
             </div>
 
-            {/* Fixed vs Variable — expenses only */}
-            {reportType === "expense" && (data?.fixedTotal !== undefined) && (
-              (() => {
-                const fixed = data.fixedTotal ?? 0;
-                const variable = data.variableTotal ?? 0;
-                const total = fixed + variable;
-                const fixedPct  = total > 0 ? (fixed    / total) * 100 : 0;
-                const varPct    = total > 0 ? (variable / total) * 100 : 0;
-                const costTxns  = costDrillData?.transactions ?? [];
-                const costTotal = costTxns.reduce((a, t) => a + parseFloat(t.value), 0);
-                const accentColor = costDrilldown === "fixed" ? "#8b5cf6" : "#38bdf8";
+            {/* Fixed vs Variable — expenses only, purely informational */}
+            {reportType === "expense" && data?.fixedTotal !== undefined && (() => {
+              const fixed    = data.fixedTotal    ?? 0;
+              const variable = data.variableTotal ?? 0;
+              const total    = fixed + variable;
+              const fixedPct = total > 0 ? (fixed    / total) * 100 : 0;
+              const varPct   = total > 0 ? (variable / total) * 100 : 0;
+              return (
+                <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border shadow-card p-5 space-y-4">
+                  <h2 className="text-[14px] font-bold text-app-text">Fixos vs Variáveis</h2>
 
-                return (
-                  <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border shadow-card overflow-hidden">
-
-                    {/* ── Stats header ── */}
-                    <div className="p-5 pb-4 space-y-4">
-                      <h2 className="text-[14px] font-bold text-app-text">Fixos vs Variáveis</h2>
-
-                      {/* Split bar */}
-                      <div className="h-2 w-full rounded-full overflow-hidden flex gap-px bg-[var(--surface-raised)]">
-                        <div className="h-full rounded-full bg-violet-500 transition-all duration-500" style={{ width: `${fixedPct}%` }} />
-                        <div className="h-full rounded-full bg-sky-400 transition-all duration-500" style={{ width: `${varPct}%` }} />
-                      </div>
-
-                      {/* Two stat rows */}
-                      <div className="space-y-3">
-                        {/* Fixed */}
-                        <div className="flex items-center gap-3">
-                          <div className="w-2.5 h-2.5 rounded-full bg-violet-500 shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-baseline justify-between gap-2 mb-1">
-                              <span className="text-[12px] font-semibold text-app-text flex items-center gap-1.5">
-                                <Repeat2 size={11} className="text-violet-500" /> Fixos
-                              </span>
-                              <span className="text-[13px] font-bold font-mono text-app-text tabular-nums">{formatCurrency(fixed)}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 h-1.5 rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                                <div className="h-full rounded-full bg-violet-500 transition-all duration-500" style={{ width: `${fixedPct}%` }} />
-                              </div>
-                              <span className="text-[10px] font-bold text-violet-500 tabular-nums w-9 text-right">{fixedPct.toFixed(0)}%</span>
-                            </div>
-                          </div>
-                        </div>
-                        {/* Variable */}
-                        <div className="flex items-center gap-3">
-                          <div className="w-2.5 h-2.5 rounded-full bg-sky-400 shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-baseline justify-between gap-2 mb-1">
-                              <span className="text-[12px] font-semibold text-app-text flex items-center gap-1.5">
-                                <Shuffle size={11} className="text-sky-400" /> Variáveis
-                              </span>
-                              <span className="text-[13px] font-bold font-mono text-app-text tabular-nums">{formatCurrency(variable)}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 h-1.5 rounded-full bg-[var(--surface-raised)] overflow-hidden">
-                                <div className="h-full rounded-full bg-sky-400 transition-all duration-500" style={{ width: `${varPct}%` }} />
-                              </div>
-                              <span className="text-[10px] font-bold text-sky-500 tabular-nums w-9 text-right">{varPct.toFixed(0)}%</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* ── Tab bar ── */}
-                    <div className="flex border-t border-app-border">
-                      {(["fixed", "variable"] as const).map((key) => {
-                        const isActive = costDrilldown === key;
-                        const label = key === "fixed" ? "Fixos" : "Variáveis";
-                        const Icon  = key === "fixed" ? Repeat2 : Shuffle;
-                        const pct   = key === "fixed" ? fixedPct : varPct;
-                        const activeBg    = key === "fixed" ? "bg-violet-500/10 dark:bg-violet-500/20" : "bg-sky-400/10 dark:bg-sky-400/20";
-                        const activeText  = key === "fixed" ? "text-violet-600 dark:text-violet-400" : "text-sky-600 dark:text-sky-400";
-                        const activeBorder= key === "fixed" ? "border-violet-500" : "border-sky-400";
-                        const badgeBg     = key === "fixed" ? "bg-violet-500/15 text-violet-600 dark:text-violet-400" : "bg-sky-400/15 text-sky-600 dark:text-sky-400";
-                        return (
-                          <button
-                            key={key}
-                            type="button"
-                            onClick={() => setCostDrilldown(isActive ? null : key)}
-                            className={[
-                              "flex-1 flex items-center justify-center gap-2 py-3 text-[12px] font-semibold transition-colors border-b-2",
-                              isActive
-                                ? `${activeBg} ${activeText} ${activeBorder}`
-                                : "border-transparent text-app-muted hover:text-app-text hover:bg-[var(--surface-raised)]",
-                              key === "variable" ? "border-l border-l-app-border" : "",
-                            ].join(" ")}
-                          >
-                            <Icon size={13} />
-                            {label}
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? badgeBg : "bg-[var(--surface-raised)] text-app-muted"}`}>
-                              {pct.toFixed(0)}%
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* ── Transaction list ── */}
-                    {costDrilldown && (
-                      <div ref={costDrillRef} className="animate-fade-in border-t border-app-border">
-                        {costDrillLoading ? (
-                          <p className="text-[12px] text-app-muted py-8 text-center">Carregando lançamentos...</p>
-                        ) : costTxns.length === 0 ? (
-                          <p className="text-[12px] text-app-muted py-8 text-center">Nenhum lançamento encontrado</p>
-                        ) : (
-                          <>
-                            <div className="divide-y divide-[var(--surface-divider)]">
-                              {costTxns.map((t) => (
-                                <div key={t.id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-[var(--surface-raised)] transition">
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-[13px] font-medium text-app-text truncate">{t.description}</p>
-                                    {t.notes && <p className="text-[11px] text-app-muted truncate">{t.notes}</p>}
-                                    <p className="text-[11px] text-app-muted mt-0.5">{formatDate(t.effectiveDate ?? t.date)}</p>
-                                  </div>
-                                  <div className="flex items-center gap-2 shrink-0">
-                                    <span className="text-[13px] font-mono font-semibold tabular-nums" style={{ color: accentColor }}>
-                                      −{formatCurrency(t.value)}
-                                    </span>
-                                    {t.isPaid
-                                      ? <CheckCircle2 size={13} className="text-income" />
-                                      : <Circle size={13} className="text-app-muted" />}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                            {/* Footer summary */}
-                            <div className="flex items-center justify-between px-5 py-3 border-t border-app-border bg-[var(--surface-raised)]">
-                              <span className="text-[12px] font-semibold text-app-text">{costTxns.length} lançamento(s)</span>
-                              <span className="text-[13px] font-mono font-bold" style={{ color: accentColor }}>
-                                −{formatCurrency(costTotal)}
-                              </span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    )}
+                  {/* Split bar */}
+                  <div className="h-2 w-full rounded-full overflow-hidden flex bg-[var(--surface-raised)]">
+                    <div className="h-full bg-violet-500 transition-all duration-500" style={{ width: `${fixedPct}%` }} />
+                    <div className="h-full bg-sky-400 transition-all duration-500"   style={{ width: `${varPct}%`   }} />
                   </div>
-                );
-              })()
-            )}
+
+                  {/* Stat rows */}
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                    {[
+                      { label: "Fixos",     value: fixed,    pct: fixedPct, color: "bg-violet-500", textColor: "text-violet-500", Icon: Repeat2 },
+                      { label: "Variáveis", value: variable, pct: varPct,   color: "bg-sky-400",    textColor: "text-sky-500",    Icon: Shuffle },
+                    ].map(({ label, value, pct, color, textColor, Icon }) => (
+                      <div key={label} className="flex items-start gap-2.5">
+                        <div className={`w-2.5 h-2.5 rounded-full ${color} shrink-0 mt-1`} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1 mb-0.5">
+                            <Icon size={11} className={textColor} />
+                            <span className="text-[11px] font-semibold text-app-muted">{label}</span>
+                          </div>
+                          <p className="text-[15px] font-bold font-mono text-app-text tabular-nums leading-tight">{formatCurrency(value)}</p>
+                          <p className={`text-[11px] font-semibold tabular-nums ${textColor}`}>{pct.toFixed(1)}%</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Bar chart card */}
             <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border shadow-card overflow-hidden">
@@ -435,7 +310,37 @@ export function ReportsClient() {
                   </h2>
                   <span className="text-[11px] text-app-muted">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : groupBy === "paymentMethod" ? "formas de pagamento" : "usuários"}</span>
                 </div>
-                <p className="text-[11px] text-app-muted mb-5">Clique em um item para ver os lançamentos</p>
+                <p className="text-[11px] text-app-muted mb-4">Clique em um item para ver os lançamentos</p>
+
+                {/* Cost-type filter chips — expense mode only */}
+                {reportType === "expense" && (
+                  <div className="flex items-center gap-2 mb-5">
+                    {([
+                      { key: "all",      label: "Todos",     icon: null },
+                      { key: "fixed",    label: "Fixos",     icon: <Repeat2 size={11} /> },
+                      { key: "variable", label: "Variáveis", icon: <Shuffle  size={11} /> },
+                    ] as const).map(({ key, label, icon }) => {
+                      const active = costTypeFilter === key;
+                      const activeStyle =
+                        key === "fixed"    ? "bg-violet-500 border-violet-500 text-white" :
+                        key === "variable" ? "bg-sky-500 border-sky-500 text-white" :
+                        "bg-brand-600 border-brand-600 text-white";
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => { setCostTypeFilter(key); closeDrilldown(); }}
+                          className={[
+                            "flex items-center gap-1.5 px-3 h-7 rounded-full text-[12px] font-semibold border transition-all",
+                            active ? activeStyle : "border-app-border text-app-muted hover:border-app-text hover:text-app-text bg-[var(--surface-card)]",
+                          ].join(" ")}
+                        >
+                          {icon}{label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 <div className="space-y-1.5">
                   {items.map((item, index) => {
                     const color = COLORS[index % COLORS.length];
