@@ -345,7 +345,12 @@ export function TransactionForm({ transaction, onClose }: Props) {
           <div>
             <label className="block text-xs font-medium text-app-muted mb-1">Nº de parcelas</label>
             <input
-              {...register("installmentTotal", { valueAsNumber: true })}
+              {...register("installmentTotal", {
+                setValueAs: (v) => {
+                  const n = parseInt(v, 10);
+                  return isNaN(n) || n < 1 ? null : n;
+                },
+              })}
               type="number"
               min="1"
               max="120"
@@ -358,7 +363,12 @@ export function TransactionForm({ transaction, onClose }: Props) {
           <div>
             <label className="block text-xs font-medium text-app-muted mb-1">Valor da parcela (R$)</label>
             <input
-              {...register("installmentValue", { valueAsNumber: true })}
+              {...register("installmentValue", {
+                setValueAs: (v) => {
+                  const n = parseFloat(v);
+                  return isNaN(n) || n <= 0 ? null : n;
+                },
+              })}
               type="number"
               step="0.01"
               placeholder="Calculado automaticamente"
