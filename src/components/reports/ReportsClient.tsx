@@ -8,6 +8,7 @@ import { formatDate } from "@/lib/utils/date";
 import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight, ChevronDown, Repeat2, Shuffle, Layers } from "lucide-react";
 import { ReportFilterSheet } from "./ReportFilterSheet";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
+import { clampEndDate } from "@/lib/utils/date";
 
 interface ReportItem {
   label: string;
@@ -213,7 +214,7 @@ export function ReportsClient() {
         <input
           type="date"
           value={endDate}
-          onChange={(e) => handleFilterChange(() => setEndDate(e.target.value))}
+          onChange={(e) => handleFilterChange(() => setEndDate(clampEndDate(e.target.value, startDate)))}
           className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
         />
         {/* Group by */}

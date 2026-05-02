@@ -50,3 +50,35 @@ export function parseDate(str: string): Date {
 }
 
 export { getDaysInMonth, getDate, ptBR };
+
+/**
+ * Browsers silently overflow invalid end-of-month days to the next month's
+ * 1st (e.g. typing "31/04" in an <input type="date"> yields "2026-05-01").
+ * This function detects that overflow and snaps back to the last valid day of
+ * the intended month, using the start date as context.
+ *
+ * Rule: if the new end-date is the 1st of a month AND that month differs from
+ * the start-date's month, assume overflow → return last day of the previous month.
+ * In all other cases the value is returned unchanged.
+ */
+export function clampEndDate(endVal: string, startVal: string): string {
+  if (!endVal) return endVal;
+  const end = parseISO(endVal);
+  if (!isValid(end)) return endVal;
+  if (end.getDate() !== 1) return endVal; // not 1st → no overflow
+
+  if (startVal) {
+    const start = parseISO(startVal);
+    if (
+      isValid(start) &&
+      end.getMonth() === start.getMonth() &&
+      end.getFullYear() === start.getFullYear()
+    ) {
+      return endVal; // same month as start → day-1 is intentional
+    }
+  }
+
+  // Snap to last day of the previous month (= day 0 of current month)
+  const lastDay = new Date(end.getFullYear(), end.getMonth(), 0);
+  return format(lastDay, "yyyy-MM-dd");
+}

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { CheckCircle2, ChevronLeft, ChevronRight, Circle, Clock, Filter, Layers, TrendingUp, TrendingDown, X } from "lucide-react";
+import { clampEndDate } from "@/lib/utils/date";
 
 interface FilterSheetProps {
   type: string;
@@ -51,7 +52,7 @@ export function FilterSheet({
   const apply = () => {
     setType(draftType);
     setStartDate(draftStart);
-    setEndDate(draftEnd);
+    setEndDate(clampEndDate(draftEnd, draftStart));
     setShowFuture(draftFuture);
     setIsPaidFilter(draftIsPaid);
     setPage(1);
@@ -223,7 +224,7 @@ export function FilterSheet({
             <input
               type="date"
               value={draftEnd}
-              onChange={(e) => setDraftEnd(e.target.value)}
+              onChange={(e) => setDraftEnd(clampEndDate(e.target.value, draftStart))}
               className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             />
           </div>

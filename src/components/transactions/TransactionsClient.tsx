@@ -48,7 +48,7 @@ function SummaryChip({
     </div>
   );
 }
-import { formatDate } from "@/lib/utils/date";
+import { formatDate, clampEndDate } from "@/lib/utils/date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 import {
@@ -369,7 +369,7 @@ export function TransactionsClient() {
           <input
             type="date"
             value={endDate}
-            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+            onChange={(e) => { setEndDate(clampEndDate(e.target.value, startDate)); setPage(1); }}
             className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
           />
           {/* Month nav */}
