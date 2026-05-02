@@ -5,7 +5,7 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState, useRef, useEffect } from "react";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
-import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight, ChevronDown, Repeat2, Shuffle } from "lucide-react";
+import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRight, ChevronDown, Repeat2, Shuffle, Layers } from "lucide-react";
 import { ReportFilterSheet } from "./ReportFilterSheet";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 
@@ -316,7 +316,7 @@ export function ReportsClient() {
                 {reportType === "expense" && (
                   <div className="flex items-center gap-2 mb-5">
                     {([
-                      { key: "all",      label: "Todos",     icon: null },
+                      { key: "all",      label: "Todos",     icon: <Layers size={11} /> },
                       { key: "fixed",    label: "Fixos",     icon: <Repeat2 size={11} /> },
                       { key: "variable", label: "Variáveis", icon: <Shuffle  size={11} /> },
                     ] as const).map(({ key, label, icon }) => {
