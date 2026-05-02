@@ -314,95 +314,99 @@ export function TransactionsClient() {
       </button>
 
       {/* Filters — desktop only (mobile uses FilterSheet) */}
-      <div className="hidden md:flex flex-wrap gap-2 items-center">
-        {/* Chip type filters */}
-        <button
-          onClick={() => { setType(""); setPage(1); }}
-          className={`chip-filter${type === "" ? " active" : ""}`}
-        >
-          <Layers size={12} className="inline mr-1" />Todos
-        </button>
-        <button
-          onClick={() => { setType("income"); setPage(1); }}
-          className={`chip-filter${type === "income" ? " active" : ""}`}
-        >
-          <TrendingUp size={12} className="inline mr-1" />Receitas
-        </button>
-        <button
-          onClick={() => { setType("expense"); setPage(1); }}
-          className={`chip-filter${type === "expense" ? " active" : ""}`}
-        >
-          <TrendingDown size={12} className="inline mr-1" />Despesas
-        </button>
-        <div className="w-px h-5 bg-app-border mx-1" />
-        {/* Paid status filter */}
-        <button
-          onClick={() => { setIsPaidFilter(""); setPage(1); }}
-          className={`chip-filter${isPaidFilter === "" ? " active" : ""}`}
-        >
-          <Layers size={12} className="inline mr-1" />Todos
-        </button>
-        <button
-          onClick={() => { setIsPaidFilter("true"); setPage(1); }}
-          className={`chip-filter${isPaidFilter === "true" ? " active" : ""}`}
-        >
-          <CheckCircle2 size={12} className="inline mr-1" />Pagos
-        </button>
-        <button
-          onClick={() => { setIsPaidFilter("false"); setPage(1); }}
-          className={`chip-filter${isPaidFilter === "false" ? " active" : ""}`}
-        >
-          <Circle size={12} className="inline mr-1" />Pendentes
-        </button>
-        <div className="w-px h-5 bg-app-border mx-1" />
-        {/* Date range */}
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-          className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
-        />
-        <span className="text-app-muted text-sm">→</span>
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-          className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
-        />
-        {/* Month nav */}
-        <div className="flex items-center gap-1">
+      <div className="hidden md:flex flex-col gap-2">
+        {/* Row 1: type + payment status */}
+        <div className="flex items-center gap-2">
+          {/* Type chips */}
           <button
-            onClick={() => navigateMonth(-1)}
-            title="Mês anterior"
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+            onClick={() => { setType(""); setPage(1); }}
+            className={`chip-filter${type === "" ? " active" : ""}`}
           >
-            <ChevronLeft size={14} />
+            <Layers size={12} className="inline mr-1" />Todos
           </button>
           <button
-            onClick={() => navigateMonth(1)}
-            title="Próximo mês"
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+            onClick={() => { setType("income"); setPage(1); }}
+            className={`chip-filter${type === "income" ? " active" : ""}`}
           >
-            <ChevronRight size={14} />
+            <TrendingUp size={12} className="inline mr-1" />Receitas
+          </button>
+          <button
+            onClick={() => { setType("expense"); setPage(1); }}
+            className={`chip-filter${type === "expense" ? " active" : ""}`}
+          >
+            <TrendingDown size={12} className="inline mr-1" />Despesas
+          </button>
+          <div className="w-px h-5 bg-app-border mx-1" />
+          {/* Paid status chips */}
+          <button
+            onClick={() => { setIsPaidFilter(""); setPage(1); }}
+            className={`chip-filter${isPaidFilter === "" ? " active" : ""}`}
+          >
+            <Layers size={12} className="inline mr-1" />Todos
+          </button>
+          <button
+            onClick={() => { setIsPaidFilter("true"); setPage(1); }}
+            className={`chip-filter${isPaidFilter === "true" ? " active" : ""}`}
+          >
+            <CheckCircle2 size={12} className="inline mr-1" />Pagos
+          </button>
+          <button
+            onClick={() => { setIsPaidFilter("false"); setPage(1); }}
+            className={`chip-filter${isPaidFilter === "false" ? " active" : ""}`}
+          >
+            <Circle size={12} className="inline mr-1" />Pendentes
           </button>
         </div>
-        {/* Agendados toggle */}
-        <button
-          onClick={() => { setShowFuture((v) => !v); setPage(1); }}
-          className={`chip-filter${showFuture ? " active" : ""}`}
-          title={showFuture ? "Ocultar lançamentos futuros" : "Mostrar lançamentos agendados"}
-        >
-          <Clock size={12} className="inline mr-1" />
-          Agendados
-        </button>
-        {(type || startDate || endDate || isPaidFilter) && (
+        {/* Row 2: date range + nav + agendados + clear */}
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+            className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
+          />
+          <span className="text-app-muted text-sm">→</span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+            className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
+          />
+          {/* Month nav */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => navigateMonth(-1)}
+              title="Mês anterior"
+              className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <button
+              onClick={() => navigateMonth(1)}
+              title="Próximo mês"
+              className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+          {/* Agendados toggle */}
           <button
-            onClick={() => { setType(""); setStartDate(""); setEndDate(""); setIsPaidFilter(""); setPage(1); }}
-            className="text-[12px] text-app-muted hover:text-app-text px-2 transition"
+            onClick={() => { setShowFuture((v) => !v); setPage(1); }}
+            className={`chip-filter${showFuture ? " active" : ""}`}
+            title={showFuture ? "Ocultar lançamentos futuros" : "Mostrar lançamentos agendados"}
           >
-            Limpar
+            <Clock size={12} className="inline mr-1" />
+            Agendados
           </button>
-        )}
+          {(type || startDate || endDate || isPaidFilter) && (
+            <button
+              onClick={() => { setType(""); setStartDate(""); setEndDate(""); setIsPaidFilter(""); setPage(1); }}
+              className="text-[12px] text-app-muted hover:text-app-text px-2 transition"
+            >
+              Limpar
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Summary mini — sticky on mobile so it stays visible while scrolling */}
