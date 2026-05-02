@@ -146,16 +146,26 @@ export function TransactionsClient() {
       .catch(() => { /* silent */ });
   }, [queryClient]);
 
+  // Browsers return "" for invalid dates (e.g. "31/04" has no April 31) or
+  // overflow to the next month's 1st ("2026-05-01" when the user meant April).
+  // clampEndDate fixes the overflow case; the fallback fixes the empty case by
+  // defaulting to the last day of the start month so the filter stays tight.
+  const effectiveEndDate = endDate
+    ? clampEndDate(endDate, startDate)
+    : startDate
+      ? format(endOfMonth(parseISO(startDate)), "yyyy-MM-dd")
+      : "";
+
   const params = new URLSearchParams({ page: String(page), limit: "30" });
   if (activeGroupId) params.set("groupId", activeGroupId);
   if (type) params.set("type", type);
   if (startDate) params.set("startDate", startDate);
-  if (endDate) params.set("endDate", endDate);
+  if (effectiveEndDate) params.set("endDate", effectiveEndDate);
   if (!showFuture) params.set("hideFuture", "true");
   if (isPaidFilter !== "") params.set("isPaid", isPaidFilter);
 
   const { data, isLoading } = useQuery<{ transactions: Transaction[] }>({
-    queryKey: ["transactions", page, type, startDate, endDate, activeGroupId, showFuture, isPaidFilter],
+    queryKey: ["transactions", page, type, startDate, effectiveEndDate, activeGroupId, showFuture, isPaidFilter],
     queryFn: () => fetch(`/api/transactions?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
     placeholderData: (prev) => prev,
   });
@@ -362,14 +372,14 @@ export function TransactionsClient() {
           <input
             type="date"
             value={startDate}
-            onChange={(e) => { if (e.target.value) { setStartDate(e.target.value); setPage(1); } }}
+            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
             className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
           />
           <span className="text-app-muted text-sm">→</span>
           <input
             type="date"
             value={endDate}
-            onChange={(e) => { const v = clampEndDate(e.target.value, startDate); if (v) { setEndDate(v); setPage(1); } }}
+            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
             className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
           />
           {/* Month nav */}

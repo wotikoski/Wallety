@@ -84,12 +84,18 @@ export function ReportsClient() {
       .catch(() => {});
   }, [queryClient]);
 
-  const params = new URLSearchParams({ startDate, endDate, groupBy });
+  const effectiveEndDate = endDate
+    ? clampEndDate(endDate, startDate)
+    : startDate
+      ? format(endOfMonth(parseISO(startDate)), "yyyy-MM-dd")
+      : "";
+
+  const params = new URLSearchParams({ startDate, endDate: effectiveEndDate, groupBy });
   if (activeGroupId) params.set("groupId", activeGroupId);
   if (reportType === "expense" && costTypeFilter !== "all") params.set("costType", costTypeFilter);
 
   const { data, isLoading } = useQuery<ReportData>({
-    queryKey: ["report", reportType, startDate, endDate, groupBy, activeGroupId, costTypeFilter],
+    queryKey: ["report", reportType, startDate, effectiveEndDate, groupBy, activeGroupId, costTypeFilter],
     queryFn: () =>
       fetch(`/api/reports/${reportType === "income" ? "income" : "expenses"}?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
@@ -99,7 +105,7 @@ export function ReportsClient() {
 
   const drillParams = new URLSearchParams({
     effectiveStartDate: startDate,
-    effectiveEndDate: endDate,
+    effectiveEndDate: effectiveEndDate,
     type: reportType,
     limit: "500",
   });
@@ -207,14 +213,14 @@ export function ReportsClient() {
         <input
           type="date"
           value={startDate}
-          onChange={(e) => { if (e.target.value) handleFilterChange(() => setStartDate(e.target.value)); }}
+          onChange={(e) => handleFilterChange(() => setStartDate(e.target.value))}
           className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
         />
         <span className="text-app-muted text-sm">→</span>
         <input
           type="date"
           value={endDate}
-          onChange={(e) => { const v = clampEndDate(e.target.value, startDate); if (v) handleFilterChange(() => setEndDate(v)); }}
+          onChange={(e) => handleFilterChange(() => setEndDate(e.target.value))}
           className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
         />
         {/* Group by */}

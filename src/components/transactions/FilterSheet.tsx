@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { CheckCircle2, ChevronLeft, ChevronRight, Circle, Clock, Filter, Layers, TrendingUp, TrendingDown, X } from "lucide-react";
 import { clampEndDate } from "@/lib/utils/date";
+import { format, endOfMonth, parseISO } from "date-fns";
 
 interface FilterSheetProps {
   type: string;
@@ -50,9 +51,14 @@ export function FilterSheet({
   };
 
   const apply = () => {
+    const effectiveEnd = draftEnd
+      ? clampEndDate(draftEnd, draftStart)
+      : draftStart
+        ? format(endOfMonth(parseISO(draftStart)), "yyyy-MM-dd")
+        : "";
     setType(draftType);
     setStartDate(draftStart);
-    setEndDate(clampEndDate(draftEnd, draftStart));
+    setEndDate(effectiveEnd);
     setShowFuture(draftFuture);
     setIsPaidFilter(draftIsPaid);
     setPage(1);
@@ -224,7 +230,7 @@ export function FilterSheet({
             <input
               type="date"
               value={draftEnd}
-              onChange={(e) => { const v = clampEndDate(e.target.value, draftStart); if (v) setDraftEnd(v); }}
+              onChange={(e) => setDraftEnd(e.target.value)}
               className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             />
           </div>
