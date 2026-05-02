@@ -207,14 +207,14 @@ export function ReportsClient() {
         <input
           type="date"
           value={startDate}
-          onChange={(e) => handleFilterChange(() => setStartDate(e.target.value))}
+          onChange={(e) => { if (e.target.value) handleFilterChange(() => setStartDate(e.target.value)); }}
           className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
         />
         <span className="text-app-muted text-sm">→</span>
         <input
           type="date"
           value={endDate}
-          onChange={(e) => handleFilterChange(() => setEndDate(clampEndDate(e.target.value, startDate)))}
+          onChange={(e) => { const v = clampEndDate(e.target.value, startDate); if (v) handleFilterChange(() => setEndDate(v)); }}
           className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
         />
         {/* Group by */}

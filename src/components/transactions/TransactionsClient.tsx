@@ -362,14 +362,14 @@ export function TransactionsClient() {
           <input
             type="date"
             value={startDate}
-            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+            onChange={(e) => { if (e.target.value) { setStartDate(e.target.value); setPage(1); } }}
             className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
           />
           <span className="text-app-muted text-sm">→</span>
           <input
             type="date"
             value={endDate}
-            onChange={(e) => { setEndDate(clampEndDate(e.target.value, startDate)); setPage(1); }}
+            onChange={(e) => { const v = clampEndDate(e.target.value, startDate); if (v) { setEndDate(v); setPage(1); } }}
             className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
           />
           {/* Month nav */}

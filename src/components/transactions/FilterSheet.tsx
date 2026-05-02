@@ -224,7 +224,7 @@ export function FilterSheet({
             <input
               type="date"
               value={draftEnd}
-              onChange={(e) => setDraftEnd(clampEndDate(e.target.value, draftStart))}
+              onChange={(e) => { const v = clampEndDate(e.target.value, draftStart); if (v) setDraftEnd(v); }}
               className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
             />
           </div>
