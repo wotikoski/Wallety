@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Clock, Filter, Layers, TrendingUp, TrendingDown, X } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight, Circle, Clock, Filter, Layers, TrendingUp, TrendingDown, X } from "lucide-react";
 
 interface FilterSheetProps {
   type: string;
@@ -11,6 +11,8 @@ interface FilterSheetProps {
   setEndDate: (v: string) => void;
   showFuture: boolean;
   setShowFuture: (v: boolean) => void;
+  isPaidFilter: "" | "true" | "false";
+  setIsPaidFilter: (v: "" | "true" | "false") => void;
   navigateMonth: (delta: -1 | 1) => void;
   setPage: (v: number) => void;
 }
@@ -24,6 +26,8 @@ export function FilterSheet({
   setEndDate,
   showFuture,
   setShowFuture,
+  isPaidFilter,
+  setIsPaidFilter,
   navigateMonth,
   setPage,
 }: FilterSheetProps) {
@@ -33,12 +37,14 @@ export function FilterSheet({
   const [draftStart, setDraftStart] = useState(startDate);
   const [draftEnd, setDraftEnd] = useState(endDate);
   const [draftFuture, setDraftFuture] = useState(showFuture);
+  const [draftIsPaid, setDraftIsPaid] = useState<"" | "true" | "false">(isPaidFilter);
 
   const openSheet = () => {
     setDraftType(type);
     setDraftStart(startDate);
     setDraftEnd(endDate);
     setDraftFuture(showFuture);
+    setDraftIsPaid(isPaidFilter);
     setOpen(true);
   };
 
@@ -47,6 +53,7 @@ export function FilterSheet({
     setStartDate(draftStart);
     setEndDate(draftEnd);
     setShowFuture(draftFuture);
+    setIsPaidFilter(draftIsPaid);
     setPage(1);
     setOpen(false);
   };
@@ -56,9 +63,10 @@ export function FilterSheet({
     setDraftStart("");
     setDraftEnd("");
     setDraftFuture(false);
+    setDraftIsPaid("");
   };
 
-  const hasActiveFilters = type || startDate || endDate || showFuture;
+  const hasActiveFilters = type || startDate || endDate || showFuture || isPaidFilter;
 
   return (
     <>
@@ -141,6 +149,40 @@ export function FilterSheet({
                 }`}
               >
                 <TrendingDown size={14} /> Despesas
+              </button>
+            </div>
+          </div>
+
+          {/* Status de pagamento */}
+          <div>
+            <label className="block text-xs font-medium text-app-muted mb-1.5">Status de pagamento</label>
+            <div className="flex rounded-xl border border-app-border overflow-hidden h-[42px]">
+              <button
+                type="button"
+                onClick={() => setDraftIsPaid("")}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+                  draftIsPaid === "" ? "bg-brand-600 text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                }`}
+              >
+                <Layers size={14} /> Todos
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftIsPaid("true")}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+                  draftIsPaid === "true" ? "bg-income text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                }`}
+              >
+                <CheckCircle2 size={14} /> Pagos
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftIsPaid("false")}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
+                  draftIsPaid === "false" ? "bg-amber-500 text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                }`}
+              >
+                <Circle size={14} /> Pendentes
               </button>
             </div>
           </div>

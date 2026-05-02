@@ -54,7 +54,7 @@ import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns"
 import {
   Plus, ArrowUpRight, ArrowDownRight, CheckCircle2, Circle,
   Trash2, Edit, ChevronLeft, ChevronRight, Layers, Download, Clock,
-  TrendingUp, TrendingDown,
+  TrendingUp, TrendingDown, BadgeCheck,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -104,6 +104,7 @@ export function TransactionsClient() {
   const [startDate, setStartDate] = useState(format(startOfMonth(now), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
   const [showFuture, setShowFuture] = useState(false);
+  const [isPaidFilter, setIsPaidFilter] = useState<"" | "true" | "false">("");
   const [showNewForm, setShowNewForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -151,9 +152,10 @@ export function TransactionsClient() {
   if (startDate) params.set("startDate", startDate);
   if (endDate) params.set("endDate", endDate);
   if (!showFuture) params.set("hideFuture", "true");
+  if (isPaidFilter !== "") params.set("isPaid", isPaidFilter);
 
   const { data, isLoading } = useQuery<{ transactions: Transaction[] }>({
-    queryKey: ["transactions", page, type, startDate, endDate, activeGroupId, showFuture],
+    queryKey: ["transactions", page, type, startDate, endDate, activeGroupId, showFuture, isPaidFilter],
     queryFn: () => fetch(`/api/transactions?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
     placeholderData: (prev) => prev,
   });
@@ -284,6 +286,8 @@ export function TransactionsClient() {
             setEndDate={setEndDate}
             showFuture={showFuture}
             setShowFuture={setShowFuture}
+            isPaidFilter={isPaidFilter}
+            setIsPaidFilter={setIsPaidFilter}
             navigateMonth={navigateMonth}
             setPage={setPage}
           />
@@ -331,6 +335,26 @@ export function TransactionsClient() {
           <TrendingDown size={12} className="inline mr-1" />Despesas
         </button>
         <div className="w-px h-5 bg-app-border mx-1" />
+        {/* Paid status filter */}
+        <button
+          onClick={() => { setIsPaidFilter(""); setPage(1); }}
+          className={`chip-filter${isPaidFilter === "" ? " active" : ""}`}
+        >
+          <Layers size={12} className="inline mr-1" />Todos
+        </button>
+        <button
+          onClick={() => { setIsPaidFilter("true"); setPage(1); }}
+          className={`chip-filter${isPaidFilter === "true" ? " active" : ""}`}
+        >
+          <CheckCircle2 size={12} className="inline mr-1" />Pagos
+        </button>
+        <button
+          onClick={() => { setIsPaidFilter("false"); setPage(1); }}
+          className={`chip-filter${isPaidFilter === "false" ? " active" : ""}`}
+        >
+          <Circle size={12} className="inline mr-1" />Pendentes
+        </button>
+        <div className="w-px h-5 bg-app-border mx-1" />
         {/* Date range */}
         <input
           type="date"
@@ -371,9 +395,9 @@ export function TransactionsClient() {
           <Clock size={12} className="inline mr-1" />
           Agendados
         </button>
-        {(type || startDate || endDate) && (
+        {(type || startDate || endDate || isPaidFilter) && (
           <button
-            onClick={() => { setType(""); setStartDate(""); setEndDate(""); setPage(1); }}
+            onClick={() => { setType(""); setStartDate(""); setEndDate(""); setIsPaidFilter(""); setPage(1); }}
             className="text-[12px] text-app-muted hover:text-app-text px-2 transition"
           >
             Limpar
