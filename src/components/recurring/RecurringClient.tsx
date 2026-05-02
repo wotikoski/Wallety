@@ -8,7 +8,7 @@ import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Portal } from "@/components/ui/Portal";
-import { Plus, RefreshCcw, Trash2, Edit, CheckCircle2, Circle, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
+import { Plus, RefreshCcw, Trash2, Edit, Play, Pause, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SwipeableRow } from "@/components/transactions/SwipeableRow";
 
@@ -303,19 +303,15 @@ export function RecurringClient() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
-                        <div className="text-right">
-                          <p className={`text-[13px] font-semibold font-mono whitespace-nowrap ${r.type === "income" ? "text-income" : "text-expense"}`}>
-                            {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
-                          </p>
-                          <span className={`text-[10px] font-semibold ${r.isActive ? "text-income" : "text-app-muted"}`}>
-                            {r.isActive ? "Ativa" : "Pausada"}
-                          </span>
-                        </div>
+                        <p className={`text-[13px] font-semibold font-mono whitespace-nowrap ${r.type === "income" ? "text-income" : "text-expense"}`}>
+                          {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
+                        </p>
                         <button
                           onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
-                          className="text-app-muted hover:text-income transition"
+                          title={r.isActive ? "Pausar recorrência" : "Ativar recorrência"}
+                          className={`p-1.5 rounded-lg transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(16,185,129,.1)]"}`}
                         >
-                          {r.isActive ? <CheckCircle2 size={18} className="text-income" /> : <Circle size={18} />}
+                          {r.isActive ? <Pause size={15} /> : <Play size={15} />}
                         </button>
                       </div>
                     </div>
@@ -332,7 +328,6 @@ export function RecurringClient() {
                   <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Frequência</th>
                   <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Início</th>
                   <th className="text-right px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Valor</th>
-                  <th className="text-center px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Ativa</th>
                   <th className="text-right px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Ações</th>
                 </tr>
               </thead>
@@ -371,13 +366,15 @@ export function RecurringClient() {
                           {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 text-center">
-                        <button onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })} className="text-app-muted hover:text-income transition">
-                          {r.isActive ? <CheckCircle2 size={18} className="text-income" /> : <Circle size={18} />}
-                        </button>
-                      </td>
                       <td className="px-5 py-3.5 text-right">
                         <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
+                            title={r.isActive ? "Pausar recorrência" : "Ativar recorrência"}
+                            className={`p-1.5 rounded-lg transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(16,185,129,.1)]"}`}
+                          >
+                            {r.isActive ? <Pause size={14} /> : <Play size={14} />}
+                          </button>
                           <button
                             onClick={() => openEdit(r)}
                             className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
