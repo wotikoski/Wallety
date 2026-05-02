@@ -628,7 +628,7 @@ export function TransactionsClient() {
         <Portal>
           <div
             className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setShowNewForm(false)}
+            onClick={(e) => { if (e.target === e.currentTarget) setShowNewForm(false); }}
           >
             <div
               onClick={(e) => e.stopPropagation()}
@@ -644,7 +644,7 @@ export function TransactionsClient() {
         <Portal>
           <div
             className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setEditingId(null)}
+            onClick={(e) => { if (e.target === e.currentTarget) setEditingId(null); }}
           >
             <div
               onClick={(e) => e.stopPropagation()}
