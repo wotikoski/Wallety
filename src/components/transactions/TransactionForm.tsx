@@ -57,7 +57,15 @@ export function TransactionForm({ transaction, onClose }: Props) {
       type: (transaction?.type as "income" | "expense") ?? "expense",
       categoryId: transaction?.categoryId ?? null,
       description: transaction?.description ?? "",
-      value: transaction ? (formatNumber(parseFloat(transaction.value)) as unknown as number) : (undefined as unknown as number),
+      // Installments: the DB stores the per-installment amount in `value`.
+      // Show the reconstructed total so the form makes sense to the user.
+      value: transaction
+        ? (formatNumber(
+            isInstallment
+              ? parseFloat(transaction.value) * (transaction.installmentTotal ?? 1)
+              : parseFloat(transaction.value),
+          ) as unknown as number)
+        : (undefined as unknown as number),
       paymentMethodId: transaction?.paymentMethodId ?? null,
       bankId: transaction?.bankId ?? null,
       installmentTotal: transaction?.installmentTotal ?? null,
@@ -78,7 +86,11 @@ export function TransactionForm({ transaction, onClose }: Props) {
       type: transaction.type as "income" | "expense",
       categoryId: transaction.categoryId,
       description: transaction.description,
-      value: formatNumber(parseFloat(transaction.value)) as unknown as number,
+      value: formatNumber(
+        isInstallment
+          ? parseFloat(transaction.value) * (transaction.installmentTotal ?? 1)
+          : parseFloat(transaction.value),
+      ) as unknown as number,
       paymentMethodId: transaction.paymentMethodId,
       bankId: transaction.bankId,
       installmentTotal: transaction.installmentTotal,
@@ -149,7 +161,19 @@ export function TransactionForm({ transaction, onClose }: Props) {
       const url = isEdit ? `/api/transactions/${transaction.id}` : "/api/transactions";
       const method = isEdit ? "PUT" : "POST";
       const body: Record<string, unknown> = { ...data, groupId: activeGroupId };
-      if (isInstallment) body.scope = installmentScope;
+
+      if (isInstallment) {
+        body.scope = installmentScope;
+        // The form shows the reconstructed total (value × installmentTotal).
+        // Convert back to the per-installment amount that the DB stores.
+        const instTotal = transaction?.installmentTotal ?? 1;
+        if (typeof body.value === "number" && instTotal > 1) {
+          const perInstallment = Math.round((body.value / instTotal) * 100) / 100;
+          body.value = perInstallment;
+          body.installmentValue = perInstallment;
+        }
+      }
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },

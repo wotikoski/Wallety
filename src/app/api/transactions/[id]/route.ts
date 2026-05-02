@@ -113,6 +113,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ transaction: updated });
     }
 
+    // For bulk installment updates: each installment has its own date, value and
+    // effectiveDate — propagating those would collapse all parcelas into the same
+    // month. Only metadata fields (category, bank, description, etc.) are safe to
+    // apply uniformly across all affected rows.
+    delete updateData.date;
+    delete updateData.value;
+    delete updateData.installmentValue;
+    delete updateData.installmentTotal;
+    delete updateData.effectiveDate;
+
     if (scope === "all") {
       await db
         .update(transactions)
