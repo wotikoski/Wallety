@@ -128,15 +128,24 @@ export function ReportsClient() {
 
   const drilldownRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!drilldown || !drilldownRef.current) return;
-    const el = drilldownRef.current;
-    const timer = setTimeout(() => {
-      const scrollParent = el.closest<HTMLElement>(".overflow-y-auto") ?? document.documentElement;
-      const top = el.getBoundingClientRect().top + scrollParent.scrollTop - 120;
-      scrollParent.scrollTo({ top, behavior: "smooth" });
-    }, 150);
-    return () => clearTimeout(timer);
-  }, [drilldown?.groupKey]);
+    // Skip while data is loading: panel is at its minimum "Carregando..." height.
+    // Wait until drillLoading=false so the panel reaches its final height before
+    // we compute the scroll target — avoids scrolling to the wrong position and
+    // then having to correct again when the list renders.
+    if (!drilldown || drillLoading || !drilldownRef.current) return;
+    // Double-rAF: first frame commits the DOM update, second frame has stable
+    // geometry after layout/paint. Replaces the fixed 150ms setTimeout which
+    // fired mid-animation and before fonts/layout settled on first page entry.
+    let id1: number, id2: number;
+    id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => {
+        drilldownRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    });
+    return () => { cancelAnimationFrame(id1); cancelAnimationFrame(id2); };
+  // drillLoading in deps: re-fires when data arrives and panel expands to full height.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drilldown?.groupKey, drillLoading]);
 
   // Reset drilldown when filters change
   function handleFilterChange(fn: () => void) {
@@ -390,7 +399,7 @@ export function ReportsClient() {
                         {isSelected && (
                           <div
                             ref={drilldownRef}
-                            className="animate-fade-in rounded-b-xl overflow-hidden border border-t-0"
+                            className="animate-fade-in rounded-b-xl overflow-hidden border border-t-0 scroll-mt-20"
                             style={{ borderColor: color + "35" }}
                           >
                             {drillLoading ? (
