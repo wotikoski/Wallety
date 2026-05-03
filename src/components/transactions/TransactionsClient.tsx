@@ -159,8 +159,10 @@ export function TransactionsClient() {
   const params = new URLSearchParams({ page: String(page), limit: "30" });
   if (activeGroupId) params.set("groupId", activeGroupId);
   if (type) params.set("type", type);
-  if (startDate) params.set("startDate", startDate);
-  if (effectiveEndDate) params.set("endDate", effectiveEndDate);
+  // Filter by COALESCE(effectiveDate, date) so credit-card transactions appear
+  // in the month their invoice falls (effectiveDate), not the charge date.
+  if (startDate) params.set("effectiveStartDate", startDate);
+  if (effectiveEndDate) params.set("effectiveEndDate", effectiveEndDate);
   if (!showFuture) params.set("hideFuture", "true");
   if (isPaidFilter !== "") params.set("isPaid", isPaidFilter);
 

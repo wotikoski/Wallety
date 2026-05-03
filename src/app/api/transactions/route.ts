@@ -61,7 +61,9 @@ export async function GET(req: NextRequest) {
     }
     if (hideFuture) {
       const todayStr = new Date().toISOString().slice(0, 10);
-      conditions.push(lte(transactions.date, todayStr));
+      // Use COALESCE(effectiveDate, date) so credit-card transactions scheduled
+      // for a future invoice date are also hidden when showFuture is off.
+      conditions.push(lte(effDate, todayStr));
     }
 
     const rows = await db
@@ -87,7 +89,7 @@ export async function GET(req: NextRequest) {
       .from(transactions)
       .leftJoin(categories, eq(transactions.categoryId, categories.id))
       .where(and(...conditions))
-      .orderBy(desc(transactions.date), desc(transactions.createdAt))
+      .orderBy(desc(effDate), desc(transactions.createdAt))
       .limit(limit)
       .offset(offset);
 
