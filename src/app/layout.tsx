@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Sora is used for both the main UI font and the brand font.
 const sora = Sora({
@@ -83,6 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Toaster />
         </Providers>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
