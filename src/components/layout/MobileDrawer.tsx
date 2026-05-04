@@ -13,6 +13,7 @@ import {
   Target,
   RefreshCcw,
   BarChart3,
+  PiggyBank,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils/cn";
 // order as the desktop sidebar: data entry → planning → analysis.
 const mainDrawerItems = [
   { href: "/recorrencias", label: "Recorrências", icon: RefreshCcw },
+  { href: "/metas", label: "Metas", icon: PiggyBank },
   { href: "/limite-diario", label: "Limite Diário", icon: Target },
   { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
 ];

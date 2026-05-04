@@ -16,6 +16,7 @@ import {
   LogOut,
   Wallet,
   RefreshCcw,
+  PiggyBank,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/recorrencias", label: "Recorrências", icon: RefreshCcw },
   { href: "/calendario", label: "Calendário", icon: Calendar },
   { href: "/orcamentos", label: "Orçamentos", icon: Wallet },
+  { href: "/metas", label: "Metas", icon: PiggyBank },
   { href: "/limite-diario", label: "Limite Diário", icon: Target },
   { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
 ];

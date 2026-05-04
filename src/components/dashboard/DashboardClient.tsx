@@ -25,7 +25,19 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, AlertTriangle, PiggyBank } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, AlertTriangle, PiggyBank, ChevronRight, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { differenceInCalendarDays, differenceInCalendarMonths, parseISO } from "date-fns";
+
+interface GoalItem {
+  id: string;
+  name: string;
+  targetAmount: string;
+  targetDate: string;
+  savedAmount: string;
+  color: string;
+  emoji: string;
+}
 
 interface DashboardData {
   totalIncome: number;
@@ -188,6 +200,14 @@ export function DashboardClient() {
   projParams.set("from", monthStart);
   projParams.set("to", monthEndStr);
   if (activeGroupId) projParams.set("groupId", activeGroupId);
+
+  // Goals — ordered by closest deadline; only first 3 shown in widget
+  const goalsParams = new URLSearchParams();
+  if (activeGroupId) goalsParams.set("groupId", activeGroupId);
+  const { data: goalsData } = useQuery<{ goals: GoalItem[] }>({
+    queryKey: ["goals", activeGroupId],
+    queryFn: () => fetch(`/api/goals?${goalsParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
+  });
 
   const { data: projData } = useQuery<{ projected: { date: string; effectiveDate: string | null; type: string; value: string }[] }>({
     queryKey: ["recurring-projected", month, year, activeGroupId],
@@ -528,6 +548,71 @@ export function DashboardClient() {
         </div>
 
       </div>
+
+      {/* Goals widget */}
+      {(goalsData?.goals?.length ?? 0) > 0 && (
+        <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-[#f1f3f9] flex items-center justify-between">
+            <h2 className="text-[14px] font-bold text-app-text">Metas de Poupança</h2>
+            <Link
+              href="/metas"
+              className="flex items-center gap-1 text-[12px] font-semibold text-brand-600 hover:text-brand-700 transition"
+            >
+              Ver todas <ChevronRight size={13} />
+            </Link>
+          </div>
+          <div className="divide-y divide-[#f1f3f9]">
+            {(goalsData?.goals ?? []).slice(0, 3).map((goal) => {
+              const target = parseFloat(goal.targetAmount);
+              const saved = parseFloat(goal.savedAmount);
+              const remaining = Math.max(0, target - saved);
+              const percent = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
+              const done = saved >= target;
+              const today = new Date();
+              const deadline = parseISO(goal.targetDate);
+              const daysLeft = differenceInCalendarDays(deadline, today);
+              const monthsLeft = Math.max(1, differenceInCalendarMonths(deadline, today) + 1);
+              const monthlyNeeded = !done && remaining > 0 ? remaining / monthsLeft : 0;
+              return (
+                <div key={goal.id} className="flex items-center px-5 py-3.5 gap-4">
+                  <span className="text-2xl leading-none shrink-0">{goal.emoji}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <p className="text-[13px] font-semibold text-app-text truncate">{goal.name}</p>
+                      {done ? (
+                        <span className="text-[11px] font-semibold text-income flex items-center gap-1 shrink-0">
+                          <CheckCircle2 size={11} /> Concluída
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-semibold shrink-0" style={{ color: goal.color }}>
+                          {monthlyNeeded > 0 ? `${formatCurrency(monthlyNeeded)}/mês` : "—"}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-1.5 prog-track">
+                      <div
+                        className="prog-fill transition-all"
+                        style={{
+                          width: `${percent}%`,
+                          background: done ? "#10b981" : goal.color,
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[10px] text-app-muted">
+                        {formatCurrency(saved)} de {formatCurrency(target)}
+                      </span>
+                      <span className={`text-[10px] font-medium ${daysLeft < 0 ? "text-red-500" : "text-app-muted"}`}>
+                        {daysLeft < 0 ? "Prazo encerrado" : daysLeft === 0 ? "Hoje!" : `${daysLeft} dias`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Recent Transactions */}
       <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">

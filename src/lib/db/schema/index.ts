@@ -7,3 +7,4 @@ export * from "./transactions";
 export * from "./monthly-budgets";
 export * from "./category-budgets";
 export * from "./recurring-transactions";
+export * from "./goals";
