@@ -349,7 +349,7 @@ export function GoalsClient() {
           className="flex items-center gap-2 bg-[#6366f1] hover:bg-[#5558d9] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition"
         >
           <Plus size={16} />
-          Nova Meta
+          <span className="hidden sm:inline">Nova Meta</span>
         </button>
       </div>
 
