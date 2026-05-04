@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
 import { transactions } from "@/lib/db/schema";
-import { and, eq, gte, lte, isNull } from "drizzle-orm";
+import { and, eq, gte, lte, isNull, sql } from "drizzle-orm";
 import { calculateDailyLimit } from "@/lib/utils/daily-limit";
 import { format, startOfMonth, endOfMonth, addMonths } from "date-fns";
 
@@ -27,6 +27,14 @@ export async function GET(req: NextRequest) {
       ? eq(transactions.groupId, groupId)
       : eq(transactions.userId, auth.sub);
 
+    // Use COALESCE(effectiveDate, date) so credit-card transactions land in
+    // the invoice month — consistent with how Dashboard buckets expenses.
+    const effDate = sql<string>`COALESCE(${transactions.effectiveDate}, ${transactions.date})`;
+    const currentStart = format(startOfMonth(monthStart), "yyyy-MM-dd");
+    const currentEnd   = format(endOfMonth(monthStart),   "yyyy-MM-dd");
+    const nextStart    = format(startOfMonth(nextMonthDate), "yyyy-MM-dd");
+    const nextEnd      = format(endOfMonth(nextMonthDate),   "yyyy-MM-dd");
+
     // Query current month transactions
     const currentTxns = await db
       .select({ type: transactions.type, value: transactions.value, isFixed: transactions.isFixed })
@@ -34,8 +42,8 @@ export async function GET(req: NextRequest) {
       .where(and(
         scopeCondition,
         isNull(transactions.deletedAt),
-        gte(transactions.date, format(startOfMonth(monthStart), "yyyy-MM-dd")),
-        lte(transactions.date, format(endOfMonth(monthStart), "yyyy-MM-dd")),
+        gte(effDate, currentStart),
+        lte(effDate, currentEnd),
       ));
 
     // Query next month transactions (already scheduled installments, recurring, etc.)
@@ -45,8 +53,8 @@ export async function GET(req: NextRequest) {
       .where(and(
         scopeCondition,
         isNull(transactions.deletedAt),
-        gte(transactions.date, format(startOfMonth(nextMonthDate), "yyyy-MM-dd")),
-        lte(transactions.date, format(endOfMonth(nextMonthDate),  "yyyy-MM-dd")),
+        gte(effDate, nextStart),
+        lte(effDate, nextEnd),
       ));
 
     const actualIncome = currentTxns
