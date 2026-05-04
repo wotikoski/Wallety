@@ -25,7 +25,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, AlertTriangle, PiggyBank } from "lucide-react";
 
 interface DashboardData {
   totalIncome: number;
@@ -33,6 +33,9 @@ interface DashboardData {
   paidExpenses: number;
   pendingExpenses: number;
   balance: number;
+  savingsRate: number | null;
+  overdueCount: number;
+  overdueAmount: number;
   expensesByCategory: { name: string; total: number; color: string }[];
   monthlyTrend: { month: string; income: number; expenses: number }[];
   recentTransactions: {
@@ -219,6 +222,15 @@ export function DashboardClient() {
   const totalIncome = data?.totalIncome ?? 0;
   const totalExpenses = data?.totalExpenses ?? 0;
   const balance = data?.balance ?? 0;
+  const overdueCount = data?.overdueCount ?? 0;
+  const overdueAmount = data?.overdueAmount ?? 0;
+  const savingsRate = data?.savingsRate ?? null;
+
+  // Days remaining in selected month
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const isCurrentMonth = now.getMonth() + 1 === month && now.getFullYear() === year;
+  const daysPassed = isCurrentMonth ? now.getDate() : daysInMonth;
+  const daysRemaining = isCurrentMonth ? daysInMonth - now.getDate() : 0;
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -250,6 +262,27 @@ export function DashboardClient() {
         </div>
       </div>
 
+      {/* Overdue alert banner */}
+      {overdueCount > 0 && (
+        <a
+          href="/lancamentos"
+          className="flex items-center gap-3 px-4 py-3 rounded-[12px] bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 transition group"
+        >
+          <AlertTriangle size={16} className="shrink-0 text-amber-500" />
+          <div className="flex-1 min-w-0">
+            <span className="text-[13px] font-semibold">
+              {overdueCount} despesa{overdueCount > 1 ? "s" : ""} em atraso
+            </span>
+            <span className="text-[12px] text-amber-600 ml-1.5">
+              · {formatCurrency(overdueAmount)} não pago{overdueCount > 1 ? "s" : ""}
+            </span>
+          </div>
+          <span className="text-[11px] font-semibold text-amber-600 group-hover:text-amber-800 shrink-0">
+            Ver →
+          </span>
+        </a>
+      )}
+
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-2 md:gap-3">
         <SummaryCard
@@ -280,6 +313,68 @@ export function DashboardClient() {
           }
         />
       </div>
+
+      {/* Month summary strip */}
+      {(savingsRate !== null || isCurrentMonth) && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {/* Savings rate */}
+          {savingsRate !== null && (
+            <div className="col-span-2 md:col-span-2 flex items-center gap-3 bg-white rounded-[12px] border border-app-border px-4 py-3 shadow-card">
+              <div className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 bg-[rgba(99,102,241,.1)]">
+                <PiggyBank size={16} className="text-brand-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-app-muted mb-0.5">Taxa de poupança</p>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[15px] font-bold font-mono ${savingsRate >= 20 ? "text-income" : savingsRate >= 0 ? "text-amber-500" : "text-expense"}`}>
+                    {savingsRate}%
+                  </span>
+                  <span className="text-[11px] text-app-muted">
+                    {savingsRate >= 20 ? "Ótimo ritmo 🎉" : savingsRate >= 0 ? "Atenção ao orçamento" : "Gastos acima da renda"}
+                  </span>
+                </div>
+                <div className="mt-1.5 prog-track">
+                  <div
+                    className="prog-fill transition-all"
+                    style={{
+                      width: `${Math.min(100, Math.max(0, savingsRate))}%`,
+                      background: savingsRate >= 20 ? "#10b981" : savingsRate >= 0 ? "#f59e0b" : "#f87171",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Days remaining / elapsed */}
+          {isCurrentMonth && (
+            <div className="flex items-center gap-3 bg-white rounded-[12px] border border-app-border px-4 py-3 shadow-card">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-app-muted mb-0.5">Dias restantes</p>
+                <p className="text-[15px] font-bold text-app-text">{daysRemaining} dias</p>
+                <div className="mt-1.5 prog-track">
+                  <div className="prog-fill bg-brand-400 transition-all" style={{ width: `${Math.round((daysPassed / daysInMonth) * 100)}%` }} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Daily spend pace */}
+          {isCurrentMonth && daysPassed > 0 && (
+            <div className="flex items-center gap-3 bg-white rounded-[12px] border border-app-border px-4 py-3 shadow-card">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-app-muted mb-0.5">Gasto médio/dia</p>
+                <p className="text-[15px] font-bold font-mono text-expense">
+                  {formatCurrencyShort(totalExpenses / daysPassed)}
+                </p>
+                <p className="text-[10px] text-app-muted mt-0.5">
+                  projeção: {formatCurrencyShort((totalExpenses / daysPassed) * daysInMonth)}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

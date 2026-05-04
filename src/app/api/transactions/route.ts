@@ -5,7 +5,7 @@ import { transactions, paymentMethods, categories } from "@/lib/db/schema";
 import { transactionSchema } from "@/lib/validations/transaction";
 import { generateInstallments } from "@/lib/utils/installments";
 import { computeEffectiveDate } from "@/lib/utils/invoice";
-import { and, eq, gte, lte, isNull, isNotNull, desc, or, sql } from "drizzle-orm";
+import { and, eq, gte, lte, isNull, isNotNull, desc, or, sql, ilike } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
     const bankId = searchParams.get("bankId");               // "__none__" → NULL
     const paymentMethodId = searchParams.get("paymentMethodId"); // "__none__" → NULL
     const isPaid = searchParams.get("isPaid");
+    const search = searchParams.get("search");
     const costType = searchParams.get("costType"); // "fixed" | "variable"
     const hideFuture = searchParams.get("hideFuture") === "true";
     const page = parseInt(searchParams.get("page") ?? "1");
@@ -54,6 +55,7 @@ export async function GET(req: NextRequest) {
     if (isPaid !== null && isPaid !== undefined) {
       conditions.push(eq(transactions.isPaid, isPaid === "true"));
     }
+    if (search) conditions.push(ilike(transactions.description, `%${search}%`));
     if (costType === "fixed") {
       conditions.push(or(isNotNull(transactions.recurrenceGroupId), eq(transactions.isFixed, true))!);
     } else if (costType === "variable") {
@@ -65,6 +67,12 @@ export async function GET(req: NextRequest) {
       // for a future invoice date are also hidden when showFuture is off.
       conditions.push(lte(effDate, todayStr));
     }
+
+    const [countRow] = await db
+      .select({ total: sql<number>`count(*)::int` })
+      .from(transactions)
+      .where(and(...conditions));
+    const total = countRow?.total ?? 0;
 
     const rows = await db
       .select({
@@ -93,7 +101,7 @@ export async function GET(req: NextRequest) {
       .limit(limit)
       .offset(offset);
 
-    return NextResponse.json({ transactions: rows, page, limit });
+    return NextResponse.json({ transactions: rows, page, limit, total });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();
     console.error(e);

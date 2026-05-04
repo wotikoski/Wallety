@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware";
 import { db } from "@/lib/db";
 import { transactions, categories } from "@/lib/db/schema";
-import { and, eq, gte, lte, isNull, inArray, desc, sql } from "drizzle-orm";
+import { and, eq, gte, lte, lt, isNull, inArray, desc, sql } from "drizzle-orm";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -108,6 +108,23 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // Overdue: unpaid expenses whose effective date falls before this month.
+    const [overdueRow] = await db
+      .select({
+        overdueCount: sql<number>`count(*)::int`,
+        overdueAmount: sql<number>`COALESCE(SUM(${transactions.value}::numeric), 0)`,
+      })
+      .from(transactions)
+      .where(
+        and(
+          scopeCondition,
+          isNull(transactions.deletedAt),
+          eq(transactions.type, "expense"),
+          eq(transactions.isPaid, false),
+          lt(effDate, start),
+        ),
+      );
+
     // "Lançamentos Recentes" uses purchase date, not effectiveDate.
     // Financial totals and charts use effectiveDate (cash-flow month), but
     // the recent list should show what the user physically bought this month —
@@ -144,6 +161,9 @@ export async function GET(req: NextRequest) {
       paidExpenses,
       pendingExpenses: totalExpenses - paidExpenses,
       balance: totalIncome - totalExpenses,
+      savingsRate: totalIncome > 0 ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : null,
+      overdueCount: overdueRow?.overdueCount ?? 0,
+      overdueAmount: overdueRow?.overdueAmount ?? 0,
       expensesByCategory: Object.values(expensesByCategory).sort((a, b) => b.total - a.total),
       monthlyTrend,
       recentTransactions: recentTxns,

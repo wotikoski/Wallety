@@ -54,7 +54,7 @@ import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns"
 import {
   Plus, ArrowUpRight, ArrowDownRight, CheckCircle2, Circle,
   Trash2, Edit, ChevronLeft, ChevronRight, Layers, Download, Clock,
-  TrendingUp, TrendingDown, BadgeCheck,
+  TrendingUp, TrendingDown, BadgeCheck, Search, X as XIcon,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -105,8 +105,19 @@ export function TransactionsClient() {
   const [endDate, setEndDate] = useState(format(endOfMonth(now), "yyyy-MM-dd"));
   const [showFuture, setShowFuture] = useState(false);
   const [isPaidFilter, setIsPaidFilter] = useState<"" | "true" | "false">("");
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showNewForm, setShowNewForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Debounce search input — wait 400 ms after the user stops typing
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [search]);
 
   // Pull-to-refresh: ref on the mobile card list container
   const listRef = useRef<HTMLDivElement>(null);
@@ -165,9 +176,10 @@ export function TransactionsClient() {
   if (effectiveEndDate) params.set("effectiveEndDate", effectiveEndDate);
   if (!showFuture) params.set("hideFuture", "true");
   if (isPaidFilter !== "") params.set("isPaid", isPaidFilter);
+  if (debouncedSearch) params.set("search", debouncedSearch);
 
-  const { data, isLoading } = useQuery<{ transactions: Transaction[] }>({
-    queryKey: ["transactions", page, type, startDate, effectiveEndDate, activeGroupId, showFuture, isPaidFilter],
+  const { data, isLoading } = useQuery<{ transactions: Transaction[]; total: number }>({
+    queryKey: ["transactions", page, type, startDate, effectiveEndDate, activeGroupId, showFuture, isPaidFilter, debouncedSearch],
     queryFn: () => fetch(`/api/transactions?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
     placeholderData: (prev) => prev,
   });
@@ -268,6 +280,8 @@ export function TransactionsClient() {
   };
 
   const txns = data?.transactions ?? [];
+  const totalCount = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / 30));
   const totalIncome = txns.filter((t) => t.type === "income").reduce((a, t) => a + parseFloat(t.value), 0);
   const totalExpense = txns.filter((t) => t.type === "expense").reduce((a, t) => a + parseFloat(t.value), 0);
 
@@ -324,6 +338,26 @@ export function TransactionsClient() {
       >
         <Plus size={24} />
       </button>
+
+      {/* Search bar — visible on all screen sizes */}
+      <div className="relative">
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-app-muted pointer-events-none" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar por descrição..."
+          className="w-full h-9 pl-8 pr-8 text-[13px] border-[1.5px] border-app-border rounded-[10px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text placeholder:text-app-muted"
+        />
+        {search && (
+          <button
+            onClick={() => setSearch("")}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-app-muted hover:text-app-text transition"
+          >
+            <XIcon size={13} />
+          </button>
+        )}
+      </div>
 
       {/* Filters — desktop only (mobile uses FilterSheet) */}
       <div className="hidden md:flex flex-col gap-2">
@@ -622,9 +656,11 @@ export function TransactionsClient() {
           </>
         )}
 
-        {txns.length > 0 && (
+        {totalCount > 0 && (
           <div className="flex items-center justify-between px-5 py-3 border-t border-[#f1f3f9]">
-            <span className="text-[12px] text-app-muted">{txns.length} lançamentos</span>
+            <span className="text-[12px] text-app-muted">
+              {((page - 1) * 30) + 1}–{Math.min(page * 30, totalCount)} de <span className="font-semibold text-app-text">{totalCount}</span> lançamentos
+            </span>
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setPage(Math.max(1, page - 1))}
@@ -633,10 +669,10 @@ export function TransactionsClient() {
               >
                 <ChevronLeft size={15} />
               </button>
-              <span className="text-[12px] text-app-muted font-medium px-1">Página {page}</span>
+              <span className="text-[12px] text-app-muted font-medium px-1">{page} / {totalPages}</span>
               <button
                 onClick={() => setPage(page + 1)}
-                disabled={txns.length < 30}
+                disabled={page >= totalPages}
                 className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-lg hover:bg-[#f1f3f9]"
               >
                 <ChevronRight size={15} />
