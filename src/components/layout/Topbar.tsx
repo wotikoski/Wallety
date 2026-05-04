@@ -31,7 +31,7 @@ export function Topbar() {
   const activeGroup = groups.find((g) => g.id === activeGroupId);
 
   return (
-    <header className="sticky top-0 z-30 h-14 bg-white border-b border-app-border flex items-center px-5 gap-3 no-print shrink-0">
+    <header className="sticky top-0 z-30 h-14 bg-[var(--surface-card)] border-b border-[var(--color-border)] flex items-center px-5 gap-3 no-print shrink-0">
       {/* Group selector */}
       <div className="relative">
         <button
@@ -44,7 +44,7 @@ export function Topbar() {
         </button>
 
         {showGroupMenu && (
-          <div className="absolute top-full left-0 mt-1.5 w-52 bg-white border border-app-border rounded-[14px] shadow-card z-50 py-1.5 overflow-hidden">
+          <div className="absolute top-full left-0 mt-1.5 w-52 bg-[var(--surface-card)] border border-[var(--color-border)] rounded-[14px] shadow-card z-50 py-1.5 overflow-hidden">
             <button
               onClick={() => { setActiveGroupId(null); setShowGroupMenu(false); }}
               className={`w-full text-left px-4 py-2.5 text-[13px] hover:bg-[var(--surface-raised)] transition ${!activeGroupId ? "text-brand-500 font-semibold" : "text-app-text font-medium"}`}

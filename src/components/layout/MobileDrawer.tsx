@@ -17,8 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-// Main items that don't fit on the 4-slot bottom nav. Same frequency
-// order as the desktop sidebar: data entry → planning → analysis.
+// Main items that don't fit on the 4-slot bottom nav.
 const mainDrawerItems = [
   { href: "/recorrencias", label: "Recorrências", icon: RefreshCcw },
   { href: "/metas", label: "Metas", icon: PiggyBank },
@@ -26,7 +25,6 @@ const mainDrawerItems = [
   { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
 ];
 
-// Settings, in setup-flow order — mirrors the desktop sidebar.
 const configDrawerItems = [
   { href: "/categorias", label: "Categorias", icon: Tag },
   { href: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard },
@@ -48,40 +46,40 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/60 z-50 md:hidden"
+        className="fixed inset-0 bg-black/70 z-50 md:hidden"
         onClick={onClose}
       />
       <div className="fixed bottom-0 left-0 right-0 bg-sidebar-bg rounded-t-2xl z-50 md:hidden pb-safe max-h-[85vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#2B284F] sticky top-0 bg-sidebar-bg">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.07] sticky top-0 bg-sidebar-bg">
           <img src="/logo-white.png" alt="Wallety" className="h-7 w-auto block" />
-          <button onClick={onClose} className="text-white/40 p-1">
+          <button onClick={onClose} className="text-white/35 hover:text-white/60 p-1 transition">
             <X size={20} />
           </button>
         </div>
 
-        <nav className="p-4 space-y-1">
+        <nav className="p-4 space-y-0.5">
           {mainDrawerItems.map((item) => (
             <DrawerItem key={item.href} item={item} pathname={pathname} onClose={onClose} />
           ))}
         </nav>
 
-        <div className="px-4 pb-2 pt-3 border-t border-[#2B284F]">
-          <p className="text-slate-500 text-xs font-medium px-3 mb-2 uppercase tracking-wider">
+        <div className="px-4 pb-2 pt-3 border-t border-white/[0.07]">
+          <p className="text-white/20 text-[10px] font-semibold px-3 mb-2 uppercase tracking-[0.12em]">
             Configurações
           </p>
-          <nav className="space-y-1">
+          <nav className="space-y-0.5">
             {configDrawerItems.map((item) => (
               <DrawerItem key={item.href} item={item} pathname={pathname} onClose={onClose} />
             ))}
           </nav>
         </div>
 
-        <div className="px-4 pb-6 border-t border-[#2B284F] pt-3 mt-2">
+        <div className="px-4 pb-6 border-t border-white/[0.07] pt-3 mt-2">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-3 rounded-lg text-white/40 text-sm"
+            className="flex items-center gap-3 w-full px-3 py-3 rounded-lg text-white/30 text-sm tracking-wide hover:text-white/55 hover:bg-white/[0.05] transition"
           >
-            <LogOut size={18} />
+            <LogOut size={16} />
             <span>Sair</span>
           </button>
         </div>
@@ -105,11 +103,13 @@ function DrawerItem({
       href={item.href}
       onClick={onClose}
       className={cn(
-        "flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition",
-        active ? "bg-[rgba(123,117,212,0.18)] text-[#7B75D4] font-semibold" : "text-white/40",
+        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium tracking-wide transition",
+        active
+          ? "bg-[rgba(132,125,255,0.15)] text-[#847dff] font-semibold"
+          : "text-white/35 hover:text-white/65 hover:bg-white/[0.05]",
       )}
     >
-      <item.icon size={18} />
+      <item.icon size={16} />
       <span>{item.label}</span>
     </Link>
   );

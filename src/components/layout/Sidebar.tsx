@@ -50,7 +50,7 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex w-60 bg-sidebar-bg flex-col h-screen sticky top-0 shrink-0 overflow-x-hidden">
       {/* Logo */}
-      <div className="h-14 flex items-center px-5 border-b border-[#2B284F] shrink-0">
+      <div className="h-14 flex items-center px-5 border-b border-white/[0.07] shrink-0">
         <img src="/logo-white.png" alt="Wallety" className="h-8 w-auto block" />
       </div>
 
@@ -66,8 +66,8 @@ export function Sidebar() {
           ))}
         </div>
 
-        <div className="pt-4 border-t border-[#2B284F]">
-          <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.1em] px-2.5 pb-2">
+        <div className="pt-4 border-t border-white/[0.07]">
+          <p className="text-[10px] font-semibold text-white/20 uppercase tracking-[0.12em] px-2.5 pb-2">
             Configurações
           </p>
           {configItems.map((item) => (
@@ -81,12 +81,12 @@ export function Sidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="h-14 flex items-center px-3 border-t border-[#2B284F] shrink-0">
+      <div className="h-14 flex items-center px-3 border-t border-white/[0.07] shrink-0">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.05] transition text-[13px] font-medium"
+          className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-white/30 hover:text-white/60 hover:bg-white/[0.05] transition text-[13px] font-medium tracking-wide"
         >
-          <LogOut size={15} />
+          <LogOut size={14} />
           <span>Sair</span>
         </button>
       </div>
@@ -109,17 +109,17 @@ function NavItem({
     <Link
       href={href}
       className={cn(
-        "relative flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-[13px] transition-all mb-0.5",
+        "relative flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-[13px] transition-all mb-0.5 tracking-wide",
         active
-          ? "bg-[rgba(123,117,212,0.18)] text-[#7B75D4] font-semibold"
-          : "text-white/40 hover:text-white/70 hover:bg-white/[0.05] font-medium",
+          ? "bg-[rgba(132,125,255,0.15)] text-[#847dff] font-semibold"
+          : "text-white/35 hover:text-white/65 hover:bg-white/[0.05] font-medium",
       )}
     >
-      {/* Active left indicator bar */}
+      {/* Active left indicator */}
       {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] bg-[#7B75D4] rounded-r-[3px]" />
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#847dff] rounded-r-full" />
       )}
-      <Icon size={15} strokeWidth={active ? 2 : 1.75} />
+      <Icon size={14} strokeWidth={active ? 2 : 1.75} />
       <span className="truncate">{label}</span>
     </Link>
   );

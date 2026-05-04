@@ -10,24 +10,34 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Brand scale — base #3630A0 ────────────────────────────
+        // ── Brand — Violet Haze scale (Origin Financial) ─────────
         brand: {
-          50:  "#F8F7FF",
-          100: "#E3E1FF",
-          200: "#BFBDF3",
-          300: "#9896E8",
-          400: "#7B75D4",   // dark-mode accent
-          500: "#524FBF",
-          600: "#3630A0",   // light-mode primary
-          700: "#2C2882",
-          800: "#1E1A58",
-          900: "#120F35",
-          950: "#0B0920",
+          50:  "#f5f4ff",
+          100: "#ece9ff",
+          200: "#d5d0ff",
+          300: "#b5adff",
+          400: "#a09bff",   // brand-hover
+          500: "#847dff",   // Violet Haze — dark-mode primary
+          600: "#6b62f0",
+          700: "#4b49aa",   // Deep Indigo — light-mode primary
+          800: "#3a3990",
+          900: "#2c2b72",
+          950: "#1a1950",
         },
 
+        // ── Origin Financial accent palette ───────────────────────
+        "ocean-glimmer":    "#00b3dd",
+        "violet-haze":      "#847dff",
+        "lavender-mist":    "#d1c9ff",
+        "soft-rose":        "#dd90d8",
+        "deep-indigo":      "#4b49aa",
+        "sky-tint":         "#90b8f0",
+        "midnight-ink":     "#0f1011",
+        "elevated-charcoal":"#2e2e2e",
+
         // ── Semantic colours → CSS vars (auto-switch light/dark) ──
-        income:  { DEFAULT: "var(--color-income)",  light: "#D1FAE5", dark: "#059669" },
-        expense: { DEFAULT: "var(--color-expense)", light: "#FEE2E2", dark: "#E0484A" },
+        income:  { DEFAULT: "var(--color-income)",  light: "#D1FAE5", dark: "#34d399" },
+        expense: { DEFAULT: "var(--color-expense)", light: "#FEE2E2", dark: "#f87171" },
 
         "app-bg":     "var(--surface-bg)",
         "app-border": "var(--color-border)",

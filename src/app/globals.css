@@ -3,115 +3,114 @@
 @tailwind utilities;
 
 /* ══════════════════════════════════════════════════════════════════════
-   DESIGN TOKENS — light (default) & dark
-   All semantic colors are CSS custom properties; Tailwind tokens and
-   inline styles reference these so a single .dark class on <html>
-   switches the entire palette without touching component files.
+   DESIGN TOKENS — Origin Financial aesthetic
+   Dark-first: midnight charcoal canvas, violet accent, mono figures.
+   A single .dark class on <html> is the canonical state; light is opt-in.
    ══════════════════════════════════════════════════════════════════════ */
+
+/* ── LIGHT MODE ──────────────────────────────────────────────────────── */
 :root {
-  /* Brand */
-  --brand:         #3630A0;
-  --brand-hover:   #2C2882;
-  --brand-rgb:     54, 48, 160;
+  /* Brand — Deep Indigo (Origin Financial Deep Indigo) */
+  --brand:         #4b49aa;
+  --brand-hover:   #3a3990;
+  --brand-rgb:     75, 73, 170;
 
   /* Surfaces */
-  --surface-bg:      #F3F2FB;
-  --surface-card:    #FFFFFF;
-  --surface-sidebar: #0D0B2A;
-  --surface-raised:  #F0EFF9;   /* subtle elevated – table stripes, sticky headers */
-  --surface-hover:   #E8E6F5;   /* hover state on interactive rows / buttons */
-  --surface-divider: #E8E6F4;   /* internal dividers */
+  --surface-bg:      #f5f5f7;   /* Faded Mist — neutral light canvas */
+  --surface-card:    #ffffff;
+  --surface-sidebar: #0f1011;   /* Midnight Ink — sidebar always dark */
+  --surface-raised:  #ebebed;
+  --surface-hover:   #e0e0e2;
+  --surface-divider: #d8d8da;
 
   /* Text */
-  --color-text:   #0F0D2E;
-  --color-muted:  #706DA0;
+  --color-text:   #0f1011;      /* Midnight Ink */
+  --color-muted:  #6a6b6b;      /* Whisper Blue */
 
   /* Border */
-  --color-border: #E2E0F4;
+  --color-border: #d8d8da;
 
   /* Semantic */
   --color-income:  #059669;
-  --color-expense: #E0484A;
-  --color-amber:   #D97706;
+  --color-expense: #e0484a;
+  --color-amber:   #d97706;
 
-  /* Shadow */
-  --shadow-card: 0 1px 4px rgba(0,0,0,.04), 0 6px 20px rgba(0,0,0,.04);
+  /* Shadow — Origin Financial lg shadow, softened for light */
+  --shadow-card: rgba(0, 0, 0, 0.06) 0px 4px 16px 0px, rgba(0, 0, 0, 0.04) 0px 1px 4px 0px;
 
-  /* ── shadcn / Radix CSS-var compatibility ──────────────────────── */
-  --background:          243 40% 97%;
-  --foreground:          243 55% 11%;
+  /* ── shadcn / Radix (HSL format: H S% L%) ──────────────────────── */
+  --background:          240 8% 96%;    /* #f5f5f7 */
+  --foreground:          220 5% 6%;     /* #0f1011 */
   --card:                0 0% 100%;
-  --card-foreground:     243 55% 11%;
+  --card-foreground:     220 5% 6%;
   --popover:             0 0% 100%;
-  --popover-foreground:  243 55% 11%;
-  --primary:             243 54% 41%;
-  --primary-foreground:  210 20% 98%;
-  --secondary:           243 40% 93%;
-  --secondary-foreground:243 55% 11%;
-  --muted:               243 40% 93%;
-  --muted-foreground:    243 30% 54%;
-  --accent:              243 40% 93%;
-  --accent-foreground:   243 55% 11%;
+  --popover-foreground:  220 5% 6%;
+  --primary:             242 39% 48%;   /* #4b49aa */
+  --primary-foreground:  0 0% 100%;
+  --secondary:           240 5% 92%;
+  --secondary-foreground:220 5% 6%;
+  --muted:               240 5% 92%;
+  --muted-foreground:    0 0% 42%;      /* #6a6b6b */
+  --accent:              240 5% 92%;
+  --accent-foreground:   220 5% 6%;
   --destructive:         359 68% 57%;
-  --destructive-foreground: 210 20% 98%;
-  --border:              243 30% 92%;
-  --input:               243 30% 92%;
-  --ring:                243 54% 41%;
+  --destructive-foreground: 0 0% 100%;
+  --border:              240 4% 85%;
+  --input:               240 4% 85%;
+  --ring:                242 39% 48%;
   --radius:              0.875rem;
 }
 
+/* ── DARK MODE — Origin Financial "Midnight Command Center" ─────────── */
 .dark {
-  /* Brand */
-  --brand:         #7B75D4;
-  --brand-hover:   #9D99E8;
-  --brand-rgb:     123, 117, 212;
+  /* Brand — Violet Haze */
+  --brand:         #847dff;
+  --brand-hover:   #a09bff;
+  --brand-rgb:     132, 125, 255;
 
-  /* Surfaces */
-  --surface-bg:      #0D0B2A;
-  --surface-card:    #16133E;
-  --surface-sidebar: #0A0822;
-  --surface-raised:  #1C1845;
-  --surface-hover:   #221E4E;
-  --surface-divider: rgba(255,255,255,0.07);
+  /* Surfaces — strict elevation hierarchy */
+  --surface-bg:      #0f1011;   /* Midnight Ink — primary page canvas */
+  --surface-card:    #1c1c1c;   /* between Midnight Ink & Elevated Charcoal */
+  --surface-sidebar: #0a0a0b;   /* slightly deeper than canvas */
+  --surface-raised:  #2e2e2e;   /* Elevated Charcoal — chips, badges, tracks */
+  --surface-hover:   #383838;   /* hover on interactive rows */
+  --surface-divider: rgba(255, 255, 255, 0.07);
 
   /* Text */
-  --color-text:   #E8E6FF;
-  --color-muted:  #8B88C0;
+  --color-text:   #ffffff;      /* Ghost White */
+  --color-muted:  #9a9a9a;      /* between Subtle Ash & Whisper Blue */
 
-  /* Border */
-  --color-border: #2B284F;
+  /* Border — barely-there white line */
+  --color-border: rgba(255, 255, 255, 0.10);
 
-  /* Surfaces — also update divider */
-  --surface-divider: #2B284F;
+  /* Semantic — keep green/red for universal financial clarity */
+  --color-income:  #34d399;
+  --color-expense: #f87171;
+  --color-amber:   #fbbf24;
 
-  /* Semantic */
-  --color-income:  #34D399;
-  --color-expense: #F87171;
-  --color-amber:   #FCD34D;
+  /* Shadow — deeper on dark canvas */
+  --shadow-card: rgba(0, 0, 0, 0.35) 0px 4px 20px 0px, rgba(0, 0, 0, 0.20) 0px 1px 4px 0px;
 
-  /* Shadow */
-  --shadow-card: 0 1px 4px rgba(0,0,0,.20), 0 6px 20px rgba(0,0,0,.28);
-
-  /* ── shadcn / Radix CSS-var compatibility ──────────────────────── */
-  --background:          243 52% 11%;
-  --foreground:          243 60% 96%;
-  --card:                243 51% 16%;
-  --card-foreground:     243 60% 96%;
-  --popover:             243 51% 16%;
-  --popover-foreground:  243 60% 96%;
-  --primary:             243 52% 64%;
-  --primary-foreground:  243 55% 10%;
-  --secondary:           243 50% 19%;
-  --secondary-foreground:243 60% 96%;
-  --muted:               243 50% 19%;
-  --muted-foreground:    243 30% 64%;
-  --accent:              243 50% 19%;
-  --accent-foreground:   243 60% 96%;
-  --destructive:         0 72% 70%;
-  --destructive-foreground: 210 20% 98%;
-  --border:              243 40% 22%;
-  --input:               243 50% 19%;
-  --ring:                243 52% 64%;
+  /* ── shadcn / Radix (HSL format) ───────────────────────────────── */
+  --background:          220 5% 6%;     /* #0f1011 */
+  --foreground:          0 0% 100%;     /* #ffffff */
+  --card:                0 0% 11%;      /* #1c1c1c */
+  --card-foreground:     0 0% 100%;
+  --popover:             0 0% 11%;
+  --popover-foreground:  0 0% 100%;
+  --primary:             244 100% 74%;  /* #847dff */
+  --primary-foreground:  0 0% 0%;
+  --secondary:           0 0% 18%;     /* #2e2e2e */
+  --secondary-foreground:0 0% 100%;
+  --muted:               0 0% 18%;
+  --muted-foreground:    0 0% 60%;
+  --accent:              0 0% 18%;
+  --accent-foreground:   0 0% 100%;
+  --destructive:         0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border:              0 0% 20%;      /* #333 */
+  --input:               0 0% 18%;
+  --ring:                244 100% 74%;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -129,14 +128,14 @@
 
 /* ══════════════════════════════════════════════════════════════════════
    DARK-MODE SURFACE OVERRIDES
-   Because many components hardcode bg-white / #f8f9fd etc., we patch
-   them globally here rather than touching every component file.
+   Many components hardcode bg-white / light hex values.
+   We patch them globally so the dark canvas shows through.
    ══════════════════════════════════════════════════════════════════════ */
 
-/* White → card surface */
+/* White → card surface (#1c1c1c) */
 .dark .bg-white { background-color: var(--surface-card) !important; }
 
-/* Subtle off-white surfaces (table stripes, sticky bars, dropdowns) */
+/* Subtle off-white → raised surface (#2e2e2e) */
 .dark .bg-\[\#f8f9fd\],
 .dark .bg-\[\#f4f5fb\],
 .dark .bg-\[\#f1f3f9\],
@@ -158,16 +157,13 @@
 .dark .divide-\[\#f1f3f9\] > * + *,
 .dark .divide-\[\#eff0f6\] > * + * { border-color: var(--surface-divider) !important; }
 
-/* Drilldown / inner panel bg */
-.dark .bg-\[\#f8f9fd\] { background-color: var(--surface-raised) !important; }
-
 /* Brand tint backgrounds */
 .dark .bg-\[rgba\(99\,102\,241\,\.06\)\],
 .dark .bg-\[rgba\(99\,102\,241\,\.03\)\] {
-  background-color: rgba(var(--brand-rgb), 0.10) !important;
+  background-color: rgba(var(--brand-rgb), 0.12) !important;
 }
 .dark .hover\:bg-\[rgba\(99\,102\,241\,\.03\)\]:hover {
-  background-color: rgba(var(--brand-rgb), 0.10) !important;
+  background-color: rgba(var(--brand-rgb), 0.12) !important;
 }
 
 /* Text overrides */
@@ -176,7 +172,7 @@
 .dark .text-\[\#B0BAC9\],
 .dark .text-\[\#b0bac9\] { color: var(--color-muted) !important; }
 
-/* Brand colour overrides (buttons, links, indicators) */
+/* Brand colour overrides */
 .dark .bg-brand-600,
 .dark .bg-brand-500  { background-color: var(--brand) !important; }
 .dark .hover\:bg-brand-700:hover,
@@ -187,7 +183,7 @@
 .dark .focus\:ring-brand-500:focus { --tw-ring-color: var(--brand) !important; }
 .dark .bg-brand-50  { background-color: rgba(var(--brand-rgb), 0.14) !important; }
 
-/* Income / expense text in dark mode */
+/* Income / expense */
 .dark .text-income { color: var(--color-income) !important; }
 .dark .text-expense { color: var(--color-expense) !important; }
 
@@ -195,23 +191,14 @@
    PRINT STYLES
    ══════════════════════════════════════════════════════════════════════ */
 @media print {
-  @page {
-    size: A4;
-    margin: 18mm 15mm;
-  }
+  @page { size: A4; margin: 18mm 15mm; }
   .no-print { display: none !important; }
   .print-only { display: block !important; }
-  html, body {
-    @apply text-black bg-white;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
+  html, body { @apply text-black bg-white; margin: 0 !important; padding: 0 !important; }
   .sidebar, nav, header, button { display: none !important; }
   html, body, #__next, main, main *, body * {
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    overflow: visible !important;
+    height: auto !important; min-height: 0 !important;
+    max-height: none !important; overflow: visible !important;
   }
   main { margin: 0 !important; padding: 0 !important; display: block !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -222,19 +209,17 @@
 
 .print-only { display: none; }
 
-.font-brand {
-  font-family: var(--font-brand), system-ui, sans-serif;
-}
+.font-brand { font-family: var(--font-inter), system-ui, sans-serif; }
 
 /* ══════════════════════════════════════════════════════════════════════
    CHIP FILTER BUTTONS
    ══════════════════════════════════════════════════════════════════════ */
 .chip-filter {
   padding: 5px 14px;
-  border-radius: 9999px;
+  border-radius: 8px;               /* Origin Financial button radius */
   font-size: 12px;
-  font-weight: 600;
-  border: 1.5px solid var(--color-border);
+  font-weight: 500;
+  border: 1px solid var(--color-border);
   background: var(--surface-card);
   color: var(--color-muted);
   cursor: pointer;
@@ -242,6 +227,7 @@
   white-space: nowrap;
   font-family: inherit;
   line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 .chip-filter:hover {
   border-color: var(--brand);
@@ -257,7 +243,7 @@
    PROGRESS TRACK / FILL
    ══════════════════════════════════════════════════════════════════════ */
 .prog-track {
-  height: 6px;
+  height: 5px;
   border-radius: 9999px;
   background: var(--surface-raised);
   overflow: hidden;
@@ -288,7 +274,7 @@
   }
 
   select {
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236a6b6b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     padding-right: 2rem !important;
@@ -308,17 +294,17 @@
   }
 }
 
-/* Dark-mode: calendar picker icon — invert to white */
+/* Dark-mode: calendar picker icon */
 .dark input[type="date"]::-webkit-calendar-picker-indicator,
 .dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
 .dark input[type="time"]::-webkit-calendar-picker-indicator,
 .dark input[type="month"]::-webkit-calendar-picker-indicator,
 .dark input[type="week"]::-webkit-calendar-picker-indicator {
-  filter: invert(1) opacity(0.6);
+  filter: invert(1) opacity(0.5);
   cursor: pointer;
 }
 
-/* Dark-mode: select arrow uses lighter stroke */
+/* Dark-mode: select arrow */
 .dark select {
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B88C0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }

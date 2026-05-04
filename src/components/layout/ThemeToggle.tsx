@@ -23,9 +23,9 @@ export function ThemeToggle() {
       document.documentElement.classList.toggle("dark", isDark);
     }
 
-    // Initial state: stored override → system → light
+    // Initial state: dark unless user explicitly chose light
     const stored = localStorage.getItem("theme");
-    applyTheme(stored === "dark" || (stored === null && mq.matches));
+    applyTheme(stored !== "light");
 
     // Follow system changes only when no manual override is set
     function onSystemChange(e: MediaQueryListEvent) {

@@ -1,31 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Sora, JetBrains_Mono } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-// Sora is used for both the main UI font and the brand font.
-const sora = Sora({
+// Inter — substitute for Suisseintl/Suisseintltrial (Origin Financial body/UI font)
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter", // keeps the same CSS var so Tailwind picks it up
+  variable: "--font-inter",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const soraForBrand = Sora({
-  subsets: ["latin"],
-  variable: "--font-brand",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
+// Roboto Mono — financial figures, technical data (exact match from Origin Financial tokens)
+const robotoMono = Roboto_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
 });
 
 export const viewport: Viewport = {
@@ -72,13 +66,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       {/* Anti-flicker: applies dark class before first paint.
           Priority: manual override in localStorage → system preference → light (default). */}
       <head>
+        {/* Anti-flicker: dark is the default; only stay light if user explicitly chose it. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+            __html: `(function(){try{if(localStorage.getItem('theme')!=='light'){document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`,
           }}
         />
       </head>
-      <body className={`${sora.variable} ${soraForBrand.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${robotoMono.variable} font-sans antialiased`}>
         <Providers>
           {children}
           <Toaster />

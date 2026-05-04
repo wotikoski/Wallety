@@ -82,12 +82,12 @@ function useChartTheme() {
   }, []);
   return {
     isDark,
-    grid:          isDark ? "#2B284F" : "#EEEDF8",
-    axis:          isDark ? "#8B88C0" : "#9490C8",
-    tooltipBg:     isDark ? "#1C1845" : "#FFFFFF",
-    tooltipBorder: isDark ? "#2B284F" : "#E2E0F4",
-    tooltipText:   isDark ? "#E8E6FF" : "#0F0D2E",
-    tooltipMuted:  isDark ? "#8B88C0" : "#706DA0",
+    grid:          isDark ? "#2e2e2e" : "#e8e8e8",
+    axis:          isDark ? "#9a9a9a" : "#6a6b6b",
+    tooltipBg:     isDark ? "#1c1c1c" : "#ffffff",
+    tooltipBorder: isDark ? "#2e2e2e" : "#d8d8da",
+    tooltipText:   isDark ? "#ffffff"  : "#0f1011",
+    tooltipMuted:  isDark ? "#9a9a9a" : "#6a6b6b",
   };
 }
 
@@ -286,18 +286,18 @@ export function DashboardClient() {
       {overdueCount > 0 && (
         <a
           href="/lancamentos"
-          className="flex items-center gap-3 px-4 py-3 rounded-[12px] bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 transition group"
+          className="flex items-center gap-3 px-4 py-3 rounded-[12px] bg-amber-950/30 border border-amber-500/30 text-amber-400 hover:bg-amber-950/50 transition group dark:bg-amber-950/30 dark:border-amber-500/30 dark:text-amber-400"
         >
-          <AlertTriangle size={16} className="shrink-0 text-amber-500" />
+          <AlertTriangle size={16} className="shrink-0 text-amber-400" />
           <div className="flex-1 min-w-0">
             <span className="text-[13px] font-semibold">
               {overdueCount} despesa{overdueCount > 1 ? "s" : ""} em atraso
             </span>
-            <span className="text-[12px] text-amber-600 ml-1.5">
+            <span className="text-[12px] text-amber-500 ml-1.5">
               · {formatCurrency(overdueAmount)} não pago{overdueCount > 1 ? "s" : ""}
             </span>
           </div>
-          <span className="text-[11px] font-semibold text-amber-600 group-hover:text-amber-800 shrink-0">
+          <span className="text-[11px] font-semibold text-amber-400 group-hover:text-amber-300 shrink-0">
             Ver →
           </span>
         </a>
