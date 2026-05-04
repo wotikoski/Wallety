@@ -14,8 +14,14 @@ export async function GET(req: NextRequest) {
     const month = parseInt(searchParams.get("month") ?? String(new Date().getMonth() + 1));
     const year = parseInt(searchParams.get("year") ?? String(new Date().getFullYear()));
 
-    const refDate = new Date(year, month - 1, 1);
-    const nextMonthDate = addMonths(refDate, 1);
+    const today = new Date();
+    const isCurrentMonth =
+      year === today.getFullYear() && month === today.getMonth() + 1;
+    // For the current month use today so daysRemaining counts from now.
+    // For past/future months use the 1st so the month-total logic is consistent.
+    const refDate = isCurrentMonth ? today : new Date(year, month - 1, 1);
+    const monthStart = new Date(year, month - 1, 1);
+    const nextMonthDate = addMonths(monthStart, 1);
 
     const scopeCondition = groupId
       ? eq(transactions.groupId, groupId)
@@ -28,8 +34,8 @@ export async function GET(req: NextRequest) {
       .where(and(
         scopeCondition,
         isNull(transactions.deletedAt),
-        gte(transactions.date, format(startOfMonth(refDate), "yyyy-MM-dd")),
-        lte(transactions.date, format(endOfMonth(refDate), "yyyy-MM-dd")),
+        gte(transactions.date, format(startOfMonth(monthStart), "yyyy-MM-dd")),
+        lte(transactions.date, format(endOfMonth(monthStart), "yyyy-MM-dd")),
       ));
 
     // Query next month transactions (already scheduled installments, recurring, etc.)
@@ -40,7 +46,7 @@ export async function GET(req: NextRequest) {
         scopeCondition,
         isNull(transactions.deletedAt),
         gte(transactions.date, format(startOfMonth(nextMonthDate), "yyyy-MM-dd")),
-        lte(transactions.date, format(endOfMonth(nextMonthDate), "yyyy-MM-dd")),
+        lte(transactions.date, format(endOfMonth(nextMonthDate),  "yyyy-MM-dd")),
       ));
 
     const actualIncome = currentTxns
