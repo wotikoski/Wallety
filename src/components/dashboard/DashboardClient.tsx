@@ -48,48 +48,7 @@ const MONTHS = [
   "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro",
 ];
 
-/* ─── Global responsive CSS (injected once) ─────────────────────────── */
-const RESPONSIVE_CSS = `
-  /* ── Hero balance responsive ── */
-  .hero-num   { font-size: 64px; }
-  .hero-cents { font-size: 32px; }
-  .hero-card  { padding: 28px 30px; min-height: 200px; }
-
-  /* ── KPI card responsive ── */
-  .kpi-card  { padding: 22px; }
-  .kpi-val   { font-size: 26px; }
-  .kpi-label { font-size: 11px; }
-
-  /* ── Dashboard gap ── */
-  .dash-stack { gap: 14px; }
-  .dash-header { flex-direction: row; align-items: flex-end; }
-  .dash-controls { flex-direction: row; }
-  .year-sel { display: inline-flex; }
-  .dash-title { font-size: 28px; }
-
-  @media (max-width: 640px) {
-    .hero-num   { font-size: 40px !important; }
-    .hero-cents { font-size: 20px !important; }
-    .hero-card  { padding: 18px 20px !important; min-height: 150px !important; }
-
-    .kpi-card  { padding: 14px 16px !important; }
-    .kpi-val   { font-size: 22px !important; }
-    .kpi-label { font-size: 10px !important; }
-
-    .dash-stack  { gap: 10px !important; }
-    .dash-header { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
-    .dash-controls { flex-direction: row !important; width: 100% !important; }
-    .year-sel  { display: none !important; }
-    .dash-title { font-size: 22px !important; }
-
-    .charts-grid { grid-template-columns: 1fr !important; }
-    .hero-grid   { grid-template-columns: 1fr !important; }
-  }
-`;
-
-function StyleInjector() {
-  return <style>{RESPONSIVE_CSS}</style>;
-}
+// Responsive layout classes are defined in globals.css (.hero-card, .kpi-card, etc.)
 
 /* ─── Chart theme ────────────────────────────────────────────────────── */
 function useChartTheme() {
@@ -447,15 +406,12 @@ export function DashboardClient() {
 
   if (isLoading) {
     return (
-      <>
-        <StyleInjector />
-        <div className="animate-pulse dash-stack" style={{ display: "flex", flexDirection: "column" }}>
+      <div className="animate-pulse dash-stack" style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ height: 32, borderRadius: 8, width: 160, background: "var(--surface-raised)" }} />
           <div className="hero-grid" style={{ display: "grid", gap: 14 }}>
             {[1, 2, 3].map((i) => <div key={i} style={{ height: 160, borderRadius: 14, background: "var(--surface-raised)" }} />)}
           </div>
         </div>
-      </>
     );
   }
 
@@ -490,9 +446,7 @@ export function DashboardClient() {
   };
 
   return (
-    <>
-      <StyleInjector />
-      <div className="dash-stack animate-fade-in" style={{ display: "flex", flexDirection: "column" }}>
+    <div className="dash-stack animate-fade-in" style={{ display: "flex", flexDirection: "column" }}>
 
         {/* ── Header ────────────────────────────────────────────────── */}
         <div className="dash-header" style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
@@ -583,7 +537,6 @@ export function DashboardClient() {
           className="hero-grid"
           style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr", gap: 14 }}
         >
-          <style>{`@media(max-width:640px){.hero-grid{grid-template-columns:1fr!important;}}`}</style>
           <HeroBalance balance={balance} monthlyTrend={monthlyTrend} hideBalance={hideBalance} />
           <KpiCard
             label="Receitas" value={totalIncome}
@@ -650,8 +603,6 @@ export function DashboardClient() {
 
         {/* ── Charts row: 1.5fr 1fr ─────────────────────────────────── */}
         <div className="charts-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 14 }}>
-          <style>{`@media(max-width:900px){.charts-grid{grid-template-columns:1fr!important;}}`}</style>
-
           {/* ── Area Chart: Receitas e Despesas ── */}
           <div style={{ ...card, padding: 22 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -848,7 +799,6 @@ export function DashboardClient() {
           )}
         </div>
 
-      </div>
-    </>
+    </div>
   );
 }
