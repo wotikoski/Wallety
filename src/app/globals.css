@@ -234,7 +234,7 @@
 
 .print-only { display: none; }
 
-.font-brand { font-family: var(--font-inter), system-ui, sans-serif; }
+.font-brand { font-family: var(--font-geist), var(--font-inter), system-ui, sans-serif; }
 
 /* ══════════════════════════════════════════════════════════════════════
    DASHBOARD — responsive layout tokens

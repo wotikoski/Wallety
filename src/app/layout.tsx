@@ -1,21 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Roboto_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-// Inter — substitute for Suisseintl/Suisseintltrial (Origin Financial body/UI font)
-const inter = Inter({
+// Geist — primary display font (handoff spec: Geist with Inter fallback)
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-geist",
   display: "swap",
   weight: ["300", "400", "500", "600", "700"],
 });
 
-// Roboto Mono — financial figures, technical data (exact match from Origin Financial tokens)
-const robotoMono = Roboto_Mono({
+// Geist Mono — financial figures, technical data (tabular-nums)
+const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
@@ -73,7 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.variable} ${robotoMono.variable} font-sans antialiased`}>
+      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
         <Providers>
           {children}
           <Toaster />

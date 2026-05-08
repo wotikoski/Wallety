@@ -17,12 +17,11 @@ import {
   Target,
   X,
   CalendarDays,
-  TrendingUp,
   PiggyBank,
   CheckCircle2,
 } from "lucide-react";
 import { differenceInCalendarDays, differenceInCalendarMonths, format, parseISO, isPast } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
 
 interface Goal {
   id: string;
@@ -35,7 +34,10 @@ interface Goal {
   notes: string | null;
 }
 
-const EMOJI_OPTIONS = ["🎯", "✈️", "🏠", "🚗", "📱", "💻", "🎓", "💍", "🏋️", "🎉", "🌴", "🛍️", "🏖️", "🎸", "📷", "⛵", "🏔️", "🎁"];
+const EMOJI_OPTIONS = [
+  "🎯","✈️","🏠","🚗","📱","💻","🎓","💍","🏋️","🎉",
+  "🌴","🛍️","🏖️","🎸","📷","⛵","🏔️","🎁",
+];
 
 function computeGoalStats(goal: Goal) {
   const target = parseFloat(goal.targetAmount);
@@ -47,14 +49,11 @@ function computeGoalStats(goal: Goal) {
   const today = new Date();
   const deadline = parseISO(goal.targetDate);
   const daysLeft = differenceInCalendarDays(deadline, today);
-  // months left: fractional, for monthly calculation
-  const monthsLeft = differenceInCalendarMonths(deadline, today) + 1; // at least 1
-
+  const monthsLeft = Math.max(1, differenceInCalendarMonths(deadline, today) + 1);
   const monthlyNeeded = remaining > 0 && monthsLeft > 0 ? remaining / monthsLeft : 0;
-  const dailyNeeded = remaining > 0 && daysLeft > 0 ? remaining / daysLeft : 0;
   const overdue = !done && isPast(deadline);
 
-  return { target, saved, remaining, percent, done, daysLeft, monthsLeft, monthlyNeeded, dailyNeeded, overdue };
+  return { target, saved, remaining, percent, done, daysLeft, monthsLeft, monthlyNeeded, overdue };
 }
 
 function GoalCard({
@@ -68,118 +67,166 @@ function GoalCard({
   onDeposit: (g: Goal) => void;
   onDelete: (id: string) => void;
 }) {
-  const { target, saved, remaining, percent, done, daysLeft, monthlyNeeded, dailyNeeded, overdue } = computeGoalStats(goal);
+  const { target, saved, remaining, percent, done, daysLeft, monthlyNeeded, overdue } =
+    computeGoalStats(goal);
 
   const deadlineLabel = format(parseISO(goal.targetDate), "dd/MM/yyyy");
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-      {/* Color bar */}
-      <div className="h-1.5" style={{ backgroundColor: goal.color }} />
+    <div
+      className="rounded-[14px] border border-[var(--color-border)] bg-[var(--surface-card)] overflow-hidden flex flex-col"
+    >
+      {/* Header row */}
+      <div className="p-5 pb-4 flex items-start gap-3">
+        {/* Emoji icon */}
+        <div
+          className="w-[28px] h-[28px] rounded-[8px] flex items-center justify-center text-[15px] shrink-0"
+          style={{ background: "rgba(59,130,246,0.12)" }}
+        >
+          {goal.emoji}
+        </div>
 
-      <div className="p-5">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl leading-none">{goal.emoji}</span>
-            <div>
-              <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base leading-tight">{goal.name}</h3>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <CalendarDays size={11} className="text-slate-400" />
-                <span className={`text-xs ${overdue ? "text-red-500" : "text-slate-400"}`}>
-                  {overdue ? "Prazo encerrado" : `Até ${deadlineLabel}`}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={() => onEdit(goal)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+        <div className="flex-1 min-w-0">
+          <h3 className="text-[14px] font-semibold text-[var(--color-text)] truncate leading-snug">
+            {goal.name}
+          </h3>
+          <div className="flex items-center gap-1 mt-0.5">
+            <CalendarDays size={10} className="text-[var(--text-faint)]" />
+            <span
+              className="text-[11px] font-medium"
+              style={{ color: overdue ? "#f87171" : "var(--text-faint)" }}
             >
-              <Edit size={14} />
-            </button>
-            <button
-              onClick={() => onDelete(goal.id)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
-            >
-              <Trash2 size={14} />
-            </button>
+              {overdue ? "Prazo encerrado" : `Até ${deadlineLabel}`}
+            </span>
           </div>
         </div>
 
-        {/* Progress bar */}
-        <div className="mb-3">
-          <div className="flex justify-between items-baseline mb-1.5">
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-              {formatCurrency(saved)}
-            </span>
-            <span className="text-xs text-slate-400">
-              de {formatCurrency(target)}
-            </span>
-          </div>
-          <div className="h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${percent}%`,
-                backgroundColor: done ? "#10b981" : goal.color,
-              }}
-            />
-          </div>
-          <div className="flex justify-between items-center mt-1">
-            <span className="text-xs text-slate-400">{percent.toFixed(0)}% concluído</span>
-            {done ? (
-              <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
-                <CheckCircle2 size={12} /> Meta alcançada!
-              </span>
-            ) : (
-              <span className="text-xs text-slate-400">Faltam {formatCurrency(remaining)}</span>
-            )}
-          </div>
+        {/* Percent chip */}
+        <div
+          className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-bold"
+          style={{
+            background: done
+              ? "rgba(34,197,94,0.15)"
+              : "rgba(59,130,246,0.12)",
+            color: done ? "#22c55e" : "#3b82f6",
+          }}
+        >
+          {percent.toFixed(0)}%
+        </div>
+      </div>
+
+      {/* Values */}
+      <div className="px-5 pb-3">
+        <div className="flex items-baseline justify-between mb-2">
+          <span
+            className="text-[22px] font-semibold leading-none"
+            style={{ fontVariantNumeric: "tabular-nums", letterSpacing: "-0.025em", color: "var(--color-text)" }}
+          >
+            {formatCurrency(saved)}
+          </span>
+          <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
+            de {formatCurrency(target)}
+          </span>
         </div>
 
-        {/* Stats row */}
+        {/* Progress bar — 6px, gradient accent.deep → accent.hue */}
+        <div
+          className="w-full rounded-full overflow-hidden"
+          style={{ height: 6, background: "var(--surface-raised)" }}
+        >
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${percent}%`,
+              background: done
+                ? "#22c55e"
+                : "linear-gradient(90deg, #2563eb, #3b82f6)",
+            }}
+          />
+        </div>
+
+        {/* Remaining + monthly hint */}
         {!done && (
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl px-3 py-2">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <TrendingUp size={11} className="text-slate-400" />
-                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wide">Por mês</span>
-              </div>
-              <span className="text-sm font-bold" style={{ color: goal.color }}>
-                {formatCurrency(monthlyNeeded)}
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
+              Faltam{" "}
+              <span style={{ fontVariantNumeric: "tabular-nums", color: "var(--text-dim)" }}>
+                {formatCurrency(remaining)}
               </span>
-            </div>
-            <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl px-3 py-2">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <CalendarDays size={11} className="text-slate-400" />
-                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wide">Por dia</span>
-              </div>
-              <span className="text-sm font-bold" style={{ color: goal.color }}>
-                {daysLeft > 0 ? formatCurrency(dailyNeeded) : "—"}
+            </span>
+            {monthlyNeeded > 0 && (
+              <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
+                ~{" "}
+                <span style={{ fontVariantNumeric: "tabular-nums", color: "#3b82f6" }}>
+                  {formatCurrency(monthlyNeeded)}
+                </span>
+                /mês
               </span>
-            </div>
+            )}
           </div>
         )}
 
-        {/* Deposit button */}
+        {done && (
+          <div className="flex items-center gap-1.5 mt-2">
+            <CheckCircle2 size={13} className="text-[#22c55e]" />
+            <span className="text-[11px] font-semibold text-[#22c55e]">Meta alcançada!</span>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="px-5 pb-5 mt-auto flex items-center gap-2 pt-3 border-t border-[var(--color-border)]">
         {!done && (
           <button
             onClick={() => onDeposit(goal)}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 active:scale-[0.98]"
-            style={{ backgroundColor: goal.color }}
+            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-[9px] text-[12px] font-semibold text-white bg-[#3b82f6] hover:bg-[#2563eb] transition-colors duration-150"
           >
-            <PiggyBank size={15} />
-            Registrar Depósito
+            <PiggyBank size={13} />
+            Depositar
           </button>
         )}
+        <button
+          onClick={() => onEdit(goal)}
+          className="p-2 rounded-[9px] text-[var(--text-faint)] hover:text-[var(--text-dim)] hover:bg-[var(--surface-raised)] transition-colors duration-150"
+        >
+          <Edit size={14} />
+        </button>
+        <button
+          onClick={() => onDelete(goal.id)}
+          className="p-2 rounded-[9px] text-[var(--text-faint)] hover:text-[#f87171] hover:bg-[rgba(248,113,113,0.1)] transition-colors duration-150"
+        >
+          <Trash2 size={14} />
+        </button>
       </div>
     </div>
   );
 }
 
+/** Dashed "Nova Meta" card matching handoff */
+function NewGoalCard({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="rounded-[14px] border-2 border-dashed border-[var(--color-border)] bg-transparent hover:border-[#3b82f6] hover:bg-[rgba(59,130,246,0.04)] transition-all duration-150 flex flex-col items-center justify-center gap-3 p-8 min-h-[160px] w-full"
+    >
+      <div
+        className="w-9 h-9 rounded-full flex items-center justify-center"
+        style={{ background: "rgba(59,130,246,0.12)" }}
+      >
+        <Plus size={18} className="text-[#3b82f6]" />
+      </div>
+      <span className="text-[13px] font-semibold text-[var(--text-mute)]">Nova meta</span>
+    </button>
+  );
+}
+
 type FormMode = "create" | "edit" | "deposit" | null;
+
+// ── Modal input shared style ─────────────────────────────────────────────────
+const inputCls =
+  "w-full border border-[var(--color-border)] rounded-[10px] px-3.5 py-2.5 text-[13px] " +
+  "bg-[var(--surface-raised)] text-[var(--color-text)] placeholder-[var(--text-faint)] " +
+  "focus:outline-none focus:ring-2 focus:ring-[#3b82f6] transition";
 
 export function GoalsClient() {
   const { activeGroupId } = useActiveGroup();
@@ -209,10 +256,11 @@ export function GoalsClient() {
 
   const { data, isLoading } = useQuery<{ goals: Goal[] }>({
     queryKey: ["goals", activeGroupId],
-    queryFn: () => fetch(`/api/goals?${params}`).then((r) => {
-      if (!r.ok) return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); });
-      return r.json();
-    }),
+    queryFn: () =>
+      fetch(`/api/goals?${params}`).then((r) => {
+        if (!r.ok) return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); });
+        return r.json();
+      }),
   });
 
   // ── Mutations ──────────────────────────────────────────
@@ -274,12 +322,8 @@ export function GoalsClient() {
     setEditing(null);
     const usedColors = (data?.goals ?? []).map((g) => g.color);
     setColor(suggestPaletteColor(usedColors));
-    setName("");
-    setTargetAmount("");
-    setTargetDate("");
-    setSavedAmount("");
-    setEmoji("🎯");
-    setNotes("");
+    setName(""); setTargetAmount(""); setTargetDate("");
+    setSavedAmount(""); setEmoji("🎯"); setNotes("");
     setMode("create");
   }
 
@@ -337,40 +381,27 @@ export function GoalsClient() {
   const goalList = data?.goals ?? [];
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Metas de Poupança</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Planeje suas conquistas financeiras</p>
-        </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 bg-[#6366f1] hover:bg-[#5558d9] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition"
-        >
-          <Plus size={16} />
-          <span className="hidden sm:inline">Nova Meta</span>
-        </button>
-      </div>
-
-      {/* Content */}
-      {isLoading ? (
-        <ListSkeleton rows={3} />
-      ) : goalList.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <Target size={48} className="text-slate-200 dark:text-slate-700 mb-4" />
-          <p className="text-slate-500 font-medium">Nenhuma meta criada ainda</p>
-          <p className="text-slate-400 text-sm mt-1">Crie sua primeira meta de poupança</p>
-          <button
-            onClick={openCreate}
-            className="mt-5 flex items-center gap-2 bg-[#6366f1] hover:bg-[#5558d9] text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition"
-          >
+    <div className="p-4 md:p-7 max-w-5xl mx-auto">
+      <PageHeader
+        title="Metas de Poupança"
+        subtitle="Planeje e acompanhe suas conquistas financeiras"
+        right={
+          <PrimaryButton onClick={openCreate}>
             <Plus size={15} />
-            Criar Meta
-          </button>
+            <span className="hidden sm:inline">Nova Meta</span>
+          </PrimaryButton>
+        }
+      />
+
+      {isLoading ? (
+        <ListSkeleton rows={4} />
+      ) : goalList.length === 0 ? (
+        /* Empty state — just show the dashed card centered */
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
+          <NewGoalCard onClick={openCreate} />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {goalList.map((goal) => (
             <GoalCard
               key={goal.id}
@@ -380,35 +411,58 @@ export function GoalsClient() {
               onDelete={handleDelete}
             />
           ))}
+          <NewGoalCard onClick={openCreate} />
         </div>
       )}
 
-      {/* ── Goal Form Modal ───────────────────────────── */}
+      {/* ── Goal Form Modal ─────────────────────────────────── */}
       {(mode === "create" || mode === "edit") && (
         <Portal>
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div className="bg-white dark:bg-slate-800 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-y-auto max-h-[95vh]">
+          <div className="fixed inset-0 bg-black/55 backdrop-blur-[6px] z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div
+              className="w-full sm:max-w-md rounded-t-2xl sm:rounded-[16px] overflow-y-auto"
+              style={{
+                maxHeight: "95vh",
+                background: "var(--surface-card)",
+                border: "1px solid var(--color-border)",
+              }}
+            >
               {/* Modal header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-800">
-                <h2 className="font-semibold text-slate-800 dark:text-slate-100">
+              <div
+                className="flex items-center justify-between px-6 py-4 sticky top-0"
+                style={{
+                  background: "var(--surface-card)",
+                  borderBottom: "1px solid var(--color-border)",
+                }}
+              >
+                <h2 className="text-[15px] font-semibold text-[var(--color-text)]">
                   {editing ? "Editar Meta" : "Nova Meta"}
                 </h2>
-                <button onClick={closeForm} className="text-slate-400 hover:text-slate-600 transition">
+                <button
+                  onClick={closeForm}
+                  className="text-[var(--text-faint)] hover:text-[var(--text-dim)] transition p-1"
+                >
                   <X size={20} />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-5 space-y-4">
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 {/* Emoji picker */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1.5">Emoji</label>
-                  <div className="flex flex-wrap gap-2">
+                  <label className="block text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-2">
+                    Emoji
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
                     {EMOJI_OPTIONS.map((e) => (
                       <button
                         key={e}
                         type="button"
                         onClick={() => setEmoji(e)}
-                        className={`text-xl p-1.5 rounded-lg transition ${emoji === e ? "bg-[#6366f1]/15 ring-2 ring-[#6366f1]" : "hover:bg-slate-100 dark:hover:bg-slate-700"}`}
+                        className={`text-lg p-1.5 rounded-[8px] transition-colors duration-150 ${
+                          emoji === e
+                            ? "bg-[rgba(59,130,246,0.15)] ring-2 ring-[#3b82f6]"
+                            : "hover:bg-[var(--surface-raised)]"
+                        }`}
                       >
                         {e}
                       </button>
@@ -418,20 +472,24 @@ export function GoalsClient() {
 
                 {/* Name */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Nome da meta</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-1.5">
+                    Nome da meta
+                  </label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ex: Viagem para Europa"
                     required
-                    className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+                    className={inputCls}
                   />
                 </div>
 
                 {/* Target amount */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Valor total (R$)</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-1.5">
+                    Valor total (R$)
+                  </label>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -439,38 +497,46 @@ export function GoalsClient() {
                     onChange={(e) => setTargetAmount(e.target.value)}
                     placeholder="0,00"
                     required
-                    className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+                    className={inputCls}
+                    style={{ fontVariantNumeric: "tabular-nums" }}
                   />
                 </div>
 
                 {/* Target date */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Data limite</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-1.5">
+                    Data limite
+                  </label>
                   <input
                     type="date"
                     value={targetDate}
                     onChange={(e) => setTargetDate(e.target.value)}
                     required
-                    className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+                    className={inputCls}
                   />
                 </div>
 
                 {/* Already saved */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Já guardado (R$)</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-1.5">
+                    Já guardado (R$)
+                  </label>
                   <input
                     type="text"
                     inputMode="decimal"
                     value={savedAmount}
                     onChange={(e) => setSavedAmount(e.target.value)}
                     placeholder="0,00"
-                    className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+                    className={inputCls}
+                    style={{ fontVariantNumeric: "tabular-nums" }}
                   />
                 </div>
 
                 {/* Color */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1.5">Cor</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-1.5">
+                    Cor
+                  </label>
                   <ColorPicker
                     value={color}
                     onChange={setColor}
@@ -480,39 +546,59 @@ export function GoalsClient() {
 
                 {/* Notes */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Notas (opcional)</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-1.5">
+                    Notas (opcional)
+                  </label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Observações sobre a meta..."
                     rows={2}
-                    className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6366f1] resize-none"
+                    className={`${inputCls} resize-none`}
                   />
                 </div>
 
                 {/* Live preview */}
                 {targetAmount && targetDate && (
-                  <div className="bg-slate-50 dark:bg-slate-700/40 rounded-xl p-3.5">
-                    <p className="text-xs font-medium text-slate-500 mb-2">Previsão de poupança</p>
+                  <div
+                    className="rounded-[10px] p-4"
+                    style={{ background: "var(--surface-raised)" }}
+                  >
+                    <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-3">
+                      Previsão de poupança
+                    </p>
                     {(() => {
-                      const target = parseCurrency(targetAmount);
-                      const saved = parseCurrency(savedAmount) || 0;
-                      const remaining = Math.max(0, target - saved);
+                      const tgt = parseCurrency(targetAmount);
+                      const sav = parseCurrency(savedAmount) || 0;
+                      const rem = Math.max(0, tgt - sav);
                       const today = new Date();
                       const deadline = parseISO(targetDate);
                       const daysLeft = differenceInCalendarDays(deadline, today);
                       const monthsLeft = Math.max(1, differenceInCalendarMonths(deadline, today) + 1);
-                      const monthly = remaining / monthsLeft;
-                      const daily = daysLeft > 0 ? remaining / daysLeft : 0;
+                      const monthly = rem / monthsLeft;
                       return (
-                        <div className="grid grid-cols-2 gap-2 text-center">
+                        <div className="grid grid-cols-2 gap-3 text-center">
                           <div>
-                            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{formatCurrency(monthly)}</p>
-                            <p className="text-[11px] text-slate-400">por mês ({monthsLeft} meses)</p>
+                            <p
+                              className="text-[18px] font-semibold text-[var(--color-text)]"
+                              style={{ fontVariantNumeric: "tabular-nums" }}
+                            >
+                              {formatCurrency(monthly)}
+                            </p>
+                            <p className="text-[11px] text-[var(--text-faint)]">
+                              por mês ({monthsLeft} meses)
+                            </p>
                           </div>
                           <div>
-                            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{formatCurrency(daily)}</p>
-                            <p className="text-[11px] text-slate-400">por dia ({daysLeft} dias)</p>
+                            <p
+                              className="text-[18px] font-semibold text-[var(--color-text)]"
+                              style={{ fontVariantNumeric: "tabular-nums" }}
+                            >
+                              {daysLeft > 0 ? formatCurrency(rem / daysLeft) : "—"}
+                            </p>
+                            <p className="text-[11px] text-[var(--text-faint)]">
+                              por dia ({daysLeft} dias)
+                            </p>
                           </div>
                         </div>
                       );
@@ -523,7 +609,7 @@ export function GoalsClient() {
                 <button
                   type="submit"
                   disabled={saveMutation.isPending}
-                  className="w-full bg-[#6366f1] hover:bg-[#5558d9] disabled:opacity-60 text-white py-3 rounded-xl text-sm font-semibold transition"
+                  className="w-full bg-[#3b82f6] hover:bg-[#2563eb] disabled:opacity-60 text-white py-3 rounded-[10px] text-[13px] font-semibold transition-colors duration-150"
                 >
                   {saveMutation.isPending ? "Salvando..." : editing ? "Salvar alterações" : "Criar meta"}
                 </button>
@@ -533,33 +619,63 @@ export function GoalsClient() {
         </Portal>
       )}
 
-      {/* ── Deposit Modal ─────────────────────────────── */}
+      {/* ── Deposit Modal ─────────────────────────────────── */}
       {mode === "deposit" && depositGoal && (
         <Portal>
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div className="bg-white dark:bg-slate-800 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl shadow-xl">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-                <div className="flex items-center gap-2">
+          <div className="fixed inset-0 bg-black/55 backdrop-blur-[6px] z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div
+              className="w-full sm:max-w-sm rounded-t-2xl sm:rounded-[16px]"
+              style={{
+                background: "var(--surface-card)",
+                border: "1px solid var(--color-border)",
+              }}
+            >
+              <div
+                className="flex items-center justify-between px-6 py-4"
+                style={{ borderBottom: "1px solid var(--color-border)" }}
+              >
+                <div className="flex items-center gap-2.5">
                   <span className="text-xl">{depositGoal.emoji}</span>
-                  <h2 className="font-semibold text-slate-800 dark:text-slate-100 text-sm">
+                  <h2 className="text-[14px] font-semibold text-[var(--color-text)]">
                     Depositar em "{depositGoal.name}"
                   </h2>
                 </div>
-                <button onClick={closeForm} className="text-slate-400 hover:text-slate-600 transition">
+                <button
+                  onClick={closeForm}
+                  className="text-[var(--text-faint)] hover:text-[var(--text-dim)] transition p-1"
+                >
                   <X size={20} />
                 </button>
               </div>
 
-              <form onSubmit={handleDeposit} className="p-5 space-y-4">
+              <form onSubmit={handleDeposit} className="p-6 space-y-4">
+                <p className="text-[12px] text-[var(--text-mute)]">
+                  Já guardado:{" "}
+                  <span
+                    className="text-[var(--color-text)] font-semibold"
+                    style={{ fontVariantNumeric: "tabular-nums" }}
+                  >
+                    {formatCurrency(depositGoal.savedAmount)}
+                  </span>
+                  {" · "}
+                  Faltam:{" "}
+                  <span
+                    className="text-[var(--color-text)] font-semibold"
+                    style={{ fontVariantNumeric: "tabular-nums" }}
+                  >
+                    {formatCurrency(
+                      Math.max(
+                        0,
+                        parseFloat(depositGoal.targetAmount) - parseFloat(depositGoal.savedAmount),
+                      ),
+                    )}
+                  </span>
+                </p>
+
                 <div>
-                  <p className="text-xs text-slate-500 mb-3">
-                    Já guardado: <strong className="text-slate-700 dark:text-slate-200">{formatCurrency(depositGoal.savedAmount)}</strong>
-                    {" · "}
-                    Faltam: <strong className="text-slate-700 dark:text-slate-200">
-                      {formatCurrency(Math.max(0, parseFloat(depositGoal.targetAmount) - parseFloat(depositGoal.savedAmount)))}
-                    </strong>
-                  </p>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Valor do depósito (R$)</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-1.5">
+                    Valor do depósito (R$)
+                  </label>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -568,15 +684,15 @@ export function GoalsClient() {
                     placeholder="0,00"
                     required
                     autoFocus
-                    className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6366f1]"
+                    className={inputCls}
+                    style={{ fontVariantNumeric: "tabular-nums" }}
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={depositMutation.isPending}
-                  className="w-full text-white py-3 rounded-xl text-sm font-semibold transition hover:opacity-90 disabled:opacity-60"
-                  style={{ backgroundColor: depositGoal.color }}
+                  className="w-full bg-[#3b82f6] hover:bg-[#2563eb] disabled:opacity-60 text-white py-3 rounded-[10px] text-[13px] font-semibold transition-colors duration-150"
                 >
                   {depositMutation.isPending ? "Registrando..." : "Confirmar depósito"}
                 </button>

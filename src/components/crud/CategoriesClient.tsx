@@ -186,7 +186,7 @@ export function CategoriesClient() {
                 <div className="flex items-start gap-3">
                   <div
                     className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0 border border-app-border"
-                    style={{ backgroundColor: (watchedColor ?? "#6366f1") + "22" }}
+                    style={{ backgroundColor: (watchedColor ?? "#3b82f6") + "22" }}
                   >
                     {watchedIcon || "💳"}
                   </div>

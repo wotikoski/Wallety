@@ -42,7 +42,7 @@ interface Drilldown {
   color: string;
 }
 
-const COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6", "#0ea5e9", "#f87171", "#06b6d4", "#84cc16", "#64748b"];
+const COLORS = ["#3b82f6", "#60a5fa", "#2563eb", "#1e40af", "#06b6d4", "#0ea5e9", "#64748b", "#94a3b8", "#475569", "#334155"];
 
 const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
@@ -175,8 +175,15 @@ export function ReportsClient() {
     <div className="space-y-5 animate-fade-in">
       <div className="no-print flex items-start justify-between gap-2">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Relatórios</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Análise do histórico financeiro</p>
+          <h1
+            className="font-semibold text-[var(--color-text)] m-0"
+            style={{ fontSize: 28, letterSpacing: "-0.03em" }}
+          >
+            Relatórios
+          </h1>
+          <p className="text-[13px] font-medium mt-1" style={{ color: "var(--text-mute)" }}>
+            Análise do histórico financeiro
+          </p>
         </div>
         <ReportFilterSheet
           reportType={reportType}
@@ -269,12 +276,26 @@ export function ReportsClient() {
         ) : (
           <>
             {/* Summary */}
-            <div
-              className={`rounded-[14px] p-5 ${reportType === "income" ? "bg-emerald-500 dark:bg-emerald-700" : "bg-red-400 dark:bg-red-700"}`}
-            >
-              <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-white/80 mb-1.5">Total de {reportType === "income" ? "Receitas" : "Despesas"}</p>
-              <p className="text-[28px] font-bold font-mono text-white">{formatCurrency(data?.grandTotal ?? 0)}</p>
-              <p className="text-[12px] text-white/70 mt-1">{items.length} {groupBy === "category" ? "categorias" : groupBy === "bank" ? "bancos" : groupBy === "paymentMethod" ? "formas de pagamento" : "usuários"}</p>
+            <div className="rounded-[14px] p-5 bg-[#3b82f6]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-white/80 mb-1.5">
+                Total de {reportType === "income" ? "Receitas" : "Despesas"}
+              </p>
+              <p
+                className="text-[28px] font-bold text-white"
+                style={{ fontVariantNumeric: "tabular-nums" }}
+              >
+                {formatCurrency(data?.grandTotal ?? 0)}
+              </p>
+              <p className="text-[12px] text-white/70 mt-1">
+                {items.length}{" "}
+                {groupBy === "category"
+                  ? "categorias"
+                  : groupBy === "bank"
+                    ? "bancos"
+                    : groupBy === "paymentMethod"
+                      ? "formas de pagamento"
+                      : "usuários"}
+              </p>
             </div>
 
             {/* Fixed vs Variable — expenses only, purely informational */}
@@ -290,15 +311,15 @@ export function ReportsClient() {
 
                   {/* Split bar */}
                   <div className="h-2 w-full rounded-full overflow-hidden flex bg-[var(--surface-raised)]">
-                    <div className="h-full bg-violet-500 transition-all duration-500" style={{ width: `${fixedPct}%` }} />
-                    <div className="h-full bg-sky-400 transition-all duration-500"   style={{ width: `${varPct}%`   }} />
+                    <div className="h-full bg-[#2563eb] transition-all duration-500" style={{ width: `${fixedPct}%` }} />
+                    <div className="h-full bg-[#60a5fa] transition-all duration-500" style={{ width: `${varPct}%`   }} />
                   </div>
 
                   {/* Stat rows */}
                   <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                     {[
-                      { label: "Fixos",     value: fixed,    pct: fixedPct, color: "bg-violet-500", textColor: "text-violet-500", Icon: Repeat2 },
-                      { label: "Variáveis", value: variable, pct: varPct,   color: "bg-sky-400",    textColor: "text-sky-500",    Icon: Shuffle },
+                      { label: "Fixos",     value: fixed,    pct: fixedPct, color: "bg-[#2563eb]", textColor: "text-[#2563eb]", Icon: Repeat2 },
+                      { label: "Variáveis", value: variable, pct: varPct,   color: "bg-[#60a5fa]", textColor: "text-[#60a5fa]", Icon: Shuffle },
                     ].map(({ label, value, pct, color, textColor, Icon }) => (
                       <div key={label} className="flex items-start gap-2.5">
                         <div className={`w-2.5 h-2.5 rounded-full ${color} shrink-0 mt-1`} />
@@ -338,9 +359,9 @@ export function ReportsClient() {
                     ] as const).map(({ key, label, icon }) => {
                       const active = costTypeFilter === key;
                       const activeStyle =
-                        key === "fixed"    ? "bg-violet-500 border-violet-500 text-white" :
-                        key === "variable" ? "bg-sky-500 border-sky-500 text-white" :
-                        "bg-brand-600 border-brand-600 text-white";
+                        key === "fixed"    ? "bg-[#2563eb] border-[#2563eb] text-white" :
+                        key === "variable" ? "bg-[#60a5fa] border-[#60a5fa] text-white" :
+                        "bg-[#3b82f6] border-[#3b82f6] text-white";
                       return (
                         <button
                           key={key}

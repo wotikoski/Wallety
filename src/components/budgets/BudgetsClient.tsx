@@ -217,7 +217,7 @@ function BudgetRow({
   const pct = planned > 0 ? (spent / planned) * 100 : 0;
   const projectedPct = planned > 0 ? ((spent + projected) / planned) * 100 : 0;
   const state = pct >= 100 ? "over" : pct >= 80 ? "warn" : "ok";
-  const barColor = state === "over" ? "#f87171" : state === "warn" ? "#f59e0b" : category.color ?? "#6366f1";
+  const barColor = state === "over" ? "#f87171" : state === "warn" ? "#f59e0b" : category.color ?? "#3b82f6";
 
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(planned > 0 ? String(planned).replace(".", ",") : "");
@@ -236,7 +236,7 @@ function BudgetRow({
         <div className="flex items-center gap-2.5">
           <div
             className="w-2.5 h-2.5 rounded-full shrink-0"
-            style={{ background: category.color ?? "#6366f1" }}
+            style={{ background: category.color ?? "#3b82f6" }}
           />
           <span className="text-[14px] font-semibold text-app-text">{category.name}</span>
         </div>
