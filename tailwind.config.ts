@@ -10,40 +10,42 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Brand — Violet Haze scale (Origin Financial) ─────────
+        // ── Brand — Blue scale (handoff canonical accent) ─────────
         brand: {
-          50:  "#f5f4ff",
-          100: "#ece9ff",
-          200: "#d5d0ff",
-          300: "#b5adff",
-          400: "#a09bff",   // brand-hover
-          500: "#847dff",   // Violet Haze — dark-mode primary
-          600: "#6b62f0",
-          700: "#4b49aa",   // Deep Indigo — light-mode primary
-          800: "#3a3990",
-          900: "#2c2b72",
-          950: "#1a1950",
+          50:  "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa",   // accent-soft / brand-hover
+          500: "#3b82f6",   // accent-hue — dark-mode primary
+          600: "#2563eb",   // accent-deep — light-mode primary
+          700: "#1d4ed8",
+          800: "#1e40af",
+          900: "#1e3a8a",   // accent-tint
+          950: "#172554",
         },
 
-        // ── Origin Financial accent palette ───────────────────────
-        "ocean-glimmer":    "#00b3dd",
-        "violet-haze":      "#847dff",
-        "lavender-mist":    "#d1c9ff",
-        "soft-rose":        "#dd90d8",
-        "deep-indigo":      "#4b49aa",
-        "sky-tint":         "#90b8f0",
-        "midnight-ink":     "#0f1011",
-        "elevated-charcoal":"#2e2e2e",
+        // ── Handoff palette extras ────────────────────────────────
+        "accent-hue":    "#3b82f6",
+        "accent-soft":   "#60a5fa",
+        "accent-deep":   "#2563eb",
+        "accent-tint":   "#1e3a8a",
+        "expense-bar":   "#334155",
+        "surface-alt":   "#11161e",
 
         // ── Semantic colours → CSS vars (auto-switch light/dark) ──
         income:  { DEFAULT: "var(--color-income)",  light: "#D1FAE5", dark: "#34d399" },
         expense: { DEFAULT: "var(--color-expense)", light: "#FEE2E2", dark: "#f87171" },
 
-        "app-bg":     "var(--surface-bg)",
-        "app-border": "var(--color-border)",
-        "app-text":   "var(--color-text)",
-        "app-muted":  "var(--color-muted)",
-        "sidebar-bg": "var(--surface-sidebar)",
+        "app-bg":      "var(--surface-bg)",
+        "app-border":  "var(--color-border)",
+        "app-text":    "var(--color-text)",
+        "app-muted":   "var(--color-muted)",
+        "sidebar-bg":  "var(--surface-sidebar)",
+        "text-dim":    "var(--text-dim)",
+        "text-faint":  "var(--text-faint)",
+        "text-mute":   "var(--text-mute)",
+        "border-str":  "var(--border-strong)",
 
         // ── shadcn / Radix tokens ─────────────────────────────────
         border:     "hsl(var(--border))",

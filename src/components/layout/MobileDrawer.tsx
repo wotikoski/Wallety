@@ -105,7 +105,7 @@ function DrawerItem({
       className={cn(
         "flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium tracking-wide transition",
         active
-          ? "bg-[rgba(132,125,255,0.15)] text-[#847dff] font-semibold"
+          ? "bg-[rgba(59,130,246,0.15)] text-[#3b82f6] font-semibold"
           : "text-white/35 hover:text-white/65 hover:bg-white/[0.05]",
       )}
     >

@@ -38,7 +38,7 @@ export function MobileBottomNav() {
               href={item.href}
               className={cn(
                 "flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition",
-                active ? "text-[#847dff]" : "text-white/30 hover:text-white/55"
+                active ? "text-[#3b82f6]" : "text-white/30 hover:text-white/55"
               )}
             >
               <item.icon size={19} strokeWidth={active ? 2 : 1.75} />

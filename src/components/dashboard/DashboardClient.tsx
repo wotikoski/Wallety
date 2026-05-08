@@ -3,73 +3,62 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
-
-function formatCurrencyShort(value: number): string {
-  const abs = Math.abs(value);
-  const sign = value < 0 ? "-" : "";
-  if (abs >= 1_000_000) return `${sign}R$ ${(abs / 1_000_000).toFixed(1).replace(".", ",")}M`;
-  if (abs >= 1_000) return `${sign}R$ ${(abs / 1_000).toFixed(1).replace(".", ",")}k`;
-  return formatCurrency(value);
-}
 import { formatDate } from "@/lib/utils/date";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, PieChart, Pie, Cell,
 } from "recharts";
-import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, AlertTriangle, PiggyBank, ChevronRight, CheckCircle2 } from "lucide-react";
+import {
+  TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight,
+  AlertTriangle, PiggyBank, ChevronRight, CheckCircle2,
+  Eye, EyeOff, Sparkles,
+} from "lucide-react";
 import Link from "next/link";
-import { differenceInCalendarDays, differenceInCalendarMonths, parseISO } from "date-fns";
+import {
+  differenceInCalendarDays, differenceInCalendarMonths, parseISO,
+} from "date-fns";
 
+/* ── Types ────────────────────────────────────────────────────────────── */
 interface GoalItem {
-  id: string;
-  name: string;
-  targetAmount: string;
-  targetDate: string;
-  savedAmount: string;
-  color: string;
-  emoji: string;
+  id: string; name: string; targetAmount: string; targetDate: string;
+  savedAmount: string; color: string; emoji: string;
 }
 
 interface DashboardData {
-  totalIncome: number;
-  totalExpenses: number;
-  paidExpenses: number;
-  pendingExpenses: number;
-  balance: number;
-  savingsRate: number | null;
-  overdueCount: number;
-  overdueAmount: number;
+  totalIncome: number; totalExpenses: number;
+  paidExpenses: number; pendingExpenses: number;
+  balance: number; savingsRate: number | null;
+  overdueCount: number; overdueAmount: number;
   expensesByCategory: { name: string; total: number; color: string }[];
   monthlyTrend: { month: string; income: number; expenses: number }[];
   recentTransactions: {
-    id: string;
-    date: string;
-    description: string;
-    type: string;
-    value: string;
-    isPaid: boolean;
-    categoryName: string | null;
-    categoryColor: string | null;
+    id: string; date: string; description: string;
+    type: string; value: string; isPaid: boolean;
+    categoryName: string | null; categoryColor: string | null;
   }[];
 }
+
+/* ── Handoff palette constants ───────────────────────────────────────── */
+const ACCENT   = "#3b82f6";
+const ACCENT_S = "#60a5fa";  // soft
+const MONO_BLUE = ["#3b82f6", "#2563eb", "#60a5fa", "#1e3a8a", "#243042", "#334155"];
 
 const MONTHS = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
 
-/* ── Chart theme hook ─────────────────────────────────────────────────── */
-// Recharts renders SVG so it can't read CSS variables directly.
-// This hook watches the <html> class list and returns resolved color values.
+/* ── Helpers ─────────────────────────────────────────────────────────── */
+function formatCurrencyShort(value: number): string {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? "-" : "";
+  if (abs >= 1_000_000) return `${sign}R$ ${(abs / 1_000_000).toFixed(1).replace(".", ",")}M`;
+  if (abs >= 1_000)     return `${sign}R$ ${(abs / 1_000).toFixed(1).replace(".", ",")}k`;
+  return formatCurrency(value);
+}
+
+/* ── Chart theme (reads dark/light from <html> class) ───────────────── */
 function useChartTheme() {
   const [isDark, setIsDark] = useState(false);
   useEffect(() => {
@@ -82,16 +71,242 @@ function useChartTheme() {
   }, []);
   return {
     isDark,
-    grid:          isDark ? "#2e2e2e" : "#e8e8e8",
-    axis:          isDark ? "#9a9a9a" : "#6a6b6b",
-    tooltipBg:     isDark ? "#1c1c1c" : "#ffffff",
-    tooltipBorder: isDark ? "#2e2e2e" : "#d8d8da",
-    tooltipText:   isDark ? "#ffffff"  : "#0f1011",
-    tooltipMuted:  isDark ? "#9a9a9a" : "#6a6b6b",
+    grid:          isDark ? "#1a212c" : "#e8ece9",
+    axis:          isDark ? "#64748b" : "#64748b",
+    tooltipBg:     isDark ? "#0d1117" : "#ffffff",
+    tooltipBorder: isDark ? "#243042" : "#e6e8e3",
+    tooltipText:   isDark ? "#e6e9ef" : "#0a0c10",
+    tooltipMuted:  isDark ? "#64748b" : "#64748b",
+    incomeBar:      ACCENT,
+    expenseBar:    isDark ? "#334155" : "#cbd5d0",
   };
 }
 
-/* ── Custom Bar Chart Tooltip ─────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   Sub-components
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── SparklineSVG ─────────────────────────────────────────────────────── */
+function SparklineSVG({
+  data, color, width = 180, height = 44,
+}: { data: number[]; color: string; width?: number; height?: number }) {
+  const id = useId().replace(/:/g, "");
+  if (data.length < 2) return null;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const pts = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - 4 - ((v - min) / range) * (height - 8);
+    return [x, y] as [number, number];
+  });
+  const line = pts.map((p, i) =>
+    (i === 0 ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1)
+  ).join(" ");
+  const area = line + ` L ${width},${height} L 0,${height} Z`;
+  const last = pts[pts.length - 1];
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height} style={{ display: "block" }}>
+      <defs>
+        <linearGradient id={`sg-${id}`} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor={color} stopOpacity="0.28" />
+          <stop offset="1" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#sg-${id})`} />
+      <path d={line} stroke={color} strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={last[0]} cy={last[1]} r="3" fill={color} />
+    </svg>
+  );
+}
+
+/* ── InsightStrip ─────────────────────────────────────────────────────── */
+function InsightStrip({
+  savingsRate, totalIncome, totalExpenses, hideBalance,
+}: {
+  savingsRate: number | null; totalIncome: number; totalExpenses: number; hideBalance: boolean;
+}) {
+  let msg = "";
+  let emoji = "✨";
+  if (hideBalance) {
+    msg = "Saldo oculto. Clique no olho para exibir.";
+    emoji = "👁";
+  } else if (savingsRate === null) {
+    msg = "Adicione receitas e despesas para ver seus insights do mês.";
+    emoji = "💡";
+  } else if (savingsRate >= 30) {
+    msg = `Excelente! Você está poupando ${savingsRate}% da renda — bem acima da meta de 20%.`;
+    emoji = "🏆";
+  } else if (savingsRate >= 20) {
+    msg = `Ótimo ritmo! Taxa de poupança de ${savingsRate}% — meta de 20% atingida.`;
+    emoji = "🎉";
+  } else if (savingsRate >= 0) {
+    const diff = formatCurrencyShort(totalIncome * 0.2 - (totalIncome - totalExpenses));
+    msg = `Poupança em ${savingsRate}%. Corte ${diff} em despesas para atingir 20%.`;
+    emoji = "📊";
+  } else {
+    msg = "Despesas acima da renda esse mês. Revise os gastos para volcar ao azul.";
+    emoji = "⚠️";
+  }
+  return (
+    <div
+      className="flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[12px] font-medium"
+      style={{
+        background: `linear-gradient(90deg, rgba(59,130,246,0.13) 0%, rgba(37,99,235,0.07) 100%)`,
+        border: "1px solid rgba(59,130,246,0.18)",
+        color: "var(--text-dim)",
+      }}
+    >
+      <span className="text-[15px] leading-none shrink-0">{emoji}</span>
+      <Sparkles size={13} style={{ color: ACCENT, flexShrink: 0 }} />
+      <span style={{ color: "var(--text-dim)" }}>{msg}</span>
+    </div>
+  );
+}
+
+/* ── HeroBalance ──────────────────────────────────────────────────────── */
+function HeroBalance({
+  balance, monthlyTrend, hideBalance,
+}: {
+  balance: number; monthlyTrend: { month: string; income: number; expenses: number }[]; hideBalance: boolean;
+}) {
+  // sparkline: net (income - expenses) per month
+  const sparkData = monthlyTrend.map((m) => m.income - m.expenses);
+
+  // delta vs previous month
+  let deltaLabel: string | null = null;
+  let deltaPositive = true;
+  if (monthlyTrend.length >= 2) {
+    const curr = monthlyTrend[monthlyTrend.length - 1];
+    const prev = monthlyTrend[monthlyTrend.length - 2];
+    const currNet = curr.income - curr.expenses;
+    const prevNet = prev.income - prev.expenses;
+    if (prevNet !== 0) {
+      const pct = ((currNet - prevNet) / Math.abs(prevNet)) * 100;
+      deltaPositive = pct >= 0;
+      deltaLabel = `${deltaPositive ? "↑" : "↓"} ${Math.abs(pct).toFixed(1).replace(".", ",")}%`;
+    }
+  }
+
+  const wholeStr = Math.floor(Math.abs(balance)).toLocaleString("pt-BR");
+  const centsStr = balance.toFixed(2).split(".")[1];
+  const isNeg = balance < 0;
+
+  return (
+    <div
+      className="relative overflow-hidden flex flex-col justify-between"
+      style={{
+        background: "var(--surface-card)",
+        border: "1px solid var(--color-border)",
+        borderRadius: 14,
+        padding: "28px 30px",
+        minHeight: 196,
+        height: "100%",
+      }}
+    >
+      {/* Label row */}
+      <div>
+        <div
+          className="flex items-center gap-2"
+          style={{ fontSize: 11, color: "var(--text-mute)", letterSpacing: 1.2, textTransform: "uppercase", fontWeight: 700 }}
+        >
+          Saldo total
+          <span
+            style={{
+              fontSize: 9, padding: "2px 7px", borderRadius: 4,
+              background: `${ACCENT}22`, color: ACCENT,
+              fontWeight: 700, letterSpacing: 0.5,
+            }}
+          >
+            ATUAL
+          </span>
+        </div>
+
+        {/* Big number */}
+        <div
+          className="mt-2.5 leading-none"
+          style={{
+            fontVariantNumeric: "tabular-nums",
+            letterSpacing: "-0.035em",
+            fontWeight: 600,
+            color: "var(--color-text)",
+          }}
+        >
+          {hideBalance ? (
+            <span style={{ fontSize: 48, color: "var(--text-faint)" }}>R$ ••••••</span>
+          ) : (
+            <>
+              <span style={{ fontSize: 56 }}>
+                {isNeg ? "−" : ""}R$&nbsp;{wholeStr}
+              </span>
+              <span style={{ fontSize: 28, color: "var(--text-faint)" }}>,{centsStr}</span>
+            </>
+          )}
+        </div>
+
+        {/* Delta */}
+        {deltaLabel && !hideBalance && (
+          <div className="flex items-center gap-2 mt-3">
+            <span style={{ fontSize: 12, color: deltaPositive ? ACCENT : "#f87171", fontWeight: 600 }}>
+              {deltaLabel}
+            </span>
+            <span style={{ fontSize: 12, color: "var(--text-mute)" }}>vs. mês anterior</span>
+          </div>
+        )}
+      </div>
+
+      {/* Sparkline — bottom-right */}
+      {sparkData.length >= 2 && (
+        <div style={{ position: "absolute", right: 22, bottom: 16, opacity: 0.85 }}>
+          <SparklineSVG data={sparkData} color={ACCENT} width={180} height={44} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── KpiCard ──────────────────────────────────────────────────────────── */
+function KpiCard({
+  label, value, hint, hintColor, hideBalance, icon,
+}: {
+  label: string; value: number; hint: string;
+  hintColor?: string; hideBalance: boolean;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        background: "var(--surface-card)",
+        border: "1px solid var(--color-border)",
+        borderRadius: 14,
+        padding: 22,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        gap: 6,
+      }}
+    >
+      <div className="flex items-center justify-between">
+        <span style={{ fontSize: 11, color: "var(--text-mute)", letterSpacing: 1.2, textTransform: "uppercase", fontWeight: 700 }}>
+          {label}
+        </span>
+        <span style={{ color: "var(--text-faint)", opacity: 0.7 }}>{icon}</span>
+      </div>
+      <div
+        style={{
+          fontSize: 26, fontWeight: 600, letterSpacing: "-0.025em",
+          fontVariantNumeric: "tabular-nums", color: "var(--color-text)",
+          lineHeight: 1.1,
+        }}
+      >
+        {hideBalance ? "••••" : formatCurrencyShort(value)}
+      </div>
+      <div style={{ fontSize: 11, color: hintColor ?? "var(--text-mute)" }}>{hint}</div>
+    </div>
+  );
+}
+
+/* ── Bar tooltip ──────────────────────────────────────────────────────── */
 function BarTooltip({ active, payload, label, theme }: {
   active?: boolean;
   payload?: { name: string; value: number; fill: string }[];
@@ -101,12 +316,9 @@ function BarTooltip({ active, payload, label, theme }: {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
-      background: theme.tooltipBg,
-      border: `1px solid ${theme.tooltipBorder}`,
-      borderRadius: 12,
-      padding: "10px 14px",
-      boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
-      minWidth: 160,
+      background: theme.tooltipBg, border: `1px solid ${theme.tooltipBorder}`,
+      borderRadius: 12, padding: "10px 14px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.18)", minWidth: 160,
     }}>
       <p style={{ color: theme.tooltipMuted, fontWeight: 700, marginBottom: 8, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em" }}>
         {label}
@@ -124,27 +336,22 @@ function BarTooltip({ active, payload, label, theme }: {
   );
 }
 
-/* ── Custom Pie / Donut Tooltip ───────────────────────────────────────── */
+/* ── Pie tooltip ──────────────────────────────────────────────────────── */
 function PieTooltip({ active, payload, theme }: {
   active?: boolean;
-  payload?: { name: string; value: number; payload: { color: string } }[];
+  payload?: { name: string; value: number; payload: { fill: string } }[];
   theme: ReturnType<typeof useChartTheme>;
 }) {
   if (!active || !payload?.length) return null;
-  const { name, value, payload: { color } } = payload[0];
+  const { name, value, payload: { fill } } = payload[0];
   return (
     <div style={{
-      background: theme.tooltipBg,
-      border: `1px solid ${theme.tooltipBorder}`,
-      borderRadius: 10,
-      padding: "8px 12px",
-      boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
-      fontSize: 12,
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
+      background: theme.tooltipBg, border: `1px solid ${theme.tooltipBorder}`,
+      borderRadius: 10, padding: "8px 12px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.18)", fontSize: 12,
+      display: "flex", alignItems: "center", gap: 8,
     }}>
-      <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
+      <div style={{ width: 8, height: 8, borderRadius: "50%", background: fill, flexShrink: 0 }} />
       <span style={{ color: theme.tooltipMuted }}>{name}:</span>
       <span style={{ color: theme.tooltipText, fontWeight: 700, fontFamily: "monospace" }}>
         {formatCurrency(value)}
@@ -153,17 +360,34 @@ function PieTooltip({ active, payload, theme }: {
   );
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   Main DashboardClient
+   ══════════════════════════════════════════════════════════════════════ */
 export function DashboardClient() {
   const { activeGroupId } = useActiveGroup();
   const queryClient = useQueryClient();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
+  const [hideBalance, setHideBalance] = useState(false);
   const chartTheme = useChartTheme();
 
-  // Lazy-materialize recurring transactions on dashboard load.
-  // Fire-and-forget: if anything new is created, refresh dashboard + lançamentos.
-  // Throttled to once per session via sessionStorage to avoid thrashing.
+  // Load hideBalance from localStorage
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("wallety_hide_balance") === "true") setHideBalance(true);
+    } catch {}
+  }, []);
+
+  const toggleHide = () => {
+    setHideBalance((v) => {
+      const next = !v;
+      try { localStorage.setItem("wallety_hide_balance", String(next)); } catch {}
+      return next;
+    });
+  };
+
+  // Lazy-materialize recurring transactions on dashboard load
   useEffect(() => {
     if (typeof window === "undefined") return;
     const key = "recurring_materialized_at";
@@ -171,7 +395,6 @@ export function DashboardClient() {
     const ONE_HOUR = 60 * 60 * 1000;
     if (last && Date.now() - parseInt(last) < ONE_HOUR) return;
     sessionStorage.setItem(key, String(Date.now()));
-
     fetch("/api/recurring/materialize", { method: "POST" })
       .then((r) => (r.ok ? r.json() : null))
       .then((res) => {
@@ -180,7 +403,7 @@ export function DashboardClient() {
           queryClient.invalidateQueries({ queryKey: ["transactions"] });
         }
       })
-      .catch(() => { /* silent: best-effort */ });
+      .catch(() => {});
   }, [queryClient]);
 
   const params = new URLSearchParams({ month: String(month), year: String(year) });
@@ -188,265 +411,327 @@ export function DashboardClient() {
 
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ["dashboard", month, year, activeGroupId],
-    queryFn: () => fetch(`/api/dashboard?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
+    queryFn: () => fetch(`/api/dashboard?${params}`).then((r) => {
+      if (!r.ok) return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); });
+      return r.json();
+    }),
   });
 
-  // Projected (not-yet-materialized) recurring occurrences for the visible
-  // month — shown separately so they never inflate "realized" totals.
-  const projParams = new URLSearchParams();
-  const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
-  const monthEnd = new Date(year, month, 0);
-  const monthEndStr = `${year}-${String(month).padStart(2, "0")}-${String(monthEnd.getDate()).padStart(2, "0")}`;
-  projParams.set("from", monthStart);
-  projParams.set("to", monthEndStr);
+  // Projected recurring
+  const monthStart  = `${year}-${String(month).padStart(2, "0")}-01`;
+  const monthEndDate = new Date(year, month, 0);
+  const monthEndStr = `${year}-${String(month).padStart(2, "0")}-${String(monthEndDate.getDate()).padStart(2, "0")}`;
+  const projParams = new URLSearchParams({ from: monthStart, to: monthEndStr });
   if (activeGroupId) projParams.set("groupId", activeGroupId);
 
-  // Goals — ordered by closest deadline; only first 3 shown in widget
   const goalsParams = new URLSearchParams();
   if (activeGroupId) goalsParams.set("groupId", activeGroupId);
+
   const { data: goalsData } = useQuery<{ goals: GoalItem[] }>({
     queryKey: ["goals", activeGroupId],
-    queryFn: () => fetch(`/api/goals?${goalsParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
+    queryFn: () => fetch(`/api/goals?${goalsParams}`).then((r) => {
+      if (!r.ok) return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); });
+      return r.json();
+    }),
   });
 
-  const { data: projData } = useQuery<{ projected: { date: string; effectiveDate: string | null; type: string; value: string }[] }>({
+  const { data: projData } = useQuery<{
+    projected: { date: string; effectiveDate: string | null; type: string; value: string }[];
+  }>({
     queryKey: ["recurring-projected", month, year, activeGroupId],
-    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
+    queryFn: () => fetch(`/api/recurring/projected?${projParams}`).then((r) => {
+      if (!r.ok) return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); });
+      return r.json();
+    }),
   });
 
   const projected = projData?.projected ?? [];
-  // Bucket by invoice month when present — an April credit-card recurrence
-  // with effective_date in May belongs to May's projected totals.
   const inCurrentMonth = (p: { date: string; effectiveDate: string | null }) => {
     const bucket = p.effectiveDate ?? p.date;
     return bucket >= monthStart && bucket <= monthEndStr;
   };
-  const projectedIncome = projected
-    .filter((p) => p.type === "income" && inCurrentMonth(p))
-    .reduce((acc, p) => acc + parseFloat(p.value), 0);
-  const projectedExpenses = projected
-    .filter((p) => p.type === "expense" && inCurrentMonth(p))
-    .reduce((acc, p) => acc + parseFloat(p.value), 0);
+  const projectedIncome   = projected.filter((p) => p.type === "income"  && inCurrentMonth(p)).reduce((a, p) => a + parseFloat(p.value), 0);
+  const projectedExpenses = projected.filter((p) => p.type === "expense" && inCurrentMonth(p)).reduce((a, p) => a + parseFloat(p.value), 0);
 
   if (isLoading) {
     return (
-      <div className="animate-pulse space-y-6">
-        <div className="h-8 bg-[var(--surface-raised)] rounded w-48" />
-        <div className="grid grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => <div key={i} className="h-28 bg-[var(--surface-raised)] rounded-xl" />)}
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 rounded w-48" style={{ background: "var(--surface-raised)" }} />
+        <div className="grid grid-cols-3 gap-3">
+          {[1, 2, 3].map((i) => <div key={i} className="h-28 rounded-xl" style={{ background: "var(--surface-raised)" }} />)}
         </div>
       </div>
     );
   }
 
-  const totalIncome = data?.totalIncome ?? 0;
+  const totalIncome   = data?.totalIncome   ?? 0;
   const totalExpenses = data?.totalExpenses ?? 0;
-  const balance = data?.balance ?? 0;
-  const overdueCount = data?.overdueCount ?? 0;
+  const balance       = data?.balance       ?? 0;
+  const overdueCount  = data?.overdueCount  ?? 0;
   const overdueAmount = data?.overdueAmount ?? 0;
-  const savingsRate = data?.savingsRate ?? null;
+  const savingsRate   = data?.savingsRate   ?? null;
+  const monthlyTrend  = data?.monthlyTrend  ?? [];
 
-  // Days remaining in selected month
-  const daysInMonth = new Date(year, month, 0).getDate();
+  const daysInMonth    = new Date(year, month, 0).getDate();
   const isCurrentMonth = now.getMonth() + 1 === month && now.getFullYear() === year;
-  const daysPassed = isCurrentMonth ? now.getDate() : daysInMonth;
-  const daysRemaining = isCurrentMonth ? daysInMonth - now.getDate() : 0;
+  const daysPassed     = isCurrentMonth ? now.getDate() : daysInMonth;
+  const daysRemaining  = isCurrentMonth ? daysInMonth - now.getDate() : 0;
+
+  // Donut categories with monochromatic blue palette
+  const cats = (data?.expensesByCategory ?? []).map((c, i) => ({
+    ...c,
+    fill: MONO_BLUE[i % MONO_BLUE.length],
+  }));
+  const catTotal = cats.reduce((s, c) => s + c.total, 0);
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      {/* Header */}
+    <div className="space-y-3.5 animate-fade-in">
+
+      {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Dashboard</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Visão geral das suas finanças</p>
+          <h1 className="text-[22px] font-extrabold tracking-tight" style={{ color: "var(--color-text)" }}>
+            Dashboard
+          </h1>
+          <p className="text-[13px] mt-0.5 font-medium" style={{ color: "var(--text-mute)" }}>
+            Visão geral das suas finanças
+          </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          {/* Hide balance toggle */}
+          <button
+            onClick={toggleHide}
+            title={hideBalance ? "Mostrar saldo" : "Ocultar saldo"}
+            className="flex items-center justify-center w-9 h-9 rounded-[9px] transition"
+            style={{
+              border: "1px solid var(--color-border)",
+              background: "transparent",
+              color: "var(--text-dim)",
+            }}
+          >
+            {hideBalance ? <EyeOff size={15} /> : <Eye size={15} />}
+          </button>
+
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="text-[13px] font-semibold rounded-[9px] px-3 h-9 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            style={{ border: "1px solid var(--color-border)", background: "var(--surface-card)", color: "var(--color-text)" }}
           >
-            {MONTHS.map((m, i) => (
-              <option key={i} value={i + 1}>{m}</option>
-            ))}
+            {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
           </select>
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="text-[13px] font-semibold rounded-[9px] px-3 h-9 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            style={{ border: "1px solid var(--color-border)", background: "var(--surface-card)", color: "var(--color-text)" }}
           >
-            {[2023, 2024, 2025, 2026].map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
+            {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
       </div>
 
-      {/* Overdue alert banner */}
+      {/* ── Overdue alert ───────────────────────────────────────────── */}
       {overdueCount > 0 && (
         <a
           href="/lancamentos"
-          className="flex items-center gap-3 px-4 py-3 rounded-[12px] bg-amber-950/30 border border-amber-500/30 text-amber-400 hover:bg-amber-950/50 transition group dark:bg-amber-950/30 dark:border-amber-500/30 dark:text-amber-400"
+          className="flex items-center gap-3 px-4 py-3 rounded-[12px] transition group"
+          style={{
+            background: "rgba(251,191,36,0.08)",
+            border: "1px solid rgba(251,191,36,0.25)",
+            color: "#fbbf24",
+          }}
         >
-          <AlertTriangle size={16} className="shrink-0 text-amber-400" />
+          <AlertTriangle size={16} className="shrink-0" style={{ color: "#fbbf24" }} />
           <div className="flex-1 min-w-0">
             <span className="text-[13px] font-semibold">
               {overdueCount} despesa{overdueCount > 1 ? "s" : ""} em atraso
             </span>
-            <span className="text-[12px] text-amber-500 ml-1.5">
+            <span className="text-[12px] ml-1.5" style={{ color: "#f59e0b" }}>
               · {formatCurrency(overdueAmount)} não pago{overdueCount > 1 ? "s" : ""}
             </span>
           </div>
-          <span className="text-[11px] font-semibold text-amber-400 group-hover:text-amber-300 shrink-0">
-            Ver →
-          </span>
+          <span className="text-[11px] font-semibold shrink-0" style={{ color: "#fbbf24" }}>Ver →</span>
         </a>
       )}
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-2 md:gap-3">
-        <SummaryCard
+      {/* ── Insight strip ───────────────────────────────────────────── */}
+      <InsightStrip
+        savingsRate={savingsRate}
+        totalIncome={totalIncome}
+        totalExpenses={totalExpenses}
+        hideBalance={hideBalance}
+      />
+
+      {/* ── Hero + KPI grid ─────────────────────────────────────────── */}
+      {/*
+        Mobile: stacked (1 col)
+        Desktop: 3-col grid — HeroBalance (col-span-2 row-span-2), KpiReceitas, KpiDespesas
+      */}
+      <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-3">
+        {/* HeroBalance */}
+        <div className="md:col-span-2 md:row-span-2">
+          <HeroBalance balance={balance} monthlyTrend={monthlyTrend} hideBalance={hideBalance} />
+        </div>
+
+        {/* KPI — Receitas */}
+        <KpiCard
           label="Receitas"
           value={totalIncome}
-          icon={<TrendingUp size={18} />}
-          color="income"
-          projected={projectedIncome}
+          hint={projectedIncome > 0 ? `+ ${formatCurrencyShort(projectedIncome)} previsto` : "no período"}
+          hideBalance={hideBalance}
+          icon={<TrendingUp size={15} />}
         />
-        <SummaryCard
+
+        {/* KPI — Despesas */}
+        <KpiCard
           label="Despesas"
           value={totalExpenses}
-          icon={<TrendingDown size={18} />}
-          color="expense"
-          paid={data?.paidExpenses ?? 0}
-          pending={data?.pendingExpenses ?? 0}
-          projected={projectedExpenses}
-        />
-        <SummaryCard
-          label="Saldo"
-          value={balance}
-          icon={<Wallet size={18} />}
-          color={balance >= 0 ? "income" : "expense"}
-          projectedBalance={
-            projectedIncome || projectedExpenses
-              ? balance + projectedIncome - projectedExpenses
-              : undefined
+          hint={
+            data?.paidExpenses && totalExpenses > 0
+              ? `${Math.round((data.paidExpenses / totalExpenses) * 100)}% pago`
+              : "no período"
           }
+          hintColor={totalExpenses > totalIncome ? "#f87171" : undefined}
+          hideBalance={hideBalance}
+          icon={<TrendingDown size={15} />}
         />
       </div>
 
-      {/* Month summary strip */}
+      {/* ── Month summary strip ─────────────────────────────────────── */}
       {(savingsRate !== null || isCurrentMonth) && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          {/* Savings rate */}
           {savingsRate !== null && (
-            <div className="col-span-2 md:col-span-2 flex items-center gap-3 bg-white rounded-[12px] border border-app-border px-4 py-3 shadow-card">
-              <div className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 bg-[rgba(99,102,241,.1)]">
-                <PiggyBank size={16} className="text-brand-600" />
+            <div
+              className="col-span-2 flex items-center gap-3 rounded-[12px] px-4 py-3"
+              style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
+            >
+              <div
+                className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
+                style={{ background: `rgba(59,130,246,0.12)`, color: ACCENT }}
+              >
+                <PiggyBank size={16} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-app-muted mb-0.5">Taxa de poupança</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "var(--text-mute)" }}>
+                  Taxa de poupança
+                </p>
                 <div className="flex items-center gap-2">
-                  <span className={`text-[15px] font-bold font-mono ${savingsRate >= 20 ? "text-income" : savingsRate >= 0 ? "text-amber-500" : "text-expense"}`}>
-                    {savingsRate}%
+                  <span
+                    className="text-[15px] font-bold tabular-nums"
+                    style={{ color: hideBalance ? "var(--text-faint)" : savingsRate >= 20 ? "#22c55e" : savingsRate >= 0 ? "#f59e0b" : "#f87171" }}
+                  >
+                    {hideBalance ? "••" : `${savingsRate}%`}
                   </span>
-                  <span className="text-[11px] text-app-muted">
-                    {savingsRate >= 20 ? "Ótimo ritmo 🎉" : savingsRate >= 0 ? "Atenção ao orçamento" : "Gastos acima da renda"}
-                  </span>
+                  {!hideBalance && (
+                    <span className="text-[11px]" style={{ color: "var(--text-mute)" }}>
+                      {savingsRate >= 20 ? "Ótimo ritmo 🎉" : savingsRate >= 0 ? "Atenção ao orçamento" : "Gastos acima da renda"}
+                    </span>
+                  )}
                 </div>
+                {!hideBalance && (
+                  <div className="mt-1.5 prog-track">
+                    <div
+                      className="prog-fill"
+                      style={{
+                        width: `${Math.min(100, Math.max(0, savingsRate))}%`,
+                        background: savingsRate >= 20 ? "#22c55e" : savingsRate >= 0 ? "#f59e0b" : "#f87171",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {isCurrentMonth && (
+            <div
+              className="flex items-center gap-3 rounded-[12px] px-4 py-3"
+              style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
+            >
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "var(--text-mute)" }}>
+                  Dias restantes
+                </p>
+                <p className="text-[15px] font-bold" style={{ color: "var(--color-text)" }}>
+                  {daysRemaining} dias
+                </p>
                 <div className="mt-1.5 prog-track">
                   <div
-                    className="prog-fill transition-all"
-                    style={{
-                      width: `${Math.min(100, Math.max(0, savingsRate))}%`,
-                      background: savingsRate >= 20 ? "#10b981" : savingsRate >= 0 ? "#f59e0b" : "#f87171",
-                    }}
+                    className="prog-fill"
+                    style={{ width: `${Math.round((daysPassed / daysInMonth) * 100)}%`, background: ACCENT }}
                   />
                 </div>
               </div>
             </div>
           )}
 
-          {/* Days remaining / elapsed */}
-          {isCurrentMonth && (
-            <div className="flex items-center gap-3 bg-white rounded-[12px] border border-app-border px-4 py-3 shadow-card">
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-app-muted mb-0.5">Dias restantes</p>
-                <p className="text-[15px] font-bold text-app-text">{daysRemaining} dias</p>
-                <div className="mt-1.5 prog-track">
-                  <div className="prog-fill bg-brand-400 transition-all" style={{ width: `${Math.round((daysPassed / daysInMonth) * 100)}%` }} />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Daily spend pace */}
           {isCurrentMonth && daysPassed > 0 && (
-            <div className="flex items-center gap-3 bg-white rounded-[12px] border border-app-border px-4 py-3 shadow-card">
+            <div
+              className="flex items-center gap-3 rounded-[12px] px-4 py-3"
+              style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
+            >
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-app-muted mb-0.5">Gasto médio/dia</p>
-                <p className="text-[15px] font-bold font-mono text-expense">
-                  {formatCurrencyShort(totalExpenses / daysPassed)}
+                <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "var(--text-mute)" }}>
+                  Gasto médio/dia
                 </p>
-                <p className="text-[10px] text-app-muted mt-0.5">
-                  projeção: {formatCurrencyShort((totalExpenses / daysPassed) * daysInMonth)}
+                <p className="text-[15px] font-bold tabular-nums" style={{ color: "#f87171" }}>
+                  {hideBalance ? "••••" : formatCurrencyShort(totalExpenses / daysPassed)}
                 </p>
+                {!hideBalance && (
+                  <p className="text-[10px] mt-0.5" style={{ color: "var(--text-mute)" }}>
+                    projeção: {formatCurrencyShort((totalExpenses / daysPassed) * daysInMonth)}
+                  </p>
+                )}
               </div>
             </div>
           )}
         </div>
       )}
 
-      {/* Charts Row */}
+      {/* ── Charts row ──────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
 
-        {/* ── Bar Chart: Receitas vs Despesas ── */}
-        <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card flex flex-col">
-          {/* Header */}
+        {/* Bar Chart: Receitas vs Despesas */}
+        <div
+          className="flex flex-col rounded-[14px] p-5"
+          style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
+        >
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-[14px] font-bold text-app-text leading-tight">Receitas vs Despesas</h2>
-              <p className="text-[11px] text-app-muted mt-0.5">Últimos 6 meses</p>
+              <h2 className="text-[14px] font-bold leading-tight" style={{ color: "var(--color-text)" }}>
+                Receitas vs Despesas
+              </h2>
+              <p className="text-[11px] mt-0.5" style={{ color: "var(--text-mute)" }}>Últimos 6 meses</p>
             </div>
             <div className="flex items-center gap-4">
-              {([["#10b981", "Receitas"], ["#f87171", "Despesas"]] as const).map(([c, l]) => (
-                <div key={l} className="flex items-center gap-2">
+              {([
+                [chartTheme.incomeBar, "Receitas"],
+                [chartTheme.expenseBar, "Despesas"],
+              ] as [string, string][]).map(([c, l]) => (
+                <div key={l} className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-sm" style={{ background: c }} />
-                  <span className="text-[11px] text-app-muted font-semibold">{l}</span>
+                  <span className="text-[11px] font-semibold" style={{ color: "var(--text-mute)" }}>{l}</span>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Chart */}
           <div className="flex-1 flex items-center justify-center">
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart
-                data={data?.monthlyTrend ?? []}
-                barCategoryGap="30%"
-                barGap={3}
-                margin={{ top: 4, right: 4, left: -8, bottom: 0 }}
-              >
-                <CartesianGrid
-                  vertical={false}
-                  stroke={chartTheme.grid}
-                  strokeDasharray="3 0"
-                />
+              <BarChart data={monthlyTrend} barCategoryGap="30%" barGap={3} margin={{ top: 4, right: 4, left: -8, bottom: 0 }}>
+                <CartesianGrid vertical={false} stroke={chartTheme.grid} strokeDasharray="3 0" />
                 <XAxis
                   dataKey="month"
                   tick={{ fontSize: 10, fill: chartTheme.axis, fontWeight: 600 }}
-                  axisLine={false}
-                  tickLine={false}
-                  interval={0}
+                  axisLine={false} tickLine={false} interval={0}
                 />
                 <YAxis
                   tick={{ fontSize: 10, fill: chartTheme.axis }}
                   tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
-                  axisLine={false}
-                  tickLine={false}
-                  width={36}
+                  axisLine={false} tickLine={false} width={36}
                 />
                 <Tooltip
-                  cursor={{ fill: chartTheme.isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", radius: 6 }}
+                  cursor={{ fill: chartTheme.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", radius: 6 }}
                   content={(props) => (
                     <BarTooltip
                       active={props.active}
@@ -456,153 +741,188 @@ export function DashboardClient() {
                     />
                   )}
                 />
-                <Bar dataKey="income" name="Receitas" fill="#10b981" radius={[5, 5, 3, 3]} maxBarSize={28} />
-                <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[5, 5, 3, 3]} maxBarSize={28} />
+                <Bar dataKey="income"   name="Receitas" fill={chartTheme.incomeBar}  radius={[5, 5, 3, 3]} maxBarSize={28} />
+                <Bar dataKey="expenses" name="Despesas" fill={chartTheme.expenseBar} radius={[5, 5, 3, 3]} maxBarSize={28} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* ── Donut Chart: Despesas por Categoria ── */}
-        <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card flex flex-col">
+        {/* Donut Chart: Despesas por Categoria — monochromatic blue */}
+        <div
+          className="flex flex-col rounded-[14px] p-5"
+          style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
+        >
           <div className="mb-4">
-            <h2 className="text-[14px] font-bold text-app-text leading-tight">Despesas por Categoria</h2>
-            <p className="text-[11px] text-app-muted mt-0.5">Distribuição do mês</p>
+            <h2 className="text-[14px] font-bold leading-tight" style={{ color: "var(--color-text)" }}>
+              Despesas por Categoria
+            </h2>
+            <p className="text-[11px] mt-0.5" style={{ color: "var(--text-mute)" }}>Distribuição do mês</p>
           </div>
 
-          {(data?.expensesByCategory?.length ?? 0) > 0 ? (() => {
-            const cats = data!.expensesByCategory;
-            const catTotal = cats.reduce((s, c) => s + c.total, 0);
-            return (
-              <div className="flex items-center gap-4 sm:gap-6">
-                {/* Donut */}
-                <div className="relative shrink-0" style={{ width: 168, height: 168 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={cats}
-                        dataKey="total"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={52}
-                        outerRadius={76}
-                        paddingAngle={3}
-                        strokeWidth={0}
-                      >
-                        {cats.map((entry, i) => (
-                          <Cell key={i} fill={entry.color || `hsl(${i * 47}, 68%, 52%)`} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        content={(props) => (
-                          <PieTooltip
-                            active={props.active}
-                            payload={props.payload as { name: string; value: number; payload: { color: string } }[]}
-                            theme={chartTheme}
-                          />
-                        )}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  {/* Center label */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-[9px] font-bold text-app-muted uppercase tracking-[0.09em] leading-tight">Total</span>
-                    <span className="text-[13px] font-bold font-mono text-app-text leading-tight mt-0.5">
-                      {formatCurrencyShort(catTotal)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Legend */}
-                <div className="flex-1 min-w-0 space-y-2">
-                  {cats.map((cat) => {
-                    const pct = catTotal > 0 ? Math.round((cat.total / catTotal) * 100) : 0;
-                    return (
-                      <div key={cat.name}>
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
-                          <span className="text-[11px] font-semibold text-app-text truncate flex-1 min-w-0">{cat.name}</span>
-                          <span className="text-[10px] font-bold text-app-muted shrink-0 tabular-nums">{pct}%</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="prog-track flex-1" style={{ height: 3 }}>
-                            <div className="prog-fill" style={{ width: `${pct}%`, background: cat.color }} />
-                          </div>
-                          <span className="text-[10px] font-semibold text-app-muted font-mono tabular-nums shrink-0">
-                            {formatCurrencyShort(cat.total)}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
+          {cats.length > 0 ? (
+            <div className="flex items-center gap-4 sm:gap-6">
+              {/* Donut */}
+              <div className="relative shrink-0" style={{ width: 168, height: 168 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={cats}
+                      dataKey="total"
+                      nameKey="name"
+                      cx="50%" cy="50%"
+                      innerRadius={52} outerRadius={76}
+                      paddingAngle={3} strokeWidth={0}
+                    >
+                      {cats.map((entry, i) => (
+                        <Cell key={i} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      content={(props) => (
+                        <PieTooltip
+                          active={props.active}
+                          payload={props.payload as { name: string; value: number; payload: { fill: string } }[]}
+                          theme={chartTheme}
+                        />
+                      )}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                {/* Center label */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span
+                    className="text-[9px] font-bold uppercase leading-tight"
+                    style={{ letterSpacing: "0.09em", color: "var(--text-mute)" }}
+                  >
+                    Gasto
+                  </span>
+                  <span className="text-[13px] font-bold tabular-nums leading-tight mt-0.5" style={{ color: "var(--color-text)" }}>
+                    {hideBalance ? "•••" : formatCurrencyShort(catTotal)}
+                  </span>
                 </div>
               </div>
-            );
-          })() : (
-            <div className="flex-1 flex flex-col items-center justify-center gap-2 text-app-muted py-10">
-              <div className="w-12 h-12 rounded-full bg-[var(--surface-raised)] flex items-center justify-center text-xl">📊</div>
+
+              {/* Legend */}
+              <div className="flex-1 min-w-0 space-y-2">
+                {cats.map((cat, i) => {
+                  const pct = catTotal > 0 ? Math.round((cat.total / catTotal) * 100) : 0;
+                  return (
+                    <div key={cat.name}>
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.fill }} />
+                        <span
+                          className="text-[11px] font-semibold truncate flex-1 min-w-0"
+                          style={{ color: "var(--color-text)" }}
+                        >
+                          {cat.name}
+                        </span>
+                        <span className="text-[10px] font-bold shrink-0 tabular-nums" style={{ color: "var(--text-mute)" }}>
+                          {pct}%
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="prog-track flex-1" style={{ height: 2 }}>
+                          <div className="prog-fill" style={{ width: `${pct}%`, background: cat.fill }} />
+                        </div>
+                        <span className="text-[10px] font-semibold tabular-nums shrink-0" style={{ color: "var(--text-mute)" }}>
+                          {hideBalance ? "•••" : formatCurrencyShort(cat.total)}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div
+              className="flex-1 flex flex-col items-center justify-center gap-2 py-10"
+              style={{ color: "var(--text-mute)" }}
+            >
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
+                style={{ background: "var(--surface-raised)" }}
+              >
+                📊
+              </div>
               <p className="text-sm font-medium">Nenhuma despesa no período</p>
             </div>
           )}
         </div>
-
       </div>
 
-      {/* Goals widget */}
+      {/* ── Goals widget ────────────────────────────────────────────── */}
       {(goalsData?.goals?.length ?? 0) > 0 && (
-        <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[#f1f3f9] flex items-center justify-between">
-            <h2 className="text-[14px] font-bold text-app-text">Metas de Poupança</h2>
+        <div
+          className="rounded-[14px] overflow-hidden"
+          style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
+        >
+          <div
+            className="px-5 py-3.5 flex items-center justify-between"
+            style={{ borderBottom: "1px solid var(--surface-divider)" }}
+          >
+            <h2 className="text-[14px] font-bold" style={{ color: "var(--color-text)" }}>
+              Metas de Poupança
+            </h2>
             <Link
               href="/metas"
-              className="flex items-center gap-1 text-[12px] font-semibold text-brand-600 hover:text-brand-700 transition"
+              className="flex items-center gap-1 text-[12px] font-semibold transition"
+              style={{ color: ACCENT }}
             >
               Ver todas <ChevronRight size={13} />
             </Link>
           </div>
-          <div className="divide-y divide-[#f1f3f9]">
+          <div>
             {(goalsData?.goals ?? []).slice(0, 3).map((goal) => {
-              const target = parseFloat(goal.targetAmount);
-              const saved = parseFloat(goal.savedAmount);
+              const target   = parseFloat(goal.targetAmount);
+              const saved    = parseFloat(goal.savedAmount);
               const remaining = Math.max(0, target - saved);
-              const percent = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
-              const done = saved >= target;
-              const today = new Date();
+              const percent  = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
+              const done     = saved >= target;
+              const today    = new Date();
               const deadline = parseISO(goal.targetDate);
               const daysLeft = differenceInCalendarDays(deadline, today);
               const monthsLeft = Math.max(1, differenceInCalendarMonths(deadline, today) + 1);
               const monthlyNeeded = !done && remaining > 0 ? remaining / monthsLeft : 0;
               return (
-                <div key={goal.id} className="flex items-center px-5 py-3.5 gap-4">
+                <div
+                  key={goal.id}
+                  className="flex items-center px-5 py-3.5 gap-4"
+                  style={{ borderBottom: "1px solid var(--surface-divider)" }}
+                >
                   <span className="text-2xl leading-none shrink-0">{goal.emoji}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline justify-between gap-2">
-                      <p className="text-[13px] font-semibold text-app-text truncate">{goal.name}</p>
+                      <p className="text-[13px] font-semibold truncate" style={{ color: "var(--color-text)" }}>
+                        {goal.name}
+                      </p>
                       {done ? (
-                        <span className="text-[11px] font-semibold text-income flex items-center gap-1 shrink-0">
+                        <span className="text-[11px] font-semibold flex items-center gap-1 shrink-0" style={{ color: "#22c55e" }}>
                           <CheckCircle2 size={11} /> Concluída
                         </span>
                       ) : (
-                        <span className="text-[11px] font-semibold shrink-0" style={{ color: goal.color }}>
-                          {monthlyNeeded > 0 ? `${formatCurrency(monthlyNeeded)}/mês` : "—"}
+                        <span className="text-[11px] font-semibold shrink-0 tabular-nums" style={{ color: ACCENT }}>
+                          {hideBalance ? "••••" : monthlyNeeded > 0 ? `${formatCurrency(monthlyNeeded)}/mês` : "—"}
                         </span>
                       )}
                     </div>
                     <div className="mt-1.5 prog-track">
                       <div
-                        className="prog-fill transition-all"
+                        className="prog-fill"
                         style={{
                           width: `${percent}%`,
-                          background: done ? "#10b981" : goal.color,
+                          background: done ? "#22c55e" : `linear-gradient(90deg, ${ACCENT}, ${ACCENT_S})`,
                         }}
                       />
                     </div>
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] text-app-muted">
-                        {formatCurrency(saved)} de {formatCurrency(target)}
+                      <span className="text-[10px]" style={{ color: "var(--text-mute)" }}>
+                        {hideBalance ? "•••" : formatCurrency(saved)} de {hideBalance ? "•••" : formatCurrency(target)}
                       </span>
-                      <span className={`text-[10px] font-medium ${daysLeft < 0 ? "text-red-500" : "text-app-muted"}`}>
+                      <span
+                        className="text-[10px] font-medium"
+                        style={{ color: daysLeft < 0 ? "#f87171" : "var(--text-mute)" }}
+                      >
                         {daysLeft < 0 ? "Prazo encerrado" : daysLeft === 0 ? "Hoje!" : `${daysLeft} dias`}
                       </span>
                     </div>
@@ -614,40 +934,63 @@ export function DashboardClient() {
         </div>
       )}
 
-      {/* Recent Transactions */}
-      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-[#f1f3f9] flex items-center justify-between">
-          <h2 className="text-[14px] font-bold text-app-text">Lançamentos Recentes</h2>
+      {/* ── Recent Transactions ─────────────────────────────────────── */}
+      <div
+        className="rounded-[14px] overflow-hidden"
+        style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
+      >
+        <div
+          className="px-5 py-3.5 flex items-center justify-between"
+          style={{ borderBottom: "1px solid var(--surface-divider)" }}
+        >
+          <h2 className="text-[14px] font-bold" style={{ color: "var(--color-text)" }}>
+            Lançamentos Recentes
+          </h2>
         </div>
-        <div className="divide-y divide-[#f1f3f9]">
+        <div>
           {(data?.recentTransactions ?? []).length === 0 ? (
-            <div className="p-12 text-center text-app-muted text-sm">
+            <div className="p-12 text-center text-sm" style={{ color: "var(--text-mute)" }}>
               Nenhum lançamento no período
             </div>
           ) : (
             (data?.recentTransactions ?? []).map((t) => (
-              <div key={t.id} className="flex items-center px-5 py-3.5 gap-3.5 hover:bg-[#f8f9fd] transition cursor-pointer">
+              <div
+                key={t.id}
+                className="flex items-center px-5 py-3.5 gap-3.5 cursor-pointer transition"
+                style={{ borderBottom: "1px solid var(--surface-divider)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-hover)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              >
+                {/* Icon avatar */}
                 <div
-                  className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0"
-                  style={{ background: t.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                  className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
+                  style={{
+                    background: t.type === "income"
+                      ? `rgba(59,130,246,0.12)`
+                      : `rgba(100,116,139,0.12)`,
+                  }}
                 >
                   {t.type === "income"
-                    ? <ArrowUpRight size={16} className="text-income" strokeWidth={2.5} />
-                    : <ArrowDownRight size={16} className="text-expense" strokeWidth={2.5} />
+                    ? <ArrowUpRight size={15} style={{ color: ACCENT }} strokeWidth={2.5} />
+                    : <ArrowDownRight size={15} style={{ color: "var(--text-dim)" }} strokeWidth={2.5} />
                   }
                 </div>
+
+                {/* Description + meta */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold text-app-text truncate">{t.description}</p>
+                  <p className="text-[13px] font-semibold truncate" style={{ color: "var(--color-text)" }}>
+                    {t.description}
+                  </p>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[11px] text-app-muted">{formatDate(t.date)}</span>
+                    <span className="text-[11px]" style={{ color: "var(--text-mute)" }}>{formatDate(t.date)}</span>
                     {t.categoryName && (
                       <>
-                        <span className="text-app-muted/40 text-[10px]">·</span>
+                        <span style={{ color: "var(--text-faint)", fontSize: 10 }}>·</span>
                         <span
                           className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                           style={{
-                            backgroundColor: t.categoryColor ? `${t.categoryColor}20` : "#6366f120",
-                            color: t.categoryColor ?? "#6366f1",
+                            backgroundColor: `${MONO_BLUE[0]}18`,
+                            color: ACCENT,
                           }}
                         >
                           {t.categoryName}
@@ -656,11 +999,25 @@ export function DashboardClient() {
                     )}
                   </div>
                 </div>
+
+                {/* Amount */}
                 <div className="text-right shrink-0">
-                  <p className={`text-[14px] font-semibold font-mono tabular-nums ${t.type === "income" ? "text-income" : "text-expense"}`}>
-                    {t.type === "income" ? "+" : "−"}{formatCurrency(t.value)}
+                  <p
+                    className="text-[14px] font-semibold tabular-nums"
+                    style={{
+                      color: t.type === "income" ? ACCENT : "var(--text-dim)",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    {hideBalance
+                      ? "••••••"
+                      : `${t.type === "income" ? "+" : "−"}${formatCurrency(t.value)}`
+                    }
                   </p>
-                  <span className={`text-[10px] font-semibold ${t.isPaid ? "text-income" : "text-amber-500"}`}>
+                  <span
+                    className="text-[10px] font-semibold"
+                    style={{ color: t.isPaid ? "#22c55e" : "#f59e0b" }}
+                  >
                     {t.isPaid ? "✓ Pago" : "● Pendente"}
                   </span>
                 </div>
@@ -669,103 +1026,6 @@ export function DashboardClient() {
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function SummaryCard({
-  label,
-  value,
-  icon,
-  color,
-  paid,
-  pending,
-  projected,
-  projectedBalance,
-}: {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-  color: "income" | "expense";
-  paid?: number;
-  pending?: number;
-  projected?: number;
-  projectedBalance?: number;
-}) {
-  const [tooltip, setTooltip] = useState(false);
-  useEffect(() => {
-    if (!tooltip) return;
-    const t = setTimeout(() => setTooltip(false), 2500);
-    return () => clearTimeout(t);
-  }, [tooltip]);
-
-  const showProgress = paid !== undefined && pending !== undefined && value > 0;
-  const pct = showProgress ? Math.min(100, Math.round((paid! / value) * 100)) : 0;
-
-  const iconBg = color === "income" ? "rgba(16,185,129,.12)" : color === "expense" ? "rgba(248,113,113,.12)" : "rgba(99,102,241,.12)";
-  const iconColor = color === "income" ? "#10b981" : color === "expense" ? "#f87171" : "#6366f1";
-  const barColor = color === "income" ? "#10b981" : "#f87171";
-
-  return (
-    <div className="bg-white rounded-[14px] border border-app-border p-3 md:p-4 shadow-card flex-1 min-w-0">
-      {/* Header: label + icon badge */}
-      <div className="flex items-start justify-between mb-2 md:mb-3">
-        <span className="text-[9px] md:text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">{label}</span>
-        <div
-          className="hidden md:flex w-9 h-9 rounded-[10px] items-center justify-center shrink-0"
-          style={{ background: iconBg, color: iconColor }}
-        >
-          {icon}
-        </div>
-      </div>
-
-      {/* Mobile: abbreviated value + tap-to-reveal tooltip */}
-      <div className="relative md:hidden">
-        <button
-          onClick={() => setTooltip((v) => !v)}
-          className={`text-[14px] font-bold font-mono tracking-tight leading-none text-left ${color === "income" ? "text-income" : "text-expense"}`}
-        >
-          {formatCurrencyShort(value)}
-        </button>
-        {tooltip && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] font-mono font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
-            {formatCurrency(value)}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#0f172a]" />
-          </div>
-        )}
-      </div>
-      {/* Desktop: full value, no interaction */}
-      <p className={`hidden md:block text-[24px] font-bold font-mono tracking-tight leading-none ${color === "income" ? "text-income" : "text-expense"}`}>
-        {formatCurrency(value)}
-      </p>
-
-      {/* Progress bar — desktop only */}
-      {showProgress && (
-        <div className="hidden md:block mt-3">
-          <div className="prog-track">
-            <div className="prog-fill" style={{ width: `${pct}%`, background: barColor }} />
-          </div>
-          <p className="text-[11px] text-app-muted mt-1.5 font-medium">
-            {pct}% pago
-            {pending! > 0 && <span> · {formatCurrency(pending!)} pendente</span>}
-          </p>
-        </div>
-      )}
-
-      {/* Projections — desktop only */}
-      {projected !== undefined && projected > 0 && (
-        <p className="hidden md:block text-[11px] text-app-muted mt-2 border-t border-dashed border-[#e2e5ef] pt-2">
-          <span className="font-medium text-slate-500">+ {formatCurrency(projected)}</span> previsto
-        </p>
-      )}
-      {projectedBalance !== undefined && (
-        <p className="hidden md:block text-[11px] text-app-muted mt-2 border-t border-dashed border-[#e2e5ef] pt-2">
-          Previsto:{" "}
-          <span className={`font-mono font-semibold ${projectedBalance >= 0 ? "text-income" : "text-expense"}`}>
-            {formatCurrency(projectedBalance)}
-          </span>
-        </p>
-      )}
     </div>
   );
 }

@@ -111,13 +111,13 @@ function NavItem({
       className={cn(
         "relative flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-[13px] transition-all mb-0.5 tracking-wide",
         active
-          ? "bg-[rgba(132,125,255,0.15)] text-[#847dff] font-semibold"
+          ? "bg-[rgba(59,130,246,0.15)] text-[#3b82f6] font-semibold"
           : "text-white/35 hover:text-white/65 hover:bg-white/[0.05] font-medium",
       )}
     >
       {/* Active left indicator */}
       {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#847dff] rounded-r-full" />
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#3b82f6] rounded-r-full" />
       )}
       <Icon size={14} strokeWidth={active ? 2 : 1.75} />
       <span className="truncate">{label}</span>
