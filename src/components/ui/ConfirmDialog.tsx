@@ -42,13 +42,13 @@ export function ConfirmDialog({
   return (
     <Portal>
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-[6px] animate-fade-in"
       onClick={() => !loading && onCancel()}
     >
       <div
         role="dialog"
         aria-modal="true"
-        className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md overflow-hidden"
+        className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-4 p-6">
@@ -84,7 +84,7 @@ export function ConfirmDialog({
             className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition disabled:opacity-50 ${
               variant === "danger"
                 ? "bg-expense hover:bg-expense-dark"
-                : "bg-brand-600 hover:bg-brand-700"
+                : "bg-[#3b82f6] hover:bg-[#2563eb]"
             }`}
           >
             {loading ? "Processando..." : confirmLabel}

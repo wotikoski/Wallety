@@ -290,8 +290,8 @@ export function TransactionsClient() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Lançamentos</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Gerencie todas as suas transações</p>
+          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Lançamentos</h1>
+          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Gerencie todas as suas transações</p>
         </div>
         <div className="flex items-center gap-2">
           <a
@@ -409,14 +409,14 @@ export function TransactionsClient() {
             type="date"
             value={startDate}
             onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
+            className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-raised)] font-medium text-app-text"
           />
           <span className="text-app-muted text-sm">→</span>
           <input
             type="date"
             value={endDate}
             onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
+            className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-raised)] font-medium text-app-text"
           />
           {/* Month nav */}
           <div className="flex items-center gap-1">
@@ -485,13 +485,13 @@ export function TransactionsClient() {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
+      <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
         {isLoading ? (
           <ListSkeleton rows={6} />
         ) : txns.length === 0 ? (
           <div className="p-12 text-center">
             <div className="text-4xl mb-3">💳</div>
-            <p className="text-slate-500 text-sm">Nenhum lançamento encontrado</p>
+            <p className="text-[var(--text-mute)] text-sm">Nenhum lançamento encontrado</p>
             <button onClick={() => setShowNewForm(true)} className="mt-3 inline-flex items-center gap-1 text-brand-600 text-sm font-medium hover:text-brand-700">
               <Plus size={14} /> Criar primeiro lançamento
             </button>
@@ -499,7 +499,7 @@ export function TransactionsClient() {
         ) : (
           <>
             {/* Mobile card view */}
-            <div ref={listRef} className="md:hidden divide-y divide-[#f1f3f9]">
+            <div ref={listRef} className="md:hidden divide-y divide-[var(--color-border)]">
               {txns.map((t) => (
                 <SwipeableRow
                   key={t.id}
@@ -522,7 +522,7 @@ export function TransactionsClient() {
                     </div>
                   }
                 >
-                  <div className="px-4 py-3.5 flex items-center gap-3 bg-white hover:bg-[#f8f9fd] transition">
+                  <div className="px-4 py-3.5 flex items-center gap-3 bg-[var(--surface-card)] hover:bg-[var(--surface-raised)] transition">
                     <div
                       className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
                       style={{ background: t.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
@@ -542,12 +542,12 @@ export function TransactionsClient() {
                           </span>
                         )}
                         {t.effectiveDate && t.effectiveDate !== t.date && (
-                          <span className="text-[10px] font-semibold text-brand-500 bg-[rgba(99,102,241,.08)] px-1.5 py-0.5 rounded-full">
+                          <span className="text-[10px] font-semibold text-[#3b82f6] bg-[rgba(59,130,246,.10)] px-1.5 py-0.5 rounded-full">
                             Fatura {formatInvoiceMonth(t.effectiveDate)}
                           </span>
                         )}
                         {t.date > todayStr && (
-                          <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                          <span className="text-[10px] font-medium text-[#d97706] bg-[rgba(217,119,6,.10)] px-1.5 py-0.5 rounded flex items-center gap-0.5">
                             <Clock size={9} /> Agendado
                           </span>
                         )}
@@ -573,7 +573,7 @@ export function TransactionsClient() {
 
             {/* Desktop table view */}
             <table className="hidden md:table w-full">
-              <thead className="bg-[#f8f9fd] border-b border-[#f1f3f9]">
+              <thead className="bg-[var(--surface-raised)] border-b border-[var(--color-border)]">
                 <tr>
                   <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Data</th>
                   <th className="text-left px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Descrição</th>
@@ -583,18 +583,18 @@ export function TransactionsClient() {
                   <th className="text-right px-5 py-3 text-[11px] font-bold text-app-muted uppercase tracking-[0.07em]">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f1f3f9]">
+              <tbody className="divide-y divide-[var(--color-border)]">
                 {txns.map((t) => (
-                  <tr key={t.id} className="hover:bg-[#f8f9fd] transition">
+                  <tr key={t.id} className="hover:bg-[var(--surface-raised)] transition">
                     <td className="px-5 py-3.5 text-[13px] text-app-muted whitespace-nowrap">
                       {formatDate(t.date)}
                       {t.effectiveDate && t.effectiveDate !== t.date && (
-                        <div className="text-[10px] font-semibold text-brand-500 bg-[rgba(99,102,241,.08)] px-1.5 py-0.5 rounded-full inline-block mt-1">
+                        <div className="text-[10px] font-semibold text-[#3b82f6] bg-[rgba(59,130,246,.10)] px-1.5 py-0.5 rounded-full inline-block mt-1">
                           Fatura {formatInvoiceMonth(t.effectiveDate)}
                         </div>
                       )}
                       {t.date > todayStr && (
-                        <div className="text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5 mt-1">
+                        <div className="text-[10px] font-semibold text-[#d97706] bg-[rgba(217,119,6,.10)] px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5 mt-1">
                           <Clock size={9} /> Agendado
                         </div>
                       )}
@@ -637,7 +637,7 @@ export function TransactionsClient() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => setEditingId(t.id)}
-                          className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
+                          className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-lg transition"
                         >
                           <Edit size={14} />
                         </button>
@@ -657,7 +657,7 @@ export function TransactionsClient() {
         )}
 
         {totalCount > 0 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-[#f1f3f9]">
+          <div className="flex items-center justify-between px-5 py-3 border-t border-[var(--color-border)]">
             <span className="text-[12px] text-app-muted">
               {((page - 1) * 30) + 1}–{Math.min(page * 30, totalCount)} de <span className="font-semibold text-app-text">{totalCount}</span> lançamentos
             </span>
@@ -665,7 +665,7 @@ export function TransactionsClient() {
               <button
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-lg hover:bg-[#f1f3f9]"
+                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-lg hover:bg-[var(--surface-raised)]"
               >
                 <ChevronLeft size={15} />
               </button>
@@ -673,7 +673,7 @@ export function TransactionsClient() {
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={page >= totalPages}
-                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-lg hover:bg-[#f1f3f9]"
+                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-lg hover:bg-[var(--surface-raised)]"
               >
                 <ChevronRight size={15} />
               </button>
@@ -703,7 +703,7 @@ export function TransactionsClient() {
       {showNewForm && (
         <Portal>
           <div
-            className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
             onClick={(e) => { if (e.target === e.currentTarget) setShowNewForm(false); }}
           >
             <div
@@ -719,7 +719,7 @@ export function TransactionsClient() {
       {editingId && (
         <Portal>
           <div
-            className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
             onClick={(e) => { if (e.target === e.currentTarget) setEditingId(null); }}
           >
             <div
@@ -774,13 +774,13 @@ function InstallmentDeleteDialog({
   return (
     <Portal>
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-[6px] animate-fade-in"
       onClick={() => !loading && onCancel()}
     >
       <div
         role="dialog"
         aria-modal="true"
-        className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md overflow-hidden"
+        className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">

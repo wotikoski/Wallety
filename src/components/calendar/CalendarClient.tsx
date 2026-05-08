@@ -119,7 +119,7 @@ export function CalendarClient() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar Grid */}
-        <div className="lg:col-span-2 bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
+        <div className="lg:col-span-2 bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
           {/* Weekday headers */}
           <div className="grid grid-cols-7 border-b border-app-border">
             {WEEKDAYS.map((d) => (
@@ -177,7 +177,7 @@ export function CalendarClient() {
         </div>
 
         {/* Day Detail Panel */}
-        <div className="bg-white rounded-[14px] border border-app-border shadow-card p-5">
+        <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-5">
           {selectedDay ? (
             <>
               <h2 className="text-base font-semibold text-app-text mb-1">
@@ -193,7 +193,7 @@ export function CalendarClient() {
                       key={t.id}
                       className={`flex items-center justify-between p-2.5 rounded-lg ${
                         t.projected
-                          ? "bg-white border border-dashed border-app-border"
+                          ? "bg-[var(--surface-card)] border border-dashed border-[var(--color-border)]"
                           : "bg-[var(--surface-raised)]"
                       }`}
                     >

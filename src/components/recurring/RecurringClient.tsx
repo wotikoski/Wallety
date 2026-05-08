@@ -77,7 +77,7 @@ function CommittedCard({ value }: { value: number }) {
   }, [tooltip]);
 
   return (
-    <div className="bg-white rounded-[14px] border border-app-border shadow-card p-3">
+    <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-3">
       <p className="text-[10px] font-bold text-app-muted uppercase tracking-[0.06em] mb-1.5 leading-tight">
         Comprometido<span className="hidden md:inline normal-case font-medium">/mês</span>
       </p>
@@ -213,8 +213,8 @@ export function RecurringClient() {
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Recorrências</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Receitas e despesas automáticas</p>
+          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Recorrências</h1>
+          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Receitas e despesas automáticas</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -237,7 +237,7 @@ export function RecurringClient() {
             { label: "Ativas", value: String(active.length), color: "text-app-text" },
             { label: "Pausadas", value: String(inactive.length), color: "text-app-muted" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-[14px] border border-app-border shadow-card p-3">
+            <div key={s.label} className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-3">
               <p className="text-[10px] font-bold text-app-muted uppercase tracking-[0.06em] mb-1.5 leading-tight">{s.label}</p>
               <p className={`text-[15px] font-bold font-mono leading-tight ${s.color}`}>{s.value}</p>
             </div>
@@ -245,7 +245,7 @@ export function RecurringClient() {
         </div>
       )}
 
-      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
+      <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
         {isLoading ? (
           <ListSkeleton rows={4} />
         ) : rows.length === 0 ? (
@@ -284,10 +284,10 @@ export function RecurringClient() {
                       </div>
                     }
                   >
-                    <div className={`px-4 py-3.5 flex items-center gap-3 bg-white transition ${!r.isActive ? "opacity-60" : ""}`}>
+                    <div className={`px-4 py-3.5 flex items-center gap-3 bg-[var(--surface-card)] hover:bg-[var(--surface-raised)] transition ${!r.isActive ? "opacity-60" : ""}`}>
                       <div
                         className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
-                        style={{ background: r.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                        style={{ background: r.type === "income" ? "rgba(59,130,246,.10)" : "rgba(100,116,139,.12)" }}
                       >
                         {r.type === "income"
                           ? <ArrowUpRight size={14} className="text-income" strokeWidth={2.5} />
@@ -340,7 +340,7 @@ export function RecurringClient() {
                         <div className="flex items-center gap-2.5">
                           <div
                             className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0"
-                            style={{ background: r.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                            style={{ background: r.type === "income" ? "rgba(59,130,246,.10)" : "rgba(100,116,139,.12)" }}
                           >
                             {r.type === "income"
                               ? <ArrowUpRight size={13} className="text-income" strokeWidth={2.5} />
@@ -544,13 +544,13 @@ function RecurringForm({
   return (
     <Portal>
     <div
-      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
       onClick={onClose}
     >
       <form
         onSubmit={submit}
         onClick={(e) => e.stopPropagation()}
-        className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
+        className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md p-6 space-y-4"
       >
         <h2 className="text-lg font-semibold text-app-text">
           {editing ? "Editar Recorrência" : "Nova Recorrência"}

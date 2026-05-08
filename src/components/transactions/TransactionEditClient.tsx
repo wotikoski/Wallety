@@ -22,7 +22,7 @@ export function TransactionEditClient({ id, onClose }: { id: string; onClose?: (
   // tiny div, leaving the backdrop exposed and causing accidental closes.
   if (isLoading) {
     return (
-      <div className="bg-white rounded-[14px] border border-app-border shadow-card p-6 min-h-[320px] flex items-center justify-center">
+      <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-6 min-h-[320px] flex items-center justify-center">
         <span className="text-app-muted text-sm">Carregando...</span>
       </div>
     );

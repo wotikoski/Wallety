@@ -79,9 +79,9 @@ export function ProfileClient() {
       </div>
 
       {/* Profile form */}
-      <div className="bg-white rounded-xl border border-app-border p-6 shadow-sm">
+      <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-6">
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-app-border">
-          <div className="w-16 h-16 rounded-[14px] bg-brand-100 flex items-center justify-center text-2xl font-bold text-brand-700">
+          <div className="w-16 h-16 rounded-[14px] bg-[rgba(59,130,246,.12)] flex items-center justify-center text-2xl font-bold text-[#2563eb]">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
           <div>
@@ -95,7 +95,7 @@ export function ProfileClient() {
             <label className="block text-sm font-medium text-app-text mb-1.5">Nome completo</label>
             <input
               {...register("name", { required: true })}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--color-border)] text-sm bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
             />
           </div>
           <div>
@@ -110,7 +110,7 @@ export function ProfileClient() {
           <button
             type="submit"
             disabled={updateMutation.isPending}
-            className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition disabled:opacity-50"
+            className="w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white font-medium py-2.5 px-4 rounded-lg text-sm transition disabled:opacity-50"
           >
             {updateMutation.isPending ? "Salvando..." : "Salvar alterações"}
           </button>
@@ -118,53 +118,53 @@ export function ProfileClient() {
       </div>
 
       {/* Legal */}
-      <div className="bg-amber-50 dark:bg-blue-50 rounded-[14px] border border-amber-200 dark:border-blue-200 shadow-card overflow-hidden">
-        <div className="px-6 py-3.5 border-b border-amber-200 dark:border-blue-200">
-          <h2 className="text-sm font-semibold text-amber-800 dark:text-blue-800">Legal</h2>
+      <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
+        <div className="px-6 py-3.5 border-b border-[var(--color-border)]">
+          <h2 className="text-sm font-semibold text-[var(--color-text)]">Legal</h2>
         </div>
-        <div className="divide-y divide-amber-200 dark:divide-blue-200">
+        <div className="divide-y divide-[var(--color-border)]">
           <Link
             href="/termos"
             target="_blank"
-            className="flex items-center gap-3 px-6 py-4 hover:bg-amber-100 dark:hover:bg-blue-100 transition group"
+            className="flex items-center gap-3 px-6 py-4 hover:bg-[var(--surface-raised)] transition group"
           >
-            <FileText size={16} className="text-amber-600 dark:text-blue-600 shrink-0" />
+            <FileText size={16} className="text-[var(--text-mute)] shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-amber-700 dark:text-blue-700">Termos de Uso</p>
-              <p className="text-xs text-amber-600 dark:text-blue-600">Última atualização: 21 de abril de 2026</p>
+              <p className="text-sm font-medium text-[var(--color-text)]">Termos de Uso</p>
+              <p className="text-xs text-[var(--text-mute)]">Última atualização: 21 de abril de 2026</p>
             </div>
-            <span className="text-xs text-amber-600 dark:text-blue-600">›</span>
+            <span className="text-xs text-[var(--text-mute)]">›</span>
           </Link>
           <Link
             href="/privacidade"
             target="_blank"
-            className="flex items-center gap-3 px-6 py-4 hover:bg-amber-100 dark:hover:bg-blue-100 transition group"
+            className="flex items-center gap-3 px-6 py-4 hover:bg-[var(--surface-raised)] transition group"
           >
-            <ShieldCheck size={16} className="text-amber-600 dark:text-blue-600 shrink-0" />
+            <ShieldCheck size={16} className="text-[var(--text-mute)] shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-amber-700 dark:text-blue-700">Política de Privacidade</p>
-              <p className="text-xs text-amber-600 dark:text-blue-600">Conforme a LGPD – Lei nº 13.709/2018</p>
+              <p className="text-sm font-medium text-[var(--color-text)]">Política de Privacidade</p>
+              <p className="text-xs text-[var(--text-mute)]">Conforme a LGPD – Lei nº 13.709/2018</p>
             </div>
-            <span className="text-xs text-amber-600 dark:text-blue-600">›</span>
+            <span className="text-xs text-[var(--text-mute)]">›</span>
           </Link>
         </div>
       </div>
 
       {/* Danger zone */}
-      <div className="bg-amber-50 dark:bg-blue-50 rounded-xl border border-amber-200 dark:border-blue-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-3.5 border-b border-amber-200 dark:border-blue-200">
-          <h2 className="text-sm font-semibold text-red-700">Zona de Perigo</h2>
+      <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
+        <div className="px-6 py-3.5 border-b border-[var(--color-border)]">
+          <h2 className="text-sm font-semibold text-red-600">Zona de Perigo</h2>
         </div>
         <div className="px-6 py-5 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-amber-700 dark:text-blue-700">Excluir minha conta</p>
-            <p className="text-xs text-amber-600 dark:text-blue-600 mt-0.5">
+            <p className="text-sm font-medium text-[var(--color-text)]">Excluir minha conta</p>
+            <p className="text-xs text-[var(--text-mute)] mt-0.5">
               Todos os seus dados serão removidos permanentemente. Esta ação não pode ser desfeita.
             </p>
           </div>
           <button
             onClick={() => { setConfirmEmail(""); setShowDeleteDialog(true); }}
-            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-amber-200 dark:border-blue-200 rounded-lg hover:bg-amber-100 dark:hover:bg-blue-100 transition"
+            className="shrink-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-[var(--color-border)] rounded-lg hover:bg-[rgba(220,38,38,.06)] transition"
           >
             <Trash2 size={14} />
             Excluir conta
@@ -176,11 +176,11 @@ export function ProfileClient() {
       {showDeleteDialog && (
         <Portal>
         <div
-          className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
           onClick={() => setShowDeleteDialog(false)}
         >
           <div
-            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
+            className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md p-6 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Icon + title */}

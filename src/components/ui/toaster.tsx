@@ -27,8 +27,8 @@ export function Toaster() {
           className={cn(
             "flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm font-medium min-w-[280px] max-w-sm animate-fade-in",
             toast.variant === "destructive"
-              ? "bg-expense text-white"
-              : "bg-slate-900 text-white",
+              ? "bg-[#dc2626] text-white"
+              : "bg-[#0d1117] border border-[var(--color-border)] text-[var(--color-text)]",
           )}
         >
           {toast.variant === "destructive"

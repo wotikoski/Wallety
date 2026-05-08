@@ -228,7 +228,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
   }, [paymentMethodId]);
 
   return (
-    <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="bg-white rounded-[14px] border border-app-border shadow-card p-6 space-y-5">
+    <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-6 space-y-5">
       {onClose && (
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-app-text">
@@ -411,7 +411,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
           </div>
         </div>
         {Number.isFinite(installmentTotal) && installmentTotal! > 1 && Number.isFinite(value) && (
-          <p className="text-xs text-brand-600">
+          <p className="text-xs text-[#3b82f6]">
             {installmentTotal}x de {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value! / installmentTotal!)}
           </p>
         )}

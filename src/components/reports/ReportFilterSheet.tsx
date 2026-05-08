@@ -64,15 +64,15 @@ export function ReportFilterSheet({
         onClick={openSheet}
         className={`md:hidden relative flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border transition ${
           hasActiveFilters
-            ? "border-brand-500 bg-brand-50 text-brand-600 font-medium"
-            : "border-app-border text-app-muted bg-[var(--surface-card)] hover:bg-[var(--surface-raised)]"
+            ? "border-[#3b82f6] bg-[rgba(59,130,246,.10)] text-[#3b82f6] font-medium"
+            : "border-[var(--color-border)] text-[var(--text-mute)] bg-[var(--surface-card)] hover:bg-[var(--surface-raised)]"
         }`}
         aria-label="Filtros"
       >
         <Filter size={15} />
         Filtros
         {hasActiveFilters && (
-          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-brand-600" />
+          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#3b82f6]" />
         )}
       </button>
 
@@ -80,7 +80,7 @@ export function ReportFilterSheet({
         {/* Backdrop */}
         {open && (
           <div
-            className="md:hidden fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm"
+            className="md:hidden fixed inset-0 z-40 bg-black/55 backdrop-blur-[6px]"
             onClick={() => setOpen(false)}
           />
         )}
@@ -138,7 +138,7 @@ export function ReportFilterSheet({
             <select
               value={draftGroupBy}
               onChange={(e) => setDraftGroupBy(e.target.value as "category" | "bank" | "paymentMethod" | "user")}
-              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-card)] text-app-text"
             >
               <option value="category">Categoria</option>
               <option value="paymentMethod">Forma de Pagamento</option>
@@ -173,7 +173,7 @@ export function ReportFilterSheet({
               type="date"
               value={draftStart}
               onChange={(e) => setDraftStart(e.target.value)}
-              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-card)] text-app-text"
             />
           </div>
 
@@ -184,7 +184,7 @@ export function ReportFilterSheet({
               type="date"
               value={draftEnd}
               onChange={(e) => setDraftEnd(e.target.value)}
-              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+              className="w-full h-[42px] text-sm border border-app-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-card)] text-app-text"
             />
           </div>
         </div>
@@ -204,7 +204,7 @@ export function ReportFilterSheet({
           </button>
           <button
             onClick={apply}
-            className="flex-1 h-[44px] text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition"
+            className="flex-1 h-[44px] text-sm font-medium text-white bg-[#3b82f6] hover:bg-[#2563eb] rounded-xl transition"
           >
             Aplicar
           </button>

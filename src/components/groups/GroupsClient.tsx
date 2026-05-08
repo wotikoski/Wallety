@@ -132,12 +132,12 @@ export function GroupsClient() {
       {showForm && (
         <Portal>
         <div
-          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
           onClick={() => { setShowForm(false); reset(); }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4"
+            className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md p-6 space-y-4"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold text-app-text">Criar Grupo</h2>
@@ -179,8 +179,8 @@ export function GroupsClient() {
         <div className="space-y-3">
           <p className="text-xs font-medium text-app-muted uppercase tracking-wider">Meus grupos</p>
           {groups.length === 0 ? (
-            <div className="bg-white rounded-[14px] border border-app-border p-8 text-center shadow-card">
-              <Users size={32} className="text-slate-300 mx-auto mb-2" />
+            <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-8 text-center">
+              <Users size={32} className="text-[var(--text-faint,#cbd5e1)] mx-auto mb-2" />
               <p className="text-[13px] text-app-muted">Nenhum grupo ainda</p>
             </div>
           ) : (
@@ -188,7 +188,7 @@ export function GroupsClient() {
               <button
                 key={g.id}
                 onClick={() => setSelectedGroup(g.id === selectedGroup ? null : g.id)}
-                className={`w-full text-left bg-white rounded-xl border p-4 shadow-sm transition ${g.id === selectedGroup ? "border-brand-500 ring-1 ring-brand-500" : "border-app-border hover:border-brand-500"}`}
+                className={`w-full text-left bg-[var(--surface-card)] rounded-[14px] border p-4 transition ${g.id === selectedGroup ? "border-[#3b82f6] ring-1 ring-[#3b82f6]" : "border-[var(--color-border)] hover:border-[#3b82f6]"}`}
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center shrink-0">
@@ -199,7 +199,7 @@ export function GroupsClient() {
                     <p className="text-[11px] text-app-muted capitalize">{g.role === "owner" ? "Dono" : g.role}</p>
                   </div>
                   {activeGroupId === g.id && (
-                    <span className="text-xs text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full font-medium">Ativo</span>
+                    <span className="text-xs text-[#3b82f6] bg-[rgba(59,130,246,.10)] px-2 py-0.5 rounded-full font-medium">Ativo</span>
                   )}
                 </div>
               </button>
@@ -210,7 +210,7 @@ export function GroupsClient() {
         {/* Group detail */}
         {selectedGroup && currentGroup && (
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
+            <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base font-semibold text-app-text">{currentGroup.name}</h2>
                 <div className="flex items-center gap-2">
@@ -254,7 +254,7 @@ export function GroupsClient() {
             </div>
 
             {/* Invite section */}
-            <div className="bg-white rounded-[14px] border border-app-border p-5 shadow-card">
+            <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-5">
               <h3 className="text-base font-semibold text-app-text mb-3">Convidar membro</h3>
               <div className="flex gap-2">
                 <input
@@ -276,7 +276,7 @@ export function GroupsClient() {
 
               {inviteUrl && (
                 <div className="mt-3 p-3 bg-[var(--surface-raised)] rounded-lg">
-                  <p className="text-xs text-slate-500 mb-1.5">Link de convite (válido por 7 dias):</p>
+                  <p className="text-xs text-[var(--text-mute)] mb-1.5">Link de convite (válido por 7 dias):</p>
                   <div className="flex items-center gap-2">
                     <code className="text-xs text-app-text flex-1 truncate">{inviteUrl}</code>
                     <button onClick={copyInviteUrl} className="p-1.5 text-app-muted hover:text-brand-600 transition">

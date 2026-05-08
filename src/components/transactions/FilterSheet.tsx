@@ -97,7 +97,7 @@ export function FilterSheet({
       {/* Backdrop */}
       {open && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm"
+          className="md:hidden fixed inset-0 z-40 bg-black/55 backdrop-blur-[6px]"
           onClick={() => setOpen(false)}
         />
       )}
@@ -186,7 +186,7 @@ export function FilterSheet({
                 type="button"
                 onClick={() => setDraftIsPaid("false")}
                 className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
-                  draftIsPaid === "false" ? "bg-amber-500 text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                  draftIsPaid === "false" ? "bg-[#d97706] text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
                 }`}
               >
                 <Circle size={14} /> Pendentes

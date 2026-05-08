@@ -44,7 +44,7 @@ export function Topbar() {
         </button>
 
         {showGroupMenu && (
-          <div className="absolute top-full left-0 mt-1.5 w-52 bg-[var(--surface-card)] border border-[var(--color-border)] rounded-[14px] shadow-card z-50 py-1.5 overflow-hidden">
+          <div className="absolute top-full left-0 mt-1.5 w-52 bg-[var(--surface-card)] border border-[var(--color-border)] rounded-[14px] z-50 py-1.5 overflow-hidden">
             <button
               onClick={() => { setActiveGroupId(null); setShowGroupMenu(false); }}
               className={`w-full text-left px-4 py-2.5 text-[13px] hover:bg-[var(--surface-raised)] transition ${!activeGroupId ? "text-brand-500 font-semibold" : "text-app-text font-medium"}`}

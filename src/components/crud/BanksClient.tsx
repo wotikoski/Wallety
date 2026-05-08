@@ -111,12 +111,12 @@ export function BanksClient() {
       {showForm && (
         <Portal>
         <div
-          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
           onClick={() => { setShowForm(false); setEditing(null); reset(); }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold text-app-text">{editing ? "Editar" : "Novo"} Banco</h2>
@@ -178,7 +178,7 @@ export function BanksClient() {
         </Portal>
       )}
 
-      <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
+      <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
         {isLoading ? <ListSkeleton rows={4} /> : (
         <div className="divide-y divide-[#f1f3f9]">
           {banks.length === 0 ? (

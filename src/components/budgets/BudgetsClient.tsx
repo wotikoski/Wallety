@@ -114,22 +114,22 @@ export function BudgetsClient() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Orçamentos</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Defina um teto mensal de gastos por categoria</p>
+          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Orçamentos</h1>
+          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Defina um teto mensal de gastos por categoria</p>
         </div>
         {/* Month nav */}
         <div className="flex items-center gap-2">
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-app-text focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
           >
             {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
           </select>
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-app-text focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
           >
             {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
@@ -137,7 +137,7 @@ export function BudgetsClient() {
       </div>
 
       {/* Hero summary card */}
-      <div className="bg-white rounded-[14px] border border-app-border shadow-card p-5">
+      <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-5">
         <div className="flex flex-wrap gap-6 items-center">
           <div className="flex-1 min-w-[200px]">
             <p className="text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] mb-2">Gasto total do mês</p>
@@ -182,7 +182,7 @@ export function BudgetsClient() {
       {isLoading ? (
         <ListSkeleton rows={4} />
       ) : rows.length === 0 ? (
-        <div className="bg-white rounded-[14px] border border-app-border shadow-card p-12 text-center text-app-muted text-sm">
+        <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-12 text-center text-app-muted text-sm">
           Nenhuma categoria de despesa cadastrada
         </div>
       ) : (
@@ -230,7 +230,7 @@ function BudgetRow({
   };
 
   return (
-    <div className="bg-white rounded-[14px] border border-app-border shadow-card p-4">
+    <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-4">
       {/* Top row */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2.5">

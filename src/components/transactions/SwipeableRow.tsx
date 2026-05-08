@@ -47,7 +47,7 @@ export function SwipeableRow({
 
       {/* Sliding content */}
       <div
-        className={`relative bg-white${snapping ? " transition-transform duration-200 ease-out" : ""}`}
+        className={`relative bg-[var(--surface-card)]${snapping ? " transition-transform duration-200 ease-out" : ""}`}
         style={{ transform: `translateX(${offset}px)` }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}

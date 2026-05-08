@@ -221,20 +221,20 @@ export function ReportsClient() {
           type="date"
           value={startDate}
           onChange={(e) => handleFilterChange(() => setStartDate(e.target.value))}
-          className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
+          className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-raised)] font-medium text-app-text"
         />
         <span className="text-app-muted text-sm">→</span>
         <input
           type="date"
           value={endDate}
           onChange={(e) => handleFilterChange(() => setEndDate(e.target.value))}
-          className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-app-text"
+          className="h-9 text-[13px] border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-raised)] font-medium text-app-text"
         />
         {/* Group by */}
         <select
           value={groupBy}
           onChange={(e) => handleFilterChange(() => setGroupBy(e.target.value as "category" | "bank" | "user"))}
-          className="h-9 text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white text-app-text"
+          className="h-9 text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-raised)] text-app-text"
         >
           <option value="category">Por Categoria</option>
           <option value="paymentMethod">Por Forma de Pagamento</option>
@@ -263,13 +263,13 @@ export function ReportsClient() {
         {/* Print header */}
         <div className="hidden print:block print-only mb-6">
           <h1 className="text-2xl font-bold">Wallety — Relatório de {reportType === "income" ? "Receitas" : "Despesas"}</h1>
-          <p className="text-sm text-slate-500">Período: {startDate} a {endDate} · Agrupado por: {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : groupBy === "paymentMethod" ? "Forma de Pagamento" : "Usuário"}</p>
+          <p className="text-sm text-[var(--text-mute)]">Período: {startDate} a {endDate} · Agrupado por: {groupBy === "category" ? "Categoria" : groupBy === "bank" ? "Banco" : groupBy === "paymentMethod" ? "Forma de Pagamento" : "Usuário"}</p>
         </div>
 
         {isLoading ? (
           <div className="text-center text-app-muted py-12 text-sm">Carregando relatório...</div>
         ) : items.length === 0 ? (
-          <div className="bg-white rounded-[14px] border border-app-border p-12 text-center shadow-card">
+          <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-12 text-center">
             <div className="text-4xl mb-3">📊</div>
             <p className="text-app-muted text-sm">Nenhum dado encontrado para o período selecionado</p>
           </div>
@@ -306,7 +306,7 @@ export function ReportsClient() {
               const fixedPct = total > 0 ? (fixed    / total) * 100 : 0;
               const varPct   = total > 0 ? (variable / total) * 100 : 0;
               return (
-                <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border shadow-card p-5 space-y-4">
+                <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-5 space-y-4">
                   <h2 className="text-[14px] font-bold text-app-text">Fixos vs Variáveis</h2>
 
                   {/* Split bar */}
@@ -339,7 +339,7 @@ export function ReportsClient() {
             })()}
 
             {/* Bar chart card */}
-            <div className="bg-[var(--surface-card)] rounded-[14px] border border-app-border shadow-card overflow-hidden">
+            <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
               <div className="p-5">
                 <div className="flex items-center justify-between mb-1">
                   <h2 className="text-[14px] font-bold text-app-text">

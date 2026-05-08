@@ -151,12 +151,12 @@ export function CategoriesClient() {
       {showForm && (
         <Portal>
         <div
-          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
           onClick={() => { setShowForm(false); setEditing(null); reset(); }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-[var(--surface-card)] rounded-[14px] shadow-card w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold text-app-text">{editing ? "Editar" : "Nova"} Categoria</h2>
@@ -241,10 +241,10 @@ export function CategoriesClient() {
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
+          <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
             <ListSkeleton rows={4} />
           </div>
-          <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
+          <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
             <ListSkeleton rows={4} />
           </div>
         </div>
@@ -282,7 +282,7 @@ function CategoryGroup({
   color: "income" | "expense";
 }) {
   return (
-    <div className="bg-white rounded-[14px] border border-app-border shadow-card overflow-hidden">
+    <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
       <div
         className="px-6 py-3.5 border-b border-app-border"
         style={{ background: color === "income" ? "rgba(16,185,129,.1)" : "rgba(248,113,113,.1)" }}

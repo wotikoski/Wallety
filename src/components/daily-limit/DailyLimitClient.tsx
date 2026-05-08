@@ -42,14 +42,14 @@ export function DailyLimitClient() {
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
           >
             {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
           </select>
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-white text-app-text focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
           >
             {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
@@ -62,7 +62,7 @@ export function DailyLimitClient() {
         <>
           {/* Hero card */}
           <div
-            className={`rounded-[14px] p-5 text-white ${isOverBudget ? "bg-red-400 dark:bg-red-700" : "bg-indigo-500 dark:bg-indigo-700"}`}
+            className={`rounded-[14px] p-5 text-white ${isOverBudget ? "bg-red-500" : "bg-[#3b82f6]"}`}
           >
             <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-white/80 mb-1.5">
               {isOverBudget ? "Saldo insuficiente" : "Limite diário"}
@@ -83,17 +83,17 @@ export function DailyLimitClient() {
 
           {/* Next month alert */}
           {hasReserve && (
-            <div className="bg-amber-50 dark:bg-blue-50 border border-amber-200 dark:border-blue-200 rounded-[14px] p-4">
+            <div className="bg-[var(--surface-card)] border border-[var(--color-border)] rounded-[14px] p-4">
               <div className="flex gap-3">
-                <CalendarClock size={16} className="text-amber-600 dark:text-blue-600 shrink-0 mt-0.5" />
+                <CalendarClock size={16} className="text-[#3b82f6] shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[13px] font-semibold text-amber-800 dark:text-blue-800">
+                  <p className="text-[13px] font-semibold text-[var(--color-text)]">
                     Déficit previsto em {nextMonthName}: {formatCurrency(data?.nextMonthDeficit ?? 0)}
                   </p>
-                  <p className="text-[12px] text-amber-700 dark:text-blue-700 mt-0.5">
+                  <p className="text-[12px] text-[var(--text-mute)] mt-0.5">
                     Receitas lançadas: {formatCurrency(data?.nextMonthIncome ?? 0)} · Despesas lançadas: {formatCurrency(data?.nextMonthExpenses ?? 0)}
                   </p>
-                  <p className="text-[12px] text-amber-600 dark:text-blue-600 mt-1">
+                  <p className="text-[12px] text-[var(--text-mute)] mt-1">
                     Este valor já está sendo reservado do seu limite atual.
                   </p>
                 </div>
@@ -110,7 +110,7 @@ export function DailyLimitClient() {
           </div>
 
           {/* Breakdown */}
-          <div className="bg-white rounded-[14px] border border-app-border shadow-card p-5">
+          <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-5">
             <div className="flex items-center gap-2 mb-4">
               <Info size={14} className="text-app-muted" />
               <h3 className="text-[13px] font-semibold text-app-text">Como é calculado</h3>
@@ -130,7 +130,7 @@ export function DailyLimitClient() {
                 <span>= Disponível para gastar</span>
                 <span className="font-mono">{formatCurrency(data?.adjustedAvailable ?? 0)}</span>
               </div>
-              <div className="flex justify-between pt-1 font-semibold text-brand-500">
+              <div className="flex justify-between pt-1 font-semibold text-[#3b82f6]">
                 <span>÷ {data?.daysRemaining ?? 0} dias restantes</span>
                 <span className="font-mono">{formatCurrency(adjustedDailyLimit)} / dia</span>
               </div>
@@ -138,9 +138,9 @@ export function DailyLimitClient() {
           </div>
 
           {(data?.actualIncome ?? 0) === 0 && (
-            <div className="bg-amber-50 dark:bg-blue-50 border border-amber-200 dark:border-blue-200 rounded-[14px] p-4 text-[13px] text-amber-700 dark:text-blue-700">
+            <div className="bg-[var(--surface-card)] border border-[var(--color-border)] rounded-[14px] p-4 text-[13px] text-[var(--text-mute)]">
               Nenhuma receita lançada para {MONTHS[month - 1]} de {year}. Adicione receitas em{" "}
-              <strong className="text-amber-800 dark:text-blue-800">Lançamentos</strong> para calcular seu limite diário.
+              <strong className="text-[var(--color-text)]">Lançamentos</strong> para calcular seu limite diário.
             </div>
           )}
         </>
@@ -168,7 +168,7 @@ function StatCard({ label, value, color }: { label: string; value: number; color
     neutral: "text-app-muted",
   };
   return (
-    <div className="bg-white rounded-[14px] border border-app-border shadow-card p-4">
+    <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-4">
       <p className="text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] mb-1.5">{label}</p>
       <p className={`text-[16px] font-bold font-mono ${colors[color]}`}>
         {formatCurrency(value)}
