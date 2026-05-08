@@ -6,25 +6,20 @@ import { formatCurrency } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
 import { useEffect, useId, useState } from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import {
-  TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight,
-  AlertTriangle, PiggyBank, ChevronRight, CheckCircle2,
-  Eye, EyeOff, Sparkles,
+  TrendingUp, TrendingDown, AlertTriangle, PiggyBank,
+  ChevronRight, CheckCircle2, Eye, EyeOff, ArrowUpRight, ArrowDownRight,
 } from "lucide-react";
 import Link from "next/link";
-import {
-  differenceInCalendarDays, differenceInCalendarMonths, parseISO,
-} from "date-fns";
+import { differenceInCalendarDays, differenceInCalendarMonths, parseISO } from "date-fns";
 
-/* ── Types ────────────────────────────────────────────────────────────── */
+/* ─── Types ─────────────────────────────────────────────────────────── */
 interface GoalItem {
   id: string; name: string; targetAmount: string; targetDate: string;
   savedAmount: string; color: string; emoji: string;
 }
-
 interface DashboardData {
   totalIncome: number; totalExpenses: number;
   paidExpenses: number; pendingExpenses: number;
@@ -33,32 +28,37 @@ interface DashboardData {
   expensesByCategory: { name: string; total: number; color: string }[];
   monthlyTrend: { month: string; income: number; expenses: number }[];
   recentTransactions: {
-    id: string; date: string; description: string;
-    type: string; value: string; isPaid: boolean;
-    categoryName: string | null; categoryColor: string | null;
+    id: string; date: string; description: string; type: string;
+    value: string; isPaid: boolean; categoryName: string | null; categoryColor: string | null;
   }[];
 }
 
-/* ── Handoff palette constants ───────────────────────────────────────── */
-const ACCENT   = "#3b82f6";
-const ACCENT_S = "#60a5fa";  // soft
-const MONO_BLUE = ["#3b82f6", "#2563eb", "#60a5fa", "#1e3a8a", "#243042", "#334155"];
+/* ─── Palette ────────────────────────────────────────────────────────── */
+const A   = "#3b82f6"; // accent hue
+const AS  = "#60a5fa"; // accent soft
+const AD  = "#2563eb"; // accent deep
+const AT  = "#1e3a8a"; // accent tint
+const BS  = "#243042"; // borderStrong
+const EB  = "#334155"; // expenseBar dark
+const EB_L = "#cbd5d0"; // expenseBar light
+// Monochromatic blue palette for donut / breakdown
+const SHADES = [A, AD, AS, AT, BS, EB];
 
 const MONTHS = [
-  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro",
 ];
 
-/* ── Helpers ─────────────────────────────────────────────────────────── */
-function formatCurrencyShort(value: number): string {
-  const abs = Math.abs(value);
-  const sign = value < 0 ? "-" : "";
-  if (abs >= 1_000_000) return `${sign}R$ ${(abs / 1_000_000).toFixed(1).replace(".", ",")}M`;
-  if (abs >= 1_000)     return `${sign}R$ ${(abs / 1_000).toFixed(1).replace(".", ",")}k`;
-  return formatCurrency(value);
+/* ─── Helpers ────────────────────────────────────────────────────────── */
+function fmtShort(v: number): string {
+  const abs = Math.abs(v);
+  const s = v < 0 ? "-" : "";
+  if (abs >= 1_000_000) return `${s}R$ ${(abs / 1e6).toFixed(1).replace(".", ",")}M`;
+  if (abs >= 1_000)     return `${s}R$ ${(abs / 1e3).toFixed(1).replace(".", ",")}k`;
+  return formatCurrency(v);
 }
 
-/* ── Chart theme (reads dark/light from <html> class) ───────────────── */
+/* ─── Chart theme ────────────────────────────────────────────────────── */
 function useChartTheme() {
   const [isDark, setIsDark] = useState(false);
   useEffect(() => {
@@ -71,183 +71,160 @@ function useChartTheme() {
   }, []);
   return {
     isDark,
-    grid:          isDark ? "#1a212c" : "#e8ece9",
-    axis:          isDark ? "#64748b" : "#64748b",
-    tooltipBg:     isDark ? "#0d1117" : "#ffffff",
-    tooltipBorder: isDark ? "#243042" : "#e6e8e3",
-    tooltipText:   isDark ? "#e6e9ef" : "#0a0c10",
-    tooltipMuted:  isDark ? "#64748b" : "#64748b",
-    incomeBar:      ACCENT,
-    expenseBar:    isDark ? "#334155" : "#cbd5d0",
+    grid:         isDark ? "#1a212c" : "#e6e8e3",
+    axis:         isDark ? "#64748b" : "#64748b",
+    tooltipBg:    isDark ? "#0d1117" : "#ffffff",
+    tooltipBorder:isDark ? "#243042" : "#e6e8e3",
+    tooltipText:  isDark ? "#e6e9ef" : "#0a0c10",
+    tooltipMuted: isDark ? "#64748b" : "#64748b",
+    expBar:       isDark ? EB : EB_L,
   };
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   Sub-components
+   Sub-components (matching handoff proportions exactly)
    ══════════════════════════════════════════════════════════════════════ */
 
 /* ── SparklineSVG ─────────────────────────────────────────────────────── */
-function SparklineSVG({
-  data, color, width = 180, height = 44,
-}: { data: number[]; color: string; width?: number; height?: number }) {
+function SparklineSVG({ data, color, width = 180, height = 44 }: {
+  data: number[]; color: string; width?: number; height?: number;
+}) {
   const id = useId().replace(/:/g, "");
   if (data.length < 2) return null;
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
-  const pts = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * width;
-    const y = height - 4 - ((v - min) / range) * (height - 8);
-    return [x, y] as [number, number];
-  });
-  const line = pts.map((p, i) =>
-    (i === 0 ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1)
-  ).join(" ");
-  const area = line + ` L ${width},${height} L 0,${height} Z`;
+  const max = Math.max(...data), min = Math.min(...data), range = max - min || 1;
+  const pts = data.map((v, i): [number, number] => [
+    (i / (data.length - 1)) * width,
+    height - 4 - ((v - min) / range) * (height - 8),
+  ]);
+  const line = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");
+  const area = `${line} L${width},${height} L0,${height} Z`;
   const last = pts[pts.length - 1];
   return (
     <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height} style={{ display: "block" }}>
       <defs>
-        <linearGradient id={`sg-${id}`} x1="0" x2="0" y1="0" y2="1">
+        <linearGradient id={`sg${id}`} x1="0" x2="0" y1="0" y2="1">
           <stop offset="0" stopColor={color} stopOpacity="0.28" />
           <stop offset="1" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill={`url(#sg-${id})`} />
+      <path d={area} fill={`url(#sg${id})`} />
       <path d={line} stroke={color} strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx={last[0]} cy={last[1]} r="3" fill={color} />
     </svg>
   );
 }
 
-/* ── InsightStrip ─────────────────────────────────────────────────────── */
-function InsightStrip({
-  savingsRate, totalIncome, totalExpenses, hideBalance,
-}: {
-  savingsRate: number | null; totalIncome: number; totalExpenses: number; hideBalance: boolean;
+/* ── InsightStrip — matches handoff exactly ───────────────────────────── */
+function InsightStrip({ savingsRate, totalIncome, totalExpenses }: {
+  savingsRate: number | null; totalIncome: number; totalExpenses: number;
 }) {
-  let msg = "";
-  let emoji = "✨";
-  if (hideBalance) {
-    msg = "Saldo oculto. Clique no olho para exibir.";
-    emoji = "👁";
-  } else if (savingsRate === null) {
-    msg = "Adicione receitas e despesas para ver seus insights do mês.";
-    emoji = "💡";
-  } else if (savingsRate >= 30) {
-    msg = `Excelente! Você está poupando ${savingsRate}% da renda — bem acima da meta de 20%.`;
-    emoji = "🏆";
-  } else if (savingsRate >= 20) {
-    msg = `Ótimo ritmo! Taxa de poupança de ${savingsRate}% — meta de 20% atingida.`;
-    emoji = "🎉";
-  } else if (savingsRate >= 0) {
-    const diff = formatCurrencyShort(totalIncome * 0.2 - (totalIncome - totalExpenses));
-    msg = `Poupança em ${savingsRate}%. Corte ${diff} em despesas para atingir 20%.`;
-    emoji = "📊";
-  } else {
-    msg = "Despesas acima da renda esse mês. Revise os gastos para volcar ao azul.";
-    emoji = "⚠️";
+  let msg = "Adicione receitas e despesas para ver seus insights do mês.";
+  if (savingsRate !== null) {
+    if (savingsRate >= 30) msg = `Excelente! Você poupou ${savingsRate}% da renda — bem acima da meta de 20%.`;
+    else if (savingsRate >= 20) msg = `Ótimo ritmo! Taxa de poupança de ${savingsRate}% — meta de 20% atingida.`;
+    else if (savingsRate >= 0) {
+      const diff = fmtShort(totalIncome * 0.2 - (totalIncome - totalExpenses));
+      msg = `Poupança em ${savingsRate}%. Corte ${diff} em despesas para atingir 20%.`;
+    } else {
+      msg = "Despesas acima da renda esse mês. Revise os gastos para voltar ao azul.";
+    }
   }
   return (
-    <div
-      className="flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[12px] font-medium"
-      style={{
-        background: `linear-gradient(90deg, rgba(59,130,246,0.13) 0%, rgba(37,99,235,0.07) 100%)`,
-        border: "1px solid rgba(59,130,246,0.18)",
-        color: "var(--text-dim)",
-      }}
-    >
-      <span className="text-[15px] leading-none shrink-0">{emoji}</span>
-      <Sparkles size={13} style={{ color: ACCENT, flexShrink: 0 }} />
-      <span style={{ color: "var(--text-dim)" }}>{msg}</span>
+    <div style={{
+      background: `linear-gradient(90deg, ${A}14, transparent)`,
+      border: `1px solid ${A}33`,
+      borderRadius: 12, padding: "11px 16px",
+      display: "flex", alignItems: "center", gap: 12,
+    }}>
+      {/* Icon box — matches handoff 26×26 */}
+      <div style={{
+        width: 26, height: 26, borderRadius: 8,
+        background: `${A}22`, color: A,
+        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+      }}>
+        {/* Sparkle SVG inline */}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={A} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3l1.5 5L19 9.5 13.5 11 12 16l-1.5-5L5 9.5 10.5 8z" />
+        </svg>
+      </div>
+      <div style={{ fontSize: 12.5, color: "var(--color-text)", lineHeight: 1.4 }}>
+        <span style={{ fontWeight: 600 }}>Insight do mês · </span>
+        <span style={{ color: "var(--text-dim)" }}>{msg}</span>
+      </div>
     </div>
   );
 }
 
 /* ── HeroBalance ──────────────────────────────────────────────────────── */
-function HeroBalance({
-  balance, monthlyTrend, hideBalance,
-}: {
-  balance: number; monthlyTrend: { month: string; income: number; expenses: number }[]; hideBalance: boolean;
+function HeroBalance({ balance, monthlyTrend, hideBalance }: {
+  balance: number;
+  monthlyTrend: { month: string; income: number; expenses: number }[];
+  hideBalance: boolean;
 }) {
-  // sparkline: net (income - expenses) per month
   const sparkData = monthlyTrend.map((m) => m.income - m.expenses);
 
-  // delta vs previous month
   let deltaLabel: string | null = null;
-  let deltaPositive = true;
+  let deltaPos = true;
   if (monthlyTrend.length >= 2) {
     const curr = monthlyTrend[monthlyTrend.length - 1];
     const prev = monthlyTrend[monthlyTrend.length - 2];
-    const currNet = curr.income - curr.expenses;
-    const prevNet = prev.income - prev.expenses;
-    if (prevNet !== 0) {
-      const pct = ((currNet - prevNet) / Math.abs(prevNet)) * 100;
-      deltaPositive = pct >= 0;
-      deltaLabel = `${deltaPositive ? "↑" : "↓"} ${Math.abs(pct).toFixed(1).replace(".", ",")}%`;
+    const cn = curr.income - curr.expenses, pn = prev.income - prev.expenses;
+    if (pn !== 0) {
+      const pct = ((cn - pn) / Math.abs(pn)) * 100;
+      deltaPos = pct >= 0;
+      deltaLabel = `${deltaPos ? "↑" : "↓"} ${Math.abs(pct).toFixed(1).replace(".", ",")}%`;
     }
   }
 
-  const wholeStr = Math.floor(Math.abs(balance)).toLocaleString("pt-BR");
-  const centsStr = balance.toFixed(2).split(".")[1];
   const isNeg = balance < 0;
+  const whole = Math.floor(Math.abs(balance)).toLocaleString("pt-BR");
+  const cents = balance.toFixed(2).split(".")[1];
 
   return (
-    <div
-      className="relative overflow-hidden flex flex-col justify-between"
-      style={{
-        background: "var(--surface-card)",
-        border: "1px solid var(--color-border)",
-        borderRadius: 14,
-        padding: "28px 30px",
-        minHeight: 196,
-        height: "100%",
-      }}
-    >
-      {/* Label row */}
+    <div style={{
+      background: "var(--surface-card)",
+      border: "1px solid var(--color-border)",
+      borderRadius: 14, padding: "28px 30px",
+      position: "relative", overflow: "hidden",
+      display: "flex", flexDirection: "column", justifyContent: "space-between",
+      minHeight: 200, height: "100%",
+    }}>
       <div>
-        <div
-          className="flex items-center gap-2"
-          style={{ fontSize: 11, color: "var(--text-mute)", letterSpacing: 1.2, textTransform: "uppercase", fontWeight: 700 }}
-        >
+        {/* Label + chip */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8,
+          fontSize: 11, color: "var(--text-mute)",
+          letterSpacing: 1.2, textTransform: "uppercase", fontWeight: 700,
+        }}>
           Saldo total
-          <span
-            style={{
-              fontSize: 9, padding: "2px 7px", borderRadius: 4,
-              background: `${ACCENT}22`, color: ACCENT,
-              fontWeight: 700, letterSpacing: 0.5,
-            }}
-          >
-            ATUAL
-          </span>
+          <span style={{
+            fontSize: 9, padding: "2px 7px", borderRadius: 4,
+            background: `${A}22`, color: A, fontWeight: 700, letterSpacing: 0.5,
+          }}>ATUAL</span>
         </div>
 
         {/* Big number */}
-        <div
-          className="mt-2.5 leading-none"
-          style={{
-            fontVariantNumeric: "tabular-nums",
-            letterSpacing: "-0.035em",
-            fontWeight: 600,
-            color: "var(--color-text)",
-          }}
-        >
+        <div style={{
+          marginTop: 10, lineHeight: 1,
+          fontVariantNumeric: "tabular-nums",
+          letterSpacing: "-0.035em", fontWeight: 600,
+        }}>
           {hideBalance ? (
             <span style={{ fontSize: 48, color: "var(--text-faint)" }}>R$ ••••••</span>
           ) : (
             <>
-              <span style={{ fontSize: 56 }}>
-                {isNeg ? "−" : ""}R$&nbsp;{wholeStr}
+              <span style={{ fontSize: 64, color: "var(--color-text)" }}>
+                {isNeg ? "−" : ""}R$&nbsp;{whole}
               </span>
-              <span style={{ fontSize: 28, color: "var(--text-faint)" }}>,{centsStr}</span>
+              <span style={{ fontSize: 32, color: "var(--text-faint)" }}>,{cents}</span>
             </>
           )}
         </div>
 
         {/* Delta */}
         {deltaLabel && !hideBalance && (
-          <div className="flex items-center gap-2 mt-3">
-            <span style={{ fontSize: 12, color: deltaPositive ? ACCENT : "#f87171", fontWeight: 600 }}>
+          <div style={{ display: "flex", gap: 14, marginTop: 14, alignItems: "center" }}>
+            <span style={{ fontSize: 12, color: deltaPos ? A : "#f87171", fontWeight: 600 }}>
               {deltaLabel}
             </span>
             <span style={{ fontSize: 12, color: "var(--text-mute)" }}>vs. mês anterior</span>
@@ -255,70 +232,60 @@ function HeroBalance({
         )}
       </div>
 
-      {/* Sparkline — bottom-right */}
+      {/* Sparkline bottom-right */}
       {sparkData.length >= 2 && (
-        <div style={{ position: "absolute", right: 22, bottom: 16, opacity: 0.85 }}>
-          <SparklineSVG data={sparkData} color={ACCENT} width={180} height={44} />
+        <div style={{ position: "absolute", right: 24, bottom: 18, opacity: 0.85 }}>
+          <SparklineSVG data={sparkData} color={A} width={200} height={56} />
         </div>
       )}
     </div>
   );
 }
 
-/* ── KpiCard ──────────────────────────────────────────────────────────── */
-function KpiCard({
-  label, value, hint, hintColor, hideBalance, icon,
-}: {
+/* ── KpiCard — matches handoff (22px padding, 26px value) ─────────────── */
+function KpiCard({ label, value, hint, hintColor, hideBalance, icon }: {
   label: string; value: number; hint: string;
-  hintColor?: string; hideBalance: boolean;
-  icon: React.ReactNode;
+  hintColor?: string; hideBalance: boolean; icon: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        background: "var(--surface-card)",
-        border: "1px solid var(--color-border)",
-        borderRadius: 14,
-        padding: 22,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        gap: 6,
-      }}
-    >
-      <div className="flex items-center justify-between">
-        <span style={{ fontSize: 11, color: "var(--text-mute)", letterSpacing: 1.2, textTransform: "uppercase", fontWeight: 700 }}>
-          {label}
-        </span>
-        <span style={{ color: "var(--text-faint)", opacity: 0.7 }}>{icon}</span>
+    <div style={{
+      background: "var(--surface-card)",
+      border: "1px solid var(--color-border)",
+      borderRadius: 14, padding: 22,
+    }}>
+      <div style={{
+        fontSize: 11, color: "var(--text-mute)",
+        letterSpacing: 1.2, textTransform: "uppercase", fontWeight: 700,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+      }}>
+        {label}
+        <span style={{ color: "var(--text-faint)", opacity: 0.6 }}>{icon}</span>
       </div>
-      <div
-        style={{
-          fontSize: 26, fontWeight: 600, letterSpacing: "-0.025em",
-          fontVariantNumeric: "tabular-nums", color: "var(--color-text)",
-          lineHeight: 1.1,
-        }}
-      >
-        {hideBalance ? "••••" : formatCurrencyShort(value)}
+      <div style={{
+        fontSize: 26, fontWeight: 600, marginTop: 8,
+        letterSpacing: "-0.025em", fontVariantNumeric: "tabular-nums",
+        color: "var(--color-text)", lineHeight: 1.1,
+      }}>
+        {hideBalance ? "••••" : fmtShort(value)}
       </div>
-      <div style={{ fontSize: 11, color: hintColor ?? "var(--text-mute)" }}>{hint}</div>
+      <div style={{ fontSize: 11, color: hintColor ?? "var(--text-mute)", marginTop: 10 }}>
+        {hint}
+      </div>
     </div>
   );
 }
 
-/* ── Bar tooltip ──────────────────────────────────────────────────────── */
+/* ── Bar chart tooltip ───────────────────────────────────────────────── */
 function BarTooltip({ active, payload, label, theme }: {
-  active?: boolean;
-  payload?: { name: string; value: number; fill: string }[];
-  label?: string;
-  theme: ReturnType<typeof useChartTheme>;
+  active?: boolean; payload?: { name: string; value: number; fill: string }[];
+  label?: string; theme: ReturnType<typeof useChartTheme>;
 }) {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
       background: theme.tooltipBg, border: `1px solid ${theme.tooltipBorder}`,
-      borderRadius: 12, padding: "10px 14px",
-      boxShadow: "0 8px 32px rgba(0,0,0,0.18)", minWidth: 160,
+      borderRadius: 10, padding: "10px 14px",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.18)", minWidth: 150,
     }}>
       <p style={{ color: theme.tooltipMuted, fontWeight: 700, marginBottom: 8, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em" }}>
         {label}
@@ -336,26 +303,72 @@ function BarTooltip({ active, payload, label, theme }: {
   );
 }
 
-/* ── Pie tooltip ──────────────────────────────────────────────────────── */
-function PieTooltip({ active, payload, theme }: {
-  active?: boolean;
-  payload?: { name: string; value: number; payload: { fill: string } }[];
-  theme: ReturnType<typeof useChartTheme>;
+/* ── CategoryBreakdown — CSS conic-gradient (matches handoff) ────────── */
+function CategoryBreakdown({ cats, catTotal, hideBalance }: {
+  cats: { name: string; total: number }[];
+  catTotal: number;
+  hideBalance: boolean;
 }) {
-  if (!active || !payload?.length) return null;
-  const { name, value, payload: { fill } } = payload[0];
+  // Build conic-gradient stops
+  let acc = 0;
+  const stops = cats.slice(0, 6).map((c, i) => {
+    const start = acc;
+    acc += catTotal > 0 ? (c.total / catTotal) * 100 : 0;
+    return `${SHADES[i % SHADES.length]} ${start.toFixed(2)}% ${acc.toFixed(2)}%`;
+  }).join(", ");
+
+  const top = cats.slice(0, 5);
+  const sum = catTotal;
+
   return (
-    <div style={{
-      background: theme.tooltipBg, border: `1px solid ${theme.tooltipBorder}`,
-      borderRadius: 10, padding: "8px 12px",
-      boxShadow: "0 8px 32px rgba(0,0,0,0.18)", fontSize: 12,
-      display: "flex", alignItems: "center", gap: 8,
-    }}>
-      <div style={{ width: 8, height: 8, borderRadius: "50%", background: fill, flexShrink: 0 }} />
-      <span style={{ color: theme.tooltipMuted }}>{name}:</span>
-      <span style={{ color: theme.tooltipText, fontWeight: 700, fontFamily: "monospace" }}>
-        {formatCurrency(value)}
-      </span>
+    <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
+      {/* Donut — CSS conic-gradient, matches handoff 130×130 */}
+      <div style={{
+        width: 130, height: 130, borderRadius: "50%", flexShrink: 0,
+        background: cats.length > 0 ? `conic-gradient(${stops})` : "var(--surface-raised)",
+        position: "relative",
+      }}>
+        {/* Hole */}
+        <div style={{
+          position: "absolute", inset: 18, borderRadius: "50%",
+          background: "var(--surface-card)",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        }}>
+          <div style={{ fontSize: 9, color: "var(--text-mute)", fontWeight: 700, letterSpacing: 1 }}>
+            GASTO
+          </div>
+          <div style={{
+            fontSize: 14, fontWeight: 600, color: "var(--color-text)",
+            fontVariantNumeric: "tabular-nums", marginTop: 2,
+          }}>
+            {hideBalance ? "•••" : fmtShort(catTotal)}
+          </div>
+        </div>
+      </div>
+
+      {/* Legend list — gap 9px, progress bars 2px */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 9 }}>
+        {top.map((c, i) => {
+          const pct = sum > 0 ? Math.round((c.total / sum) * 100) : 0;
+          const shade = SHADES[i % SHADES.length];
+          return (
+            <div key={c.name}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: shade, flexShrink: 0 }} />
+                <span style={{ fontSize: 12, color: "var(--color-text)", flex: 1 }}>{c.name}</span>
+                <span style={{
+                  fontSize: 11, color: "var(--text-mute)",
+                  fontVariantNumeric: "tabular-nums", fontWeight: 600,
+                }}>{pct}%</span>
+              </div>
+              {/* 2px height bar, matches handoff */}
+              <div style={{ height: 2, background: "var(--color-border)", borderRadius: 1, overflow: "hidden" }}>
+                <div style={{ width: `${pct}%`, height: "100%", background: shade, transition: "width 0.4s" }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -372,38 +385,31 @@ export function DashboardClient() {
   const [hideBalance, setHideBalance] = useState(false);
   const chartTheme = useChartTheme();
 
-  // Load hideBalance from localStorage
   useEffect(() => {
-    try {
-      if (localStorage.getItem("wallety_hide_balance") === "true") setHideBalance(true);
-    } catch {}
+    try { if (localStorage.getItem("wallety_hide_balance") === "true") setHideBalance(true); } catch {}
   }, []);
 
-  const toggleHide = () => {
-    setHideBalance((v) => {
-      const next = !v;
-      try { localStorage.setItem("wallety_hide_balance", String(next)); } catch {}
-      return next;
-    });
-  };
+  const toggleHide = () => setHideBalance((v) => {
+    const next = !v;
+    try { localStorage.setItem("wallety_hide_balance", String(next)); } catch {}
+    return next;
+  });
 
-  // Lazy-materialize recurring transactions on dashboard load
+  // Materialize recurring
   useEffect(() => {
     if (typeof window === "undefined") return;
     const key = "recurring_materialized_at";
     const last = sessionStorage.getItem(key);
-    const ONE_HOUR = 60 * 60 * 1000;
-    if (last && Date.now() - parseInt(last) < ONE_HOUR) return;
+    if (last && Date.now() - parseInt(last) < 3_600_000) return;
     sessionStorage.setItem(key, String(Date.now()));
     fetch("/api/recurring/materialize", { method: "POST" })
       .then((r) => (r.ok ? r.json() : null))
       .then((res) => {
-        if (res && res.created > 0) {
+        if (res?.created > 0) {
           queryClient.invalidateQueries({ queryKey: ["dashboard"] });
           queryClient.invalidateQueries({ queryKey: ["transactions"] });
         }
-      })
-      .catch(() => {});
+      }).catch(() => {});
   }, [queryClient]);
 
   const params = new URLSearchParams({ month: String(month), year: String(year) });
@@ -417,7 +423,6 @@ export function DashboardClient() {
     }),
   });
 
-  // Projected recurring
   const monthStart  = `${year}-${String(month).padStart(2, "0")}-01`;
   const monthEndDate = new Date(year, month, 0);
   const monthEndStr = `${year}-${String(month).padStart(2, "0")}-${String(monthEndDate.getDate()).padStart(2, "0")}`;
@@ -446,19 +451,19 @@ export function DashboardClient() {
   });
 
   const projected = projData?.projected ?? [];
-  const inCurrentMonth = (p: { date: string; effectiveDate: string | null }) => {
-    const bucket = p.effectiveDate ?? p.date;
-    return bucket >= monthStart && bucket <= monthEndStr;
+  const inCurrent = (p: { date: string; effectiveDate: string | null }) => {
+    const b = p.effectiveDate ?? p.date;
+    return b >= monthStart && b <= monthEndStr;
   };
-  const projectedIncome   = projected.filter((p) => p.type === "income"  && inCurrentMonth(p)).reduce((a, p) => a + parseFloat(p.value), 0);
-  const projectedExpenses = projected.filter((p) => p.type === "expense" && inCurrentMonth(p)).reduce((a, p) => a + parseFloat(p.value), 0);
+  const projIncome   = projected.filter((p) => p.type === "income"  && inCurrent(p)).reduce((a, p) => a + parseFloat(p.value), 0);
+  const projExpenses = projected.filter((p) => p.type === "expense" && inCurrent(p)).reduce((a, p) => a + parseFloat(p.value), 0);
 
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-4">
         <div className="h-8 rounded w-48" style={{ background: "var(--surface-raised)" }} />
-        <div className="grid grid-cols-3 gap-3">
-          {[1, 2, 3].map((i) => <div key={i} className="h-28 rounded-xl" style={{ background: "var(--surface-raised)" }} />)}
+        <div className="grid grid-cols-3 gap-3.5">
+          {[1, 2, 3].map((i) => <div key={i} className="h-48 rounded-[14px]" style={{ background: "var(--surface-raised)" }} />)}
         </div>
       </div>
     );
@@ -477,55 +482,59 @@ export function DashboardClient() {
   const daysPassed     = isCurrentMonth ? now.getDate() : daysInMonth;
   const daysRemaining  = isCurrentMonth ? daysInMonth - now.getDate() : 0;
 
-  // Donut categories with monochromatic blue palette
-  const cats = (data?.expensesByCategory ?? []).map((c, i) => ({
-    ...c,
-    fill: MONO_BLUE[i % MONO_BLUE.length],
-  }));
-  const catTotal = cats.reduce((s, c) => s + c.total, 0);
+  // Expense categories (keep original colors for tooltip, override fill with mono-blue for chart)
+  const rawCats = data?.expensesByCategory ?? [];
+  const catTotal = rawCats.reduce((s, c) => s + c.total, 0);
+
+  // ── Card style helper (no shadow — matches handoff) ───────────────────
+  const card: React.CSSProperties = {
+    background: "var(--surface-card)",
+    border: "1px solid var(--color-border)",
+    borderRadius: 14,
+  };
 
   return (
-    <div className="space-y-3.5 animate-fade-in">
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }} className="animate-fade-in">
 
       {/* ── Header ─────────────────────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-2">
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 16 }}>
         <div>
-          <h1 className="text-[22px] font-extrabold tracking-tight" style={{ color: "var(--color-text)" }}>
+          <h1 style={{ fontSize: 28, fontWeight: 600, margin: 0, letterSpacing: "-0.03em", color: "var(--color-text)" }}>
             Dashboard
           </h1>
-          <p className="text-[13px] mt-0.5 font-medium" style={{ color: "var(--text-mute)" }}>
+          <p style={{ fontSize: 13, color: "var(--text-mute)", marginTop: 4, fontWeight: 500 }}>
             Visão geral das suas finanças
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Hide balance toggle */}
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {/* Hide balance */}
           <button
             onClick={toggleHide}
             title={hideBalance ? "Mostrar saldo" : "Ocultar saldo"}
-            className="flex items-center justify-center w-9 h-9 rounded-[9px] transition"
             style={{
-              border: "1px solid var(--color-border)",
               background: "transparent",
+              border: "1px solid var(--color-border)",
               color: "var(--text-dim)",
+              padding: 9, borderRadius: 9, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
             }}
           >
-            {hideBalance ? <EyeOff size={15} /> : <Eye size={15} />}
+            {hideBalance ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
-
-          <select
-            value={month}
-            onChange={(e) => setMonth(Number(e.target.value))}
-            className="text-[13px] font-semibold rounded-[9px] px-3 h-9 focus:outline-none focus:ring-2 focus:ring-brand-500"
-            style={{ border: "1px solid var(--color-border)", background: "var(--surface-card)", color: "var(--color-text)" }}
-          >
+          {/* Month */}
+          <select value={month} onChange={(e) => setMonth(Number(e.target.value))} style={{
+            background: "transparent", border: "1px solid var(--color-border)",
+            color: "var(--color-text)", padding: "9px 12px", borderRadius: 9,
+            fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer",
+          }}>
             {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
           </select>
-          <select
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            className="text-[13px] font-semibold rounded-[9px] px-3 h-9 focus:outline-none focus:ring-2 focus:ring-brand-500"
-            style={{ border: "1px solid var(--color-border)", background: "var(--surface-card)", color: "var(--color-text)" }}
-          >
+          {/* Year */}
+          <select value={year} onChange={(e) => setYear(Number(e.target.value))} style={{
+            background: "transparent", border: "1px solid var(--color-border)",
+            color: "var(--color-text)", padding: "9px 12px", borderRadius: 9,
+            fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer",
+          }}>
             {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
@@ -533,25 +542,23 @@ export function DashboardClient() {
 
       {/* ── Overdue alert ───────────────────────────────────────────── */}
       {overdueCount > 0 && (
-        <a
-          href="/lancamentos"
-          className="flex items-center gap-3 px-4 py-3 rounded-[12px] transition group"
-          style={{
-            background: "rgba(251,191,36,0.08)",
-            border: "1px solid rgba(251,191,36,0.25)",
-            color: "#fbbf24",
-          }}
-        >
-          <AlertTriangle size={16} className="shrink-0" style={{ color: "#fbbf24" }} />
-          <div className="flex-1 min-w-0">
-            <span className="text-[13px] font-semibold">
+        <a href="/lancamentos" style={{
+          display: "flex", alignItems: "center", gap: 12,
+          padding: "11px 16px", borderRadius: 12,
+          background: "rgba(251,191,36,0.08)",
+          border: "1px solid rgba(251,191,36,0.25)",
+          color: "#fbbf24", textDecoration: "none",
+        }}>
+          <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>
               {overdueCount} despesa{overdueCount > 1 ? "s" : ""} em atraso
             </span>
-            <span className="text-[12px] ml-1.5" style={{ color: "#f59e0b" }}>
+            <span style={{ fontSize: 12, color: "#f59e0b", marginLeft: 6 }}>
               · {formatCurrency(overdueAmount)} não pago{overdueCount > 1 ? "s" : ""}
             </span>
           </div>
-          <span className="text-[11px] font-semibold shrink-0" style={{ color: "#fbbf24" }}>Ver →</span>
+          <span style={{ fontSize: 11, fontWeight: 600, flexShrink: 0 }}>Ver →</span>
         </a>
       )}
 
@@ -560,84 +567,72 @@ export function DashboardClient() {
         savingsRate={savingsRate}
         totalIncome={totalIncome}
         totalExpenses={totalExpenses}
-        hideBalance={hideBalance}
       />
 
-      {/* ── Hero + KPI grid ─────────────────────────────────────────── */}
-      {/*
-        Mobile: stacked (1 col)
-        Desktop: 3-col grid — HeroBalance (col-span-2 row-span-2), KpiReceitas, KpiDespesas
-      */}
-      <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-3">
-        {/* HeroBalance */}
-        <div className="md:col-span-2 md:row-span-2">
-          <HeroBalance balance={balance} monthlyTrend={monthlyTrend} hideBalance={hideBalance} />
-        </div>
-
-        {/* KPI — Receitas */}
+      {/* ── Hero row: 1.6fr 1fr 1fr — MATCHES HANDOFF GRID ─────────── */}
+      {/* Mobile: stacked 1 col. Desktop: 3-col asymmetric. */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr",   // mobile fallback; overridden by media query via class
+        gap: 14,
+      }} className="hero-grid">
+        <style>{`
+          @media (min-width: 768px) {
+            .hero-grid { grid-template-columns: 1.6fr 1fr 1fr !important; }
+          }
+        `}</style>
+        <HeroBalance balance={balance} monthlyTrend={monthlyTrend} hideBalance={hideBalance} />
         <KpiCard
           label="Receitas"
           value={totalIncome}
-          hint={projectedIncome > 0 ? `+ ${formatCurrencyShort(projectedIncome)} previsto` : "no período"}
+          hint={projIncome > 0 ? `+ ${fmtShort(projIncome)} previsto` : "no período"}
+          hintColor={A}
           hideBalance={hideBalance}
-          icon={<TrendingUp size={15} />}
+          icon={<TrendingUp size={14} />}
         />
-
-        {/* KPI — Despesas */}
         <KpiCard
           label="Despesas"
           value={totalExpenses}
-          hint={
-            data?.paidExpenses && totalExpenses > 0
-              ? `${Math.round((data.paidExpenses / totalExpenses) * 100)}% pago`
-              : "no período"
-          }
-          hintColor={totalExpenses > totalIncome ? "#f87171" : undefined}
+          hint={data?.paidExpenses && totalExpenses > 0
+            ? `${Math.round((data.paidExpenses / totalExpenses) * 100)}% pago`
+            : "no período"}
           hideBalance={hideBalance}
-          icon={<TrendingDown size={15} />}
+          icon={<TrendingDown size={14} />}
         />
       </div>
 
-      {/* ── Month summary strip ─────────────────────────────────────── */}
+      {/* ── Month summary strip (compact) ───────────────────────────── */}
       {(savingsRate !== null || isCurrentMonth) && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10 }}>
           {savingsRate !== null && (
-            <div
-              className="col-span-2 flex items-center gap-3 rounded-[12px] px-4 py-3"
-              style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
-            >
-              <div
-                className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
-                style={{ background: `rgba(59,130,246,0.12)`, color: ACCENT }}
-              >
+            <div style={{ ...card, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, gridColumn: "span 2" }}>
+              <div style={{ width: 34, height: 34, borderRadius: 9, background: `${A}12`, color: A, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <PiggyBank size={16} />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "var(--text-mute)" }}>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-mute)", marginBottom: 3 }}>
                   Taxa de poupança
                 </p>
-                <div className="flex items-center gap-2">
-                  <span
-                    className="text-[15px] font-bold tabular-nums"
-                    style={{ color: hideBalance ? "var(--text-faint)" : savingsRate >= 20 ? "#22c55e" : savingsRate >= 0 ? "#f59e0b" : "#f87171" }}
-                  >
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{
+                    fontSize: 15, fontWeight: 700, fontVariantNumeric: "tabular-nums",
+                    color: hideBalance ? "var(--text-faint)" : savingsRate >= 20 ? "#22c55e" : savingsRate >= 0 ? "#f59e0b" : "#f87171",
+                  }}>
                     {hideBalance ? "••" : `${savingsRate}%`}
                   </span>
                   {!hideBalance && (
-                    <span className="text-[11px]" style={{ color: "var(--text-mute)" }}>
+                    <span style={{ fontSize: 11, color: "var(--text-mute)" }}>
                       {savingsRate >= 20 ? "Ótimo ritmo 🎉" : savingsRate >= 0 ? "Atenção ao orçamento" : "Gastos acima da renda"}
                     </span>
                   )}
                 </div>
                 {!hideBalance && (
-                  <div className="mt-1.5 prog-track">
-                    <div
-                      className="prog-fill"
-                      style={{
-                        width: `${Math.min(100, Math.max(0, savingsRate))}%`,
-                        background: savingsRate >= 20 ? "#22c55e" : savingsRate >= 0 ? "#f59e0b" : "#f87171",
-                      }}
-                    />
+                  <div style={{ marginTop: 6, height: 3, background: "var(--surface-raised)", borderRadius: 2, overflow: "hidden" }}>
+                    <div style={{
+                      width: `${Math.min(100, Math.max(0, savingsRate))}%`, height: "100%", borderRadius: 2,
+                      background: savingsRate >= 20 ? "#22c55e" : savingsRate >= 0 ? "#f59e0b" : "#f87171",
+                      transition: "width 0.5s",
+                    }} />
                   </div>
                 )}
               </div>
@@ -645,207 +640,104 @@ export function DashboardClient() {
           )}
 
           {isCurrentMonth && (
-            <div
-              className="flex items-center gap-3 rounded-[12px] px-4 py-3"
-              style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
-            >
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "var(--text-mute)" }}>
-                  Dias restantes
-                </p>
-                <p className="text-[15px] font-bold" style={{ color: "var(--color-text)" }}>
-                  {daysRemaining} dias
-                </p>
-                <div className="mt-1.5 prog-track">
-                  <div
-                    className="prog-fill"
-                    style={{ width: `${Math.round((daysPassed / daysInMonth) * 100)}%`, background: ACCENT }}
-                  />
-                </div>
+            <div style={{ ...card, padding: "14px 18px" }}>
+              <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-mute)", marginBottom: 3 }}>
+                Dias restantes
+              </p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: "var(--color-text)" }}>{daysRemaining} dias</p>
+              <div style={{ marginTop: 6, height: 3, background: "var(--surface-raised)", borderRadius: 2, overflow: "hidden" }}>
+                <div style={{ width: `${Math.round((daysPassed / daysInMonth) * 100)}%`, height: "100%", background: A, transition: "width 0.5s", borderRadius: 2 }} />
               </div>
             </div>
           )}
 
           {isCurrentMonth && daysPassed > 0 && (
-            <div
-              className="flex items-center gap-3 rounded-[12px] px-4 py-3"
-              style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
-            >
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: "var(--text-mute)" }}>
-                  Gasto médio/dia
+            <div style={{ ...card, padding: "14px 18px" }}>
+              <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-mute)", marginBottom: 3 }}>
+                Gasto médio/dia
+              </p>
+              <p style={{ fontSize: 15, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: "#f87171" }}>
+                {hideBalance ? "••••" : fmtShort(totalExpenses / daysPassed)}
+              </p>
+              {!hideBalance && (
+                <p style={{ fontSize: 10, color: "var(--text-mute)", marginTop: 2 }}>
+                  projeção: {fmtShort((totalExpenses / daysPassed) * daysInMonth)}
                 </p>
-                <p className="text-[15px] font-bold tabular-nums" style={{ color: "#f87171" }}>
-                  {hideBalance ? "••••" : formatCurrencyShort(totalExpenses / daysPassed)}
-                </p>
-                {!hideBalance && (
-                  <p className="text-[10px] mt-0.5" style={{ color: "var(--text-mute)" }}>
-                    projeção: {formatCurrencyShort((totalExpenses / daysPassed) * daysInMonth)}
-                  </p>
-                )}
-              </div>
+              )}
             </div>
           )}
         </div>
       )}
 
-      {/* ── Charts row ──────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      {/* ── Charts row: 1.5fr 1fr — MATCHES HANDOFF GRID ───────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }} className="charts-grid">
+        <style>{`
+          @media (min-width: 900px) {
+            .charts-grid { grid-template-columns: 1.5fr 1fr !important; }
+          }
+        `}</style>
 
-        {/* Bar Chart: Receitas vs Despesas */}
-        <div
-          className="flex flex-col rounded-[14px] p-5"
-          style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
-        >
-          <div className="flex items-center justify-between mb-5">
+        {/* Bar Chart */}
+        <div style={{ ...card, padding: 22 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <div>
-              <h2 className="text-[14px] font-bold leading-tight" style={{ color: "var(--color-text)" }}>
-                Receitas vs Despesas
-              </h2>
-              <p className="text-[11px] mt-0.5" style={{ color: "var(--text-mute)" }}>Últimos 6 meses</p>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text)" }}>Receitas e despesas</div>
+              <div style={{ fontSize: 11, color: "var(--text-mute)", marginTop: 2 }}>Últimos 6 meses · em R$</div>
             </div>
-            <div className="flex items-center gap-4">
-              {([
-                [chartTheme.incomeBar, "Receitas"],
-                [chartTheme.expenseBar, "Despesas"],
-              ] as [string, string][]).map(([c, l]) => (
-                <div key={l} className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-sm" style={{ background: c }} />
-                  <span className="text-[11px] font-semibold" style={{ color: "var(--text-mute)" }}>{l}</span>
-                </div>
+            <div style={{ display: "flex", gap: 14, fontSize: 11 }}>
+              {([[ A, "Receita"], [chartTheme.expBar, "Despesa"]] as [string, string][]).map(([c, l]) => (
+                <span key={l} style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-dim)" }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 2, background: c, display: "inline-block" }} />
+                  {l}
+                </span>
               ))}
             </div>
           </div>
-          <div className="flex-1 flex items-center justify-center">
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={monthlyTrend} barCategoryGap="30%" barGap={3} margin={{ top: 4, right: 4, left: -8, bottom: 0 }}>
-                <CartesianGrid vertical={false} stroke={chartTheme.grid} strokeDasharray="3 0" />
-                <XAxis
-                  dataKey="month"
-                  tick={{ fontSize: 10, fill: chartTheme.axis, fontWeight: 600 }}
-                  axisLine={false} tickLine={false} interval={0}
-                />
-                <YAxis
-                  tick={{ fontSize: 10, fill: chartTheme.axis }}
-                  tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
-                  axisLine={false} tickLine={false} width={36}
-                />
-                <Tooltip
-                  cursor={{ fill: chartTheme.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", radius: 6 }}
-                  content={(props) => (
-                    <BarTooltip
-                      active={props.active}
-                      payload={props.payload as { name: string; value: number; fill: string }[]}
-                      label={props.label as string}
-                      theme={chartTheme}
-                    />
-                  )}
-                />
-                <Bar dataKey="income"   name="Receitas" fill={chartTheme.incomeBar}  radius={[5, 5, 3, 3]} maxBarSize={28} />
-                <Bar dataKey="expenses" name="Despesas" fill={chartTheme.expenseBar} radius={[5, 5, 3, 3]} maxBarSize={28} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={monthlyTrend} barCategoryGap="30%" barGap={2} margin={{ top: 4, right: 4, left: -8, bottom: 0 }}>
+              <CartesianGrid vertical={false} stroke={chartTheme.grid} strokeDasharray="3 0" />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: chartTheme.axis, fontWeight: 600 }} axisLine={false} tickLine={false} interval={0} />
+              <YAxis tick={{ fontSize: 10, fill: chartTheme.axis }} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)} axisLine={false} tickLine={false} width={34} />
+              <Tooltip
+                cursor={{ fill: chartTheme.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", radius: 4 }}
+                content={(props) => (
+                  <BarTooltip
+                    active={props.active}
+                    payload={props.payload as { name: string; value: number; fill: string }[]}
+                    label={props.label as string}
+                    theme={chartTheme}
+                  />
+                )}
+              />
+              <Bar dataKey="income"   name="Receita"  fill={A}                  radius={[4, 4, 2, 2]} maxBarSize={20} />
+              <Bar dataKey="expenses" name="Despesa"  fill={chartTheme.expBar}  radius={[4, 4, 2, 2]} maxBarSize={20} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
-        {/* Donut Chart: Despesas por Categoria — monochromatic blue */}
-        <div
-          className="flex flex-col rounded-[14px] p-5"
-          style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
-        >
-          <div className="mb-4">
-            <h2 className="text-[14px] font-bold leading-tight" style={{ color: "var(--color-text)" }}>
-              Despesas por Categoria
-            </h2>
-            <p className="text-[11px] mt-0.5" style={{ color: "var(--text-mute)" }}>Distribuição do mês</p>
-          </div>
-
-          {cats.length > 0 ? (
-            <div className="flex items-center gap-4 sm:gap-6">
-              {/* Donut */}
-              <div className="relative shrink-0" style={{ width: 168, height: 168 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={cats}
-                      dataKey="total"
-                      nameKey="name"
-                      cx="50%" cy="50%"
-                      innerRadius={52} outerRadius={76}
-                      paddingAngle={3} strokeWidth={0}
-                    >
-                      {cats.map((entry, i) => (
-                        <Cell key={i} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      content={(props) => (
-                        <PieTooltip
-                          active={props.active}
-                          payload={props.payload as { name: string; value: number; payload: { fill: string } }[]}
-                          theme={chartTheme}
-                        />
-                      )}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-                {/* Center label */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span
-                    className="text-[9px] font-bold uppercase leading-tight"
-                    style={{ letterSpacing: "0.09em", color: "var(--text-mute)" }}
-                  >
-                    Gasto
-                  </span>
-                  <span className="text-[13px] font-bold tabular-nums leading-tight mt-0.5" style={{ color: "var(--color-text)" }}>
-                    {hideBalance ? "•••" : formatCurrencyShort(catTotal)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Legend */}
-              <div className="flex-1 min-w-0 space-y-2">
-                {cats.map((cat, i) => {
-                  const pct = catTotal > 0 ? Math.round((cat.total / catTotal) * 100) : 0;
-                  return (
-                    <div key={cat.name}>
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.fill }} />
-                        <span
-                          className="text-[11px] font-semibold truncate flex-1 min-w-0"
-                          style={{ color: "var(--color-text)" }}
-                        >
-                          {cat.name}
-                        </span>
-                        <span className="text-[10px] font-bold shrink-0 tabular-nums" style={{ color: "var(--text-mute)" }}>
-                          {pct}%
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="prog-track flex-1" style={{ height: 2 }}>
-                          <div className="prog-fill" style={{ width: `${pct}%`, background: cat.fill }} />
-                        </div>
-                        <span className="text-[10px] font-semibold tabular-nums shrink-0" style={{ color: "var(--text-mute)" }}>
-                          {hideBalance ? "•••" : formatCurrencyShort(cat.total)}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
+        {/* Category Breakdown — CSS conic-gradient */}
+        <div style={{ ...card, padding: 22 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text)" }}>Onde foi o dinheiro</div>
+              <div style={{ fontSize: 11, color: "var(--text-mute)", marginTop: 2 }}>
+                {hideBalance ? "•••" : fmtShort(totalExpenses)}
               </div>
             </div>
+            <Link href="/relatorios" style={{
+              background: "transparent", border: 0, color: A,
+              fontSize: 11, cursor: "pointer", fontFamily: "inherit",
+              display: "flex", alignItems: "center", gap: 4, textDecoration: "none",
+            }}>
+              detalhes <ChevronRight size={12} />
+            </Link>
+          </div>
+          {rawCats.length > 0 ? (
+            <CategoryBreakdown cats={rawCats} catTotal={catTotal} hideBalance={hideBalance} />
           ) : (
-            <div
-              className="flex-1 flex flex-col items-center justify-center gap-2 py-10"
-              style={{ color: "var(--text-mute)" }}
-            >
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
-                style={{ background: "var(--surface-raised)" }}
-              >
-                📊
-              </div>
-              <p className="text-sm font-medium">Nenhuma despesa no período</p>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, padding: "32px 0", color: "var(--text-mute)" }}>
+              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--surface-raised)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>📊</div>
+              <p style={{ fontSize: 13, fontWeight: 500 }}>Nenhuma despesa no período</p>
             </div>
           )}
         </div>
@@ -853,178 +745,146 @@ export function DashboardClient() {
 
       {/* ── Goals widget ────────────────────────────────────────────── */}
       {(goalsData?.goals?.length ?? 0) > 0 && (
-        <div
-          className="rounded-[14px] overflow-hidden"
-          style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
-        >
-          <div
-            className="px-5 py-3.5 flex items-center justify-between"
-            style={{ borderBottom: "1px solid var(--surface-divider)" }}
-          >
-            <h2 className="text-[14px] font-bold" style={{ color: "var(--color-text)" }}>
-              Metas de Poupança
-            </h2>
-            <Link
-              href="/metas"
-              className="flex items-center gap-1 text-[12px] font-semibold transition"
-              style={{ color: ACCENT }}
-            >
-              Ver todas <ChevronRight size={13} />
+        <div style={{ ...card, overflow: "hidden" }}>
+          <div style={{
+            padding: "14px 20px", borderBottom: "1px solid var(--color-border)",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text)" }}>Metas de Poupança</div>
+            <Link href="/metas" style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color: A, textDecoration: "none" }}>
+              Ver todas <ChevronRight size={12} />
             </Link>
           </div>
-          <div>
-            {(goalsData?.goals ?? []).slice(0, 3).map((goal) => {
-              const target   = parseFloat(goal.targetAmount);
-              const saved    = parseFloat(goal.savedAmount);
-              const remaining = Math.max(0, target - saved);
-              const percent  = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
-              const done     = saved >= target;
-              const today    = new Date();
-              const deadline = parseISO(goal.targetDate);
-              const daysLeft = differenceInCalendarDays(deadline, today);
-              const monthsLeft = Math.max(1, differenceInCalendarMonths(deadline, today) + 1);
-              const monthlyNeeded = !done && remaining > 0 ? remaining / monthsLeft : 0;
-              return (
-                <div
-                  key={goal.id}
-                  className="flex items-center px-5 py-3.5 gap-4"
-                  style={{ borderBottom: "1px solid var(--surface-divider)" }}
-                >
-                  <span className="text-2xl leading-none shrink-0">{goal.emoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <p className="text-[13px] font-semibold truncate" style={{ color: "var(--color-text)" }}>
-                        {goal.name}
-                      </p>
-                      {done ? (
-                        <span className="text-[11px] font-semibold flex items-center gap-1 shrink-0" style={{ color: "#22c55e" }}>
-                          <CheckCircle2 size={11} /> Concluída
-                        </span>
-                      ) : (
-                        <span className="text-[11px] font-semibold shrink-0 tabular-nums" style={{ color: ACCENT }}>
-                          {hideBalance ? "••••" : monthlyNeeded > 0 ? `${formatCurrency(monthlyNeeded)}/mês` : "—"}
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-1.5 prog-track">
-                      <div
-                        className="prog-fill"
-                        style={{
-                          width: `${percent}%`,
-                          background: done ? "#22c55e" : `linear-gradient(90deg, ${ACCENT}, ${ACCENT_S})`,
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px]" style={{ color: "var(--text-mute)" }}>
-                        {hideBalance ? "•••" : formatCurrency(saved)} de {hideBalance ? "•••" : formatCurrency(target)}
+          {(goalsData?.goals ?? []).slice(0, 3).map((goal) => {
+            const target   = parseFloat(goal.targetAmount);
+            const saved    = parseFloat(goal.savedAmount);
+            const remaining = Math.max(0, target - saved);
+            const percent  = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
+            const done     = saved >= target;
+            const today    = new Date();
+            const deadline = parseISO(goal.targetDate);
+            const daysLeft = differenceInCalendarDays(deadline, today);
+            const mLeft    = Math.max(1, differenceInCalendarMonths(deadline, today) + 1);
+            const monthly  = !done && remaining > 0 ? remaining / mLeft : 0;
+            return (
+              <div key={goal.id} style={{
+                display: "flex", alignItems: "center", padding: "14px 20px", gap: 14,
+                borderTop: "1px solid var(--color-border)",
+              }}>
+                <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{goal.emoji}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {goal.name}
+                    </p>
+                    {done ? (
+                      <span style={{ fontSize: 11, fontWeight: 600, color: "#22c55e", display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+                        <CheckCircle2 size={11} /> Concluída
                       </span>
-                      <span
-                        className="text-[10px] font-medium"
-                        style={{ color: daysLeft < 0 ? "#f87171" : "var(--text-mute)" }}
-                      >
-                        {daysLeft < 0 ? "Prazo encerrado" : daysLeft === 0 ? "Hoje!" : `${daysLeft} dias`}
+                    ) : (
+                      <span style={{ fontSize: 11, fontWeight: 600, color: A, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+                        {hideBalance ? "••••" : monthly > 0 ? `${formatCurrency(monthly)}/mês` : "—"}
                       </span>
-                    </div>
+                    )}
+                  </div>
+                  <div style={{ marginTop: 6, height: 3, background: "var(--surface-raised)", borderRadius: 2, overflow: "hidden" }}>
+                    <div style={{
+                      width: `${percent}%`, height: "100%", borderRadius: 2,
+                      background: done ? "#22c55e" : `linear-gradient(90deg, ${AD}, ${A})`,
+                      transition: "width 0.5s",
+                    }} />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+                    <span style={{ fontSize: 10, color: "var(--text-mute)" }}>
+                      {hideBalance ? "•••" : formatCurrency(saved)} de {hideBalance ? "•••" : formatCurrency(target)}
+                    </span>
+                    <span style={{ fontSize: 10, fontWeight: 500, color: daysLeft < 0 ? "#f87171" : "var(--text-mute)" }}>
+                      {daysLeft < 0 ? "Prazo encerrado" : daysLeft === 0 ? "Hoje!" : `${daysLeft} dias`}
+                    </span>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
-      {/* ── Recent Transactions ─────────────────────────────────────── */}
-      <div
-        className="rounded-[14px] overflow-hidden"
-        style={{ background: "var(--surface-card)", border: "1px solid var(--color-border)" }}
-      >
-        <div
-          className="px-5 py-3.5 flex items-center justify-between"
-          style={{ borderBottom: "1px solid var(--surface-divider)" }}
-        >
-          <h2 className="text-[14px] font-bold" style={{ color: "var(--color-text)" }}>
-            Lançamentos Recentes
-          </h2>
-        </div>
-        <div>
-          {(data?.recentTransactions ?? []).length === 0 ? (
-            <div className="p-12 text-center text-sm" style={{ color: "var(--text-mute)" }}>
-              Nenhum lançamento no período
+      {/* ── Últimas transações — matches handoff layout exactly ──────── */}
+      <div style={{ ...card, padding: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text)" }}>Últimas transações</div>
+            <div style={{ fontSize: 11, color: "var(--text-mute)", marginTop: 2 }}>
+              {(data?.recentTransactions ?? []).length} este período
             </div>
-          ) : (
-            (data?.recentTransactions ?? []).map((t) => (
-              <div
-                key={t.id}
-                className="flex items-center px-5 py-3.5 gap-3.5 cursor-pointer transition"
-                style={{ borderBottom: "1px solid var(--surface-divider)" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-hover)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-              >
-                {/* Icon avatar */}
-                <div
-                  className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
-                  style={{
-                    background: t.type === "income"
-                      ? `rgba(59,130,246,0.12)`
-                      : `rgba(100,116,139,0.12)`,
-                  }}
-                >
-                  {t.type === "income"
-                    ? <ArrowUpRight size={15} style={{ color: ACCENT }} strokeWidth={2.5} />
-                    : <ArrowDownRight size={15} style={{ color: "var(--text-dim)" }} strokeWidth={2.5} />
+          </div>
+          <Link href="/lancamentos" style={{
+            background: "transparent", border: "1px solid var(--color-border)",
+            color: "var(--text-dim)", padding: "6px 12px", borderRadius: 8,
+            fontSize: 11, cursor: "pointer", fontFamily: "inherit",
+            display: "flex", alignItems: "center", gap: 6, textDecoration: "none",
+          }}>
+            Ver todas
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+
+        {(data?.recentTransactions ?? []).length === 0 ? (
+          <p style={{ padding: "32px 0", textAlign: "center", color: "var(--text-mute)", fontSize: 13 }}>
+            Nenhum lançamento no período
+          </p>
+        ) : (
+          (data?.recentTransactions ?? []).map((t) => {
+            const isIncome = t.type === "income";
+            return (
+              <div key={t.id} style={{
+                display: "flex", alignItems: "center",
+                padding: "11px 0", borderTop: "1px solid var(--color-border)",
+              }}>
+                {/* Avatar 30×30 — matches handoff */}
+                <div style={{
+                  width: 30, height: 30, borderRadius: 8, marginRight: 12, flexShrink: 0,
+                  background: isIncome ? `${A}22` : "var(--surface-raised)",
+                  border: `1px solid ${isIncome ? `${A}44` : "var(--color-border)"}`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 13, color: isIncome ? A : "var(--text-dim)", fontWeight: 700,
+                }}>
+                  {isIncome
+                    ? <ArrowUpRight size={13} strokeWidth={2.5} />
+                    : <ArrowDownRight size={13} strokeWidth={2.5} style={{ color: "var(--text-dim)" }} />
                   }
                 </div>
 
                 {/* Description + meta */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold truncate" style={{ color: "var(--color-text)" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {t.description}
-                  </p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[11px]" style={{ color: "var(--text-mute)" }}>{formatDate(t.date)}</span>
-                    {t.categoryName && (
-                      <>
-                        <span style={{ color: "var(--text-faint)", fontSize: 10 }}>·</span>
-                        <span
-                          className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                          style={{
-                            backgroundColor: `${MONO_BLUE[0]}18`,
-                            color: ACCENT,
-                          }}
-                        >
-                          {t.categoryName}
-                        </span>
-                      </>
-                    )}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text-mute)", marginTop: 1 }}>
+                    {t.categoryName ?? (isIncome ? "Receita" : "—")} · {formatDate(t.date)}
                   </div>
                 </div>
 
-                {/* Amount */}
-                <div className="text-right shrink-0">
-                  <p
-                    className="text-[14px] font-semibold tabular-nums"
-                    style={{
-                      color: t.type === "income" ? ACCENT : "var(--text-dim)",
-                      fontVariantNumeric: "tabular-nums",
-                    }}
-                  >
-                    {hideBalance
-                      ? "••••••"
-                      : `${t.type === "income" ? "+" : "−"}${formatCurrency(t.value)}`
-                    }
-                  </p>
-                  <span
-                    className="text-[10px] font-semibold"
-                    style={{ color: t.isPaid ? "#22c55e" : "#f59e0b" }}
-                  >
-                    {t.isPaid ? "✓ Pago" : "● Pendente"}
-                  </span>
+                {/* Amount — income in accent, expense in neutral text */}
+                <div style={{
+                  fontSize: 13, fontWeight: 600,
+                  fontVariantNumeric: "tabular-nums",
+                  color: isIncome ? A : "var(--color-text)",
+                  flexShrink: 0,
+                }}>
+                  {hideBalance
+                    ? "••••"
+                    : isIncome
+                      ? `+ ${formatCurrency(t.value)}`
+                      : `− ${formatCurrency(t.value)}`
+                  }
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            );
+          })
+        )}
       </div>
     </div>
   );
