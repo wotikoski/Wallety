@@ -90,8 +90,8 @@ const config: Config = {
       },
 
       fontFamily: {
-        sans: ["var(--font-geist)", "var(--font-inter)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "Geist Mono", "IBM Plex Mono", "monospace"],
+        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "monospace"],
       },
 
       boxShadow: {

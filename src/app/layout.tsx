@@ -1,26 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-// Geist — primary display font (handoff spec: Geist with Inter fallback)
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist",
-  display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-// Geist Mono — financial figures, technical data (tabular-nums)
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-  weight: ["400", "500"],
-});
+// GeistSans — primary display font served locally via official Vercel package.
+// CSS variable: --font-geist-sans
+// GeistMono — financial figures, technical data (tabular-nums).
+// CSS variable: --font-geist-mono
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -73,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}>
         <Providers>
           {children}
           <Toaster />
