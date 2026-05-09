@@ -490,11 +490,12 @@ export function DashboardClient() {
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
+              className="dash-year"
               style={{
                 background: "transparent", border: "1px solid var(--color-border)",
                 color: "var(--color-text)", padding: "9px 10px", borderRadius: 9,
                 fontSize: 12, fontWeight: 500, cursor: "pointer",
-                flex: 1, minWidth: 0,
+                flexShrink: 0,
               }}
             >
               {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
