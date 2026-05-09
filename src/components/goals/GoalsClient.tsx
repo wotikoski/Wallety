@@ -381,7 +381,7 @@ export function GoalsClient() {
   const goalList = data?.goals ?? [];
 
   return (
-    <div className="p-4 md:p-7 max-w-5xl mx-auto">
+    <div className="animate-fade-in">
       <PageHeader
         title="Metas de Poupança"
         subtitle="Planeje e acompanhe suas conquistas financeiras"
