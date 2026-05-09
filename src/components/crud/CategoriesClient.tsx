@@ -285,11 +285,11 @@ function CategoryGroup({
     <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
       <div
         className="px-6 py-3.5 border-b border-app-border"
-        style={{ background: color === "income" ? "rgba(16,185,129,.1)" : "rgba(248,113,113,.1)" }}
+        style={{ background: color === "income" ? "rgba(59,130,246,.1)" : "rgba(248,113,113,.1)" }}
       >
         <h2
           className="text-sm font-semibold"
-          style={{ color: color === "income" ? "#059669" : "#ef4444" }}
+          style={{ color: color === "income" ? "#3b82f6" : "#ef4444" }}
         >
           {title} · {categories.length}
         </h2>
