@@ -282,16 +282,13 @@ function CategoryGroup({
 }) {
   return (
     <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
-      <div
-        className="px-6 py-3.5 border-b border-app-border"
-        style={{ background: color === "income" ? "rgba(59,130,246,.1)" : "rgba(248,113,113,.1)" }}
-      >
-        <h2
-          className="text-sm font-semibold"
-          style={{ color: color === "income" ? "#3b82f6" : "#ef4444" }}
-        >
-          {title} · {categories.length}
+      <div className="px-5 py-3.5 border-b border-[var(--color-border)] flex items-center justify-between">
+        <h2 className="text-[14px] font-semibold text-[var(--color-text)] m-0">
+          {title}
         </h2>
+        <span className="text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] tabular-nums">
+          {categories.length}
+        </span>
       </div>
       <div className="divide-y divide-[#f1f3f9]">
         {categories.length === 0 ? (
