@@ -535,7 +535,7 @@ export function DashboardClient() {
         {/* ── Hero row: 1.6fr 1fr 1fr ───────────────────────────────── */}
         <div
           className="hero-grid"
-          style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr", gap: 14 }}
+          style={{ display: "grid", gap: 14 }}
         >
           <HeroBalance balance={balance} monthlyTrend={monthlyTrend} hideBalance={hideBalance} />
           <KpiCard
@@ -602,7 +602,7 @@ export function DashboardClient() {
         )}
 
         {/* ── Charts row: 1.5fr 1fr ─────────────────────────────────── */}
-        <div className="charts-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 14 }}>
+        <div className="charts-grid" style={{ display: "grid", gap: 14 }}>
           {/* ── Area Chart: Receitas e Despesas ── */}
           <div style={{ ...card, padding: 22 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
