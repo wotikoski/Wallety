@@ -451,12 +451,8 @@ export function DashboardClient() {
         {/* ── Header ────────────────────────────────────────────────── */}
         <div className="dash-header" style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
           <div>
-            <h1 className="dash-title" style={{ fontWeight: 600, margin: 0, letterSpacing: "-0.03em", color: "var(--color-text)" }}>
-              Dashboard
-            </h1>
-            <p style={{ fontSize: 13, color: "var(--text-mute)", marginTop: 4, fontWeight: 500 }}>
-              Visão geral das suas finanças
-            </p>
+            <h1 className="page-title">Dashboard</h1>
+            <p className="page-subtitle">Visão geral das suas finanças</p>
           </div>
 
           {/* Controls — eye + month + year (year hidden on mobile) */}

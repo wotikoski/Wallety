@@ -213,8 +213,8 @@ export function RecurringClient() {
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Recorrências</h1>
-          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Receitas e despesas automáticas</p>
+          <h1 className="page-title">Recorrências</h1>
+          <p className="page-subtitle">Receitas e despesas automáticas</p>
         </div>
         <div className="flex items-center gap-2">
           <button

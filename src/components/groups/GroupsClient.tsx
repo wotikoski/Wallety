@@ -116,8 +116,8 @@ export function GroupsClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Grupos</h1>
-          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Compartilhe finanças com família ou parceiros</p>
+          <h1 className="page-title">Grupos</h1>
+          <p className="page-subtitle">Compartilhe finanças com família ou parceiros</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}

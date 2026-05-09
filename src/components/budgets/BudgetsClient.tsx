@@ -114,8 +114,8 @@ export function BudgetsClient() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Orçamentos</h1>
-          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Defina um teto mensal de gastos por categoria</p>
+          <h1 className="page-title">Orçamentos</h1>
+          <p className="page-subtitle">Defina um teto mensal de gastos por categoria</p>
         </div>
         {/* Month nav */}
         <div className="flex items-center gap-2">

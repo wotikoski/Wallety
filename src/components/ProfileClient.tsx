@@ -74,8 +74,8 @@ export function ProfileClient() {
   return (
     <div className="space-y-6 max-w-lg animate-fade-in">
       <div>
-        <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Meu Perfil</h1>
-        <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Gerencie suas informações pessoais</p>
+        <h1 className="page-title">Meu Perfil</h1>
+        <p className="page-subtitle">Gerencie suas informações pessoais</p>
       </div>
 
       {/* Profile form */}

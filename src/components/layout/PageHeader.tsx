@@ -19,17 +19,8 @@ export function PageHeader({
   return (
     <div className={cn("flex items-start justify-between gap-4 mb-6", className)}>
       <div>
-        <h1
-          className="m-0 font-semibold text-[var(--color-text)] leading-tight"
-          style={{ fontSize: 28, letterSpacing: "-0.03em" }}
-        >
-          {title}
-        </h1>
-        {subtitle && (
-          <p className="text-[13px] font-medium text-[var(--text-mute)] mt-1">
-            {subtitle}
-          </p>
-        )}
+        <h1 className="page-title">{title}</h1>
+        {subtitle && <p className="page-subtitle">{subtitle}</p>}
       </div>
       {right && <div className="shrink-0 flex items-center gap-2">{right}</div>}
     </div>

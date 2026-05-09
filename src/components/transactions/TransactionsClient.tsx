@@ -290,7 +290,7 @@ export function TransactionsClient() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Lançamentos</h1>
+          <h1 className="page-title">Lançamentos</h1>
           <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Gerencie todas as suas transações</p>
         </div>
         <div className="flex items-center gap-2">

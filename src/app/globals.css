@@ -248,6 +248,9 @@
 .dash-stack      { display: flex; flex-direction: column; gap: 14px; }
 .dash-header     { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
 .dash-controls   { display: flex; gap: 8px; align-items: center; }
+/* Canonical page header (used by every route's H1) */
+.page-title      { font-size: 28px; font-weight: 600; margin: 0; letter-spacing: -0.03em; color: var(--color-text); line-height: 1.2; }
+.page-subtitle   { font-size: 13px; font-weight: 500; margin-top: 4px; color: var(--text-mute); }
 .dash-title      { font-size: 28px; font-weight: 600; margin: 0; letter-spacing: -0.03em; color: var(--color-text); }
 
 .year-sel        { display: inline-flex; }
@@ -268,7 +271,9 @@
   .dash-stack    { gap: 10px; }
   .dash-header   { flex-direction: column; align-items: flex-start; gap: 10px; }
   .dash-controls { width: 100%; }
+  .page-title,
   .dash-title    { font-size: 22px; }
+  .page-subtitle { font-size: 12px; }
 
   /* Hero card: full-width, compact */
   .hero-grid     { grid-template-columns: 1fr 1fr; }
