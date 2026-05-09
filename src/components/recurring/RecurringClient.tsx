@@ -286,15 +286,18 @@ export function RecurringClient() {
                   >
                     <div className={`px-4 py-3.5 flex items-center gap-3 bg-[var(--surface-card)] hover:bg-[var(--surface-raised)] transition ${!r.isActive ? "opacity-60" : ""}`}>
                       <div
-                        className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
-                        style={{ background: r.type === "income" ? "rgba(59,130,246,.10)" : "rgba(100,116,139,.12)" }}
+                        className="w-[30px] h-[30px] rounded-[8px] flex items-center justify-center shrink-0 border"
+                        style={{
+                          background: r.type === "income" ? "rgba(59,130,246,.13)" : "var(--surface-raised)",
+                          borderColor: r.type === "income" ? "rgba(59,130,246,.27)" : "var(--color-border)",
+                        }}
                       >
                         {r.type === "income"
-                          ? <ArrowUpRight size={14} className="text-income" strokeWidth={2.5} />
-                          : <ArrowDownRight size={14} className="text-expense" strokeWidth={2.5} />}
+                          ? <ArrowUpRight size={13} style={{ color: "#3b82f6" }} strokeWidth={2.5} />
+                          : <ArrowDownRight size={13} style={{ color: "var(--text-dim)" }} strokeWidth={2.5} />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-semibold text-app-text truncate">{r.description}</p>
+                        <p className="text-[13px] font-medium text-[var(--color-text)] truncate">{r.description}</p>
                         <div className="flex items-center flex-wrap gap-x-1.5 gap-y-0.5 mt-0.5">
                           <span className="text-[11px] text-app-muted whitespace-nowrap">
                             {FREQ_LABEL[r.frequency]}
@@ -339,15 +342,18 @@ export function RecurringClient() {
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2.5">
                           <div
-                            className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0"
-                            style={{ background: r.type === "income" ? "rgba(59,130,246,.10)" : "rgba(100,116,139,.12)" }}
+                            className="w-[30px] h-[30px] rounded-[8px] flex items-center justify-center shrink-0 border"
+                            style={{
+                              background: r.type === "income" ? "rgba(59,130,246,.13)" : "var(--surface-raised)",
+                              borderColor: r.type === "income" ? "rgba(59,130,246,.27)" : "var(--color-border)",
+                            }}
                           >
                             {r.type === "income"
-                              ? <ArrowUpRight size={13} className="text-income" strokeWidth={2.5} />
-                              : <ArrowDownRight size={13} className="text-expense" strokeWidth={2.5} />}
+                              ? <ArrowUpRight size={13} style={{ color: "#3b82f6" }} strokeWidth={2.5} />
+                              : <ArrowDownRight size={13} style={{ color: "var(--text-dim)" }} strokeWidth={2.5} />}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-[13px] font-semibold text-app-text truncate">{r.description}</p>
+                            <p className="text-[13px] font-medium text-[var(--color-text)] truncate">{r.description}</p>
                           </div>
                         </div>
                       </td>

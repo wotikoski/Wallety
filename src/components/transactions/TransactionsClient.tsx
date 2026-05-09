@@ -524,16 +524,19 @@ export function TransactionsClient() {
                 >
                   <div className="px-4 py-3.5 flex items-center gap-3 bg-[var(--surface-card)] hover:bg-[var(--surface-raised)] transition">
                     <div
-                      className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
-                      style={{ background: t.type === "income" ? "rgba(59,130,246,.12)" : "rgba(248,113,113,.12)" }}
+                      className="w-[30px] h-[30px] rounded-[8px] flex items-center justify-center shrink-0 border"
+                      style={{
+                        background: t.type === "income" ? "rgba(59,130,246,.13)" : "var(--surface-raised)",
+                        borderColor: t.type === "income" ? "rgba(59,130,246,.27)" : "var(--color-border)",
+                      }}
                     >
                       {t.type === "income"
-                        ? <ArrowUpRight size={14} className="text-income" strokeWidth={2.5} />
-                        : <ArrowDownRight size={14} className="text-expense" strokeWidth={2.5} />
+                        ? <ArrowUpRight size={13} style={{ color: "#3b82f6" }} strokeWidth={2.5} />
+                        : <ArrowDownRight size={13} style={{ color: "var(--text-dim)" }} strokeWidth={2.5} />
                       }
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-semibold text-app-text truncate">{t.description}</p>
+                      <p className="text-[13px] font-medium text-[var(--color-text)] truncate">{t.description}</p>
                       <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                         <p className="text-[11px] text-app-muted">{formatDate(t.date)}</p>
                         {t.installmentTotal && t.installmentTotal > 1 && (
@@ -600,18 +603,21 @@ export function TransactionsClient() {
                       )}
                     </td>
                     <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex items-center gap-3">
                         <div
-                          className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0"
-                          style={{ background: t.type === "income" ? "rgba(59,130,246,.12)" : "rgba(248,113,113,.12)" }}
+                          className="w-[30px] h-[30px] rounded-[8px] flex items-center justify-center shrink-0 border"
+                          style={{
+                            background: t.type === "income" ? "rgba(59,130,246,.13)" : "var(--surface-raised)",
+                            borderColor: t.type === "income" ? "rgba(59,130,246,.27)" : "var(--color-border)",
+                          }}
                         >
                           {t.type === "income"
-                            ? <ArrowUpRight size={13} className="text-income" strokeWidth={2.5} />
-                            : <ArrowDownRight size={13} className="text-expense" strokeWidth={2.5} />
+                            ? <ArrowUpRight size={13} style={{ color: "#3b82f6" }} strokeWidth={2.5} />
+                            : <ArrowDownRight size={13} style={{ color: "var(--text-dim)" }} strokeWidth={2.5} />
                           }
                         </div>
                         <div>
-                          <span className="text-[13px] font-semibold text-app-text">{t.description}</span>
+                          <span className="text-[13px] font-medium text-[var(--color-text)]">{t.description}</span>
                         </div>
                       </div>
                     </td>
