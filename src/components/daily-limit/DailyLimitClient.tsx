@@ -33,8 +33,8 @@ export function DailyLimitClient() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Limite Diário</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">
+          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Limite Diário</h1>
+          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">
             Quanto você pode gastar por dia, considerando compromissos do próximo mês
           </p>
         </div>

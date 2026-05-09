@@ -95,8 +95,8 @@ export function CalendarClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Calendário</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Visualize seus lançamentos por data</p>
+          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Calendário</h1>
+          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Visualize seus lançamentos por data</p>
         </div>
         <div className="flex items-center gap-1">
           <button

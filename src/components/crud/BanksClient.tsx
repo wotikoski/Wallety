@@ -89,8 +89,8 @@ export function BanksClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Bancos</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Gerencie seus bancos e instituições financeiras</p>
+          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Bancos</h1>
+          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Gerencie seus bancos e instituições financeiras</p>
         </div>
         <button
           onClick={() => {
@@ -186,7 +186,7 @@ export function BanksClient() {
           ) : banks.map((bank) => (
             <div key={bank.id} className="flex items-center px-6 py-4 gap-4 hover:bg-[#f8f9fd] transition">
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                className="w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0"
                 style={{ backgroundColor: bank.color ? bank.color + "20" : "#f1f5f9" }}
               >
                 <Building2 size={18} style={{ color: bank.color ?? "#64748b" }} />

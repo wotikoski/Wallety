@@ -74,8 +74,8 @@ export function ProfileClient() {
   return (
     <div className="space-y-6 max-w-lg animate-fade-in">
       <div>
-        <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Meu Perfil</h1>
-        <p className="text-app-muted text-[13px] mt-0.5 font-medium">Gerencie suas informações pessoais</p>
+        <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Meu Perfil</h1>
+        <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Gerencie suas informações pessoais</p>
       </div>
 
       {/* Profile form */}
@@ -185,7 +185,7 @@ export function ProfileClient() {
           >
             {/* Icon + title */}
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-[10px] bg-red-100 flex items-center justify-center shrink-0">
                 <Trash2 size={18} className="text-red-600" />
               </div>
               <div>

@@ -119,8 +119,8 @@ export function PaymentMethodsClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Formas de Pagamento</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Gerencie contas, cartões e formas de pagamento</p>
+          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Formas de Pagamento</h1>
+          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Gerencie contas, cartões e formas de pagamento</p>
         </div>
         <button
           onClick={() => { setShowForm(!showForm); setEditing(null); reset(); }}
@@ -240,7 +240,7 @@ export function PaymentMethodsClient() {
             <p className="px-6 py-12 text-[13px] text-app-muted text-center">Nenhuma forma de pagamento</p>
           ) : paymentMethods.map((pm) => (
             <div key={pm.id} className="flex items-center px-6 py-4 gap-4 hover:bg-[#f8f9fd] transition">
-              <div className="w-10 h-10 rounded-xl bg-[rgba(59,130,246,.12)] flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-[10px] bg-[rgba(59,130,246,.12)] flex items-center justify-center shrink-0">
                 <CreditCard size={18} className="text-[#3b82f6]" />
               </div>
               <div className="flex-1 min-w-0">

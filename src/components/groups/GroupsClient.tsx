@@ -116,8 +116,8 @@ export function GroupsClient() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-extrabold text-app-text tracking-tight">Grupos</h1>
-          <p className="text-app-muted text-[13px] mt-0.5 font-medium">Compartilhe finanças com família ou parceiros</p>
+          <h1 className="font-semibold text-[var(--color-text)] m-0" style={{ fontSize: 28, letterSpacing: "-0.03em" }}>Grupos</h1>
+          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Compartilhe finanças com família ou parceiros</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -191,7 +191,7 @@ export function GroupsClient() {
                 className={`w-full text-left bg-[var(--surface-card)] rounded-[14px] border p-4 transition ${g.id === selectedGroup ? "border-[#3b82f6] ring-1 ring-[#3b82f6]" : "border-[var(--color-border)] hover:border-[#3b82f6]"}`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[rgba(59,130,246,.12)] flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-[10px] bg-[rgba(59,130,246,.12)] flex items-center justify-center shrink-0">
                     <Users size={18} className="text-[#3b82f6]" />
                   </div>
                   <div className="flex-1 min-w-0">
