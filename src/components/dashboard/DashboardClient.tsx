@@ -487,16 +487,14 @@ export function DashboardClient() {
               {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
             </select>
 
-            {/* Year — hidden on mobile via .year-sel class */}
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="year-sel"
               style={{
                 background: "transparent", border: "1px solid var(--color-border)",
                 color: "var(--color-text)", padding: "9px 10px", borderRadius: 9,
                 fontSize: 12, fontWeight: 500, cursor: "pointer",
-                flexShrink: 0,
+                flex: 1, minWidth: 0,
               }}
             >
               {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
