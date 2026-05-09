@@ -322,7 +322,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
             type="text"
             inputMode="decimal"
             placeholder="0,00"
-            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text font-mono"
+            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text tabular-nums"
           />
           {errors.value && <p className="text-red-500 text-xs mt-1">{errors.value.message}</p>}
         </div>
@@ -406,7 +406,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
               placeholder="Calculado automaticamente"
               onWheel={(e) => e.currentTarget.blur()}
               readOnly={!!installmentTotal && installmentTotal > 1}
-              className="w-full h-9 px-3 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-hover)] text-app-muted font-mono"
+              className="w-full h-9 px-3 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-hover)] text-app-muted tabular-nums"
             />
           </div>
         </div>

@@ -85,19 +85,19 @@ function CommittedCard({ value }: { value: number }) {
       <div className="relative md:hidden">
         <button
           onClick={() => setTooltip((v) => !v)}
-          className="text-[15px] font-bold font-mono leading-tight text-[var(--color-text)] text-left"
+          className="text-[15px] font-bold tabular-nums leading-tight text-[var(--color-text)] text-left"
         >
           {fmtShort(value)}
         </button>
         {tooltip && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] font-mono font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] tabular-nums font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
             {formatCurrency(value)}
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#0f172a]" />
           </div>
         )}
       </div>
       {/* Desktop: full value, no interaction */}
-      <p className="hidden md:block text-[15px] font-bold font-mono leading-tight text-[var(--color-text)]">
+      <p className="hidden md:block text-[15px] font-bold tabular-nums leading-tight text-[var(--color-text)]">
         {formatCurrency(value)}
       </p>
     </div>
@@ -239,7 +239,7 @@ export function RecurringClient() {
           ].map((s) => (
             <div key={s.label} className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-3">
               <p className="text-[10px] font-bold text-app-muted uppercase tracking-[0.06em] mb-1.5 leading-tight">{s.label}</p>
-              <p className={`text-[15px] font-bold font-mono leading-tight ${s.color}`}>{s.value}</p>
+              <p className={`text-[15px] font-bold tabular-nums leading-tight ${s.color}`}>{s.value}</p>
             </div>
           ))}
         </div>
@@ -306,7 +306,7 @@ export function RecurringClient() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
-                        <p className={`text-[13px] font-semibold font-mono whitespace-nowrap ${r.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
+                        <p className={`text-[13px] font-semibold tabular-nums whitespace-nowrap ${r.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
                           {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
                         </p>
                         <button
@@ -368,7 +368,7 @@ export function RecurringClient() {
                         {r.endDate && <p className="text-[11px] text-app-muted">até {fmtDate(r.endDate)}</p>}
                       </td>
                       <td className="px-5 py-3.5 text-right">
-                        <span className={`text-[13px] font-semibold font-mono ${r.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
+                        <span className={`text-[13px] font-semibold tabular-nums ${r.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
                           {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
                         </span>
                       </td>
@@ -602,7 +602,7 @@ function RecurringForm({
               inputMode="decimal"
               value={valueStr}
               onChange={(e) => setValueStr(e.target.value)}
-              className="w-full h-9 px-3 text-sm font-mono border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+              className="w-full h-9 px-3 text-sm tabular-nums border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
               placeholder="0,00"
             />
           </div>

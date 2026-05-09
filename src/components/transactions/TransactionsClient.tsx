@@ -30,19 +30,19 @@ function SummaryChip({
       {/* Mobile: abbreviated + tap-to-reveal tooltip */}
       <button
         onClick={() => setTooltip((v) => !v)}
-        className="md:hidden text-sm font-semibold font-mono block w-full text-center"
+        className="md:hidden text-sm font-semibold tabular-nums block w-full text-center"
         style={{ color: valueColor }}
       >
         {formatCurrencyShort(value)}
       </button>
       {tooltip && (
-        <div className="md:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] font-mono font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
+        <div className="md:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] tabular-nums font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
           {formatCurrency(value)}
           <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#0f172a]" />
         </div>
       )}
       {/* Desktop: full value, no interaction */}
-      <p className="hidden md:block text-sm font-semibold font-mono" style={{ color: valueColor }}>
+      <p className="hidden md:block text-sm font-semibold tabular-nums" style={{ color: valueColor }}>
         {formatCurrency(value)}
       </p>
     </div>
@@ -558,7 +558,7 @@ export function TransactionsClient() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
-                        <p className={`text-[13px] font-semibold font-mono ${t.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
+                        <p className={`text-[13px] font-semibold tabular-nums ${t.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
                           {t.type === "income" ? "+" : "−"}{formatCurrency(t.value)}
                         </p>
                         <span className={`text-[10px] font-semibold ${t.isPaid ? "text-income" : "text-amber-500"}`}>
@@ -630,7 +630,7 @@ export function TransactionsClient() {
                       ) : null}
                     </td>
                     <td className="px-5 py-3.5 text-right">
-                      <span className={`text-[13px] font-semibold font-mono ${t.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
+                      <span className={`text-[13px] font-semibold tabular-nums ${t.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
                         {t.type === "income" ? "+" : "−"}{formatCurrency(t.value)}
                       </span>
                     </td>

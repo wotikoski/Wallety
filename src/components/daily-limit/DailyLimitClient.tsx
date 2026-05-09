@@ -67,7 +67,7 @@ export function DailyLimitClient() {
             <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-white/80 mb-1.5">
               {isOverBudget ? "Saldo insuficiente" : "Limite diário"}
             </p>
-            <p className="text-[28px] font-bold font-mono text-white mb-1">
+            <p className="text-[28px] font-bold tabular-nums text-white mb-1">
               {formatCurrency(adjustedDailyLimit)}
             </p>
             <p className="text-[12px] text-white/70">
@@ -121,18 +121,18 @@ export function DailyLimitClient() {
               <Row label="(-) Gastos variáveis" value={data?.spentVariable ?? 0} type="expense" />
               <div className="flex justify-between border-t border-app-border pt-2 font-semibold text-app-text">
                 <span>= Saldo restante</span>
-                <span className="font-mono">{formatCurrency(data?.remainingReal ?? 0)}</span>
+                <span className="tabular-nums">{formatCurrency(data?.remainingReal ?? 0)}</span>
               </div>
               {hasReserve && (
                 <Row label={`(-) Reserva para ${nextMonthName}`} value={data?.reserveNeeded ?? 0} type="expense" />
               )}
               <div className="flex justify-between border-t border-app-border pt-2 font-semibold text-app-text">
                 <span>= Disponível para gastar</span>
-                <span className="font-mono">{formatCurrency(data?.adjustedAvailable ?? 0)}</span>
+                <span className="tabular-nums">{formatCurrency(data?.adjustedAvailable ?? 0)}</span>
               </div>
               <div className="flex justify-between pt-1 font-semibold text-[#3b82f6]">
                 <span>÷ {data?.daysRemaining ?? 0} dias restantes</span>
-                <span className="font-mono">{formatCurrency(adjustedDailyLimit)} / dia</span>
+                <span className="tabular-nums">{formatCurrency(adjustedDailyLimit)} / dia</span>
               </div>
             </div>
           </div>
@@ -153,7 +153,7 @@ function Row({ label, value, type }: { label: string; value: number; type: "inco
   return (
     <div className="flex justify-between">
       <span>{label}</span>
-      <span className={`font-mono ${type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
+      <span className={`tabular-nums ${type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
         {formatCurrency(value)}
       </span>
     </div>
@@ -170,7 +170,7 @@ function StatCard({ label, value, color }: { label: string; value: number; color
   return (
     <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-4">
       <p className="text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] mb-1.5">{label}</p>
-      <p className={`text-[16px] font-bold font-mono ${colors[color]}`}>
+      <p className={`text-[16px] font-bold tabular-nums ${colors[color]}`}>
         {formatCurrency(value)}
       </p>
     </div>

@@ -142,7 +142,7 @@ export function BudgetsClient() {
           <div className="flex-1 min-w-[200px]">
             <p className="text-[11px] font-bold text-app-muted uppercase tracking-[0.07em] mb-2">Gasto total do mês</p>
             <div className="flex items-baseline gap-2.5 mb-3">
-              <p className="text-[26px] font-bold font-mono text-app-text">{formatCurrency(totalSpent)}</p>
+              <p className="text-[26px] font-bold tabular-nums text-app-text">{formatCurrency(totalSpent)}</p>
               <span className="text-[13px] text-app-muted">de {formatCurrency(totalPlanned)}</span>
             </div>
             <div className="prog-track" style={{ height: 8 }}>
@@ -155,12 +155,12 @@ export function BudgetsClient() {
           </div>
           <div className="flex gap-6 items-center">
             <div className="text-center">
-              <p className="text-[18px] font-bold font-mono text-income">{formatCurrency(Math.max(0, totalPlanned - totalSpent))}</p>
+              <p className="text-[18px] font-bold tabular-nums text-income">{formatCurrency(Math.max(0, totalPlanned - totalSpent))}</p>
               <p className="text-[11px] text-app-muted mt-1">Disponível</p>
             </div>
             <div className="w-px h-10 bg-app-border" />
             <div className="text-center">
-              <p className="text-[18px] font-bold font-mono text-app-text">
+              <p className="text-[18px] font-bold tabular-nums text-app-text">
                 {budgets.filter((b) => b.spent <= parseFloat(b.amount)).length}/{budgets.length}
               </p>
               <p className="text-[11px] text-app-muted mt-1">Dentro do limite</p>
@@ -169,7 +169,7 @@ export function BudgetsClient() {
               <>
                 <div className="w-px h-10 bg-app-border" />
                 <div className="text-center">
-                  <p className="text-[18px] font-bold font-mono text-app-text">+{formatCurrency(totalProjected)}</p>
+                  <p className="text-[18px] font-bold tabular-nums text-app-text">+{formatCurrency(totalProjected)}</p>
                   <p className="text-[11px] text-app-muted mt-1">Previsto</p>
                 </div>
               </>
@@ -268,13 +268,13 @@ function BudgetRow({
             onChange={(e) => setDraft(e.target.value)}
             onBlur={commit}
             onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
-            className="w-32 px-2.5 h-8 text-[13px] font-mono border-[1.5px] border-[#3b82f6] rounded-[8px] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+            className="w-32 px-2.5 h-8 text-[13px] tabular-nums border-[1.5px] border-[#3b82f6] rounded-[8px] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
             placeholder="0,00"
           />
         ) : (
           <button
             onClick={() => setEditing(true)}
-            className="text-[18px] font-bold font-mono text-app-text hover:text-[#3b82f6] transition"
+            className="text-[18px] font-bold tabular-nums text-app-text hover:text-[#3b82f6] transition"
             style={{ color: state === "over" ? "#f87171" : undefined }}
           >
             {formatCurrency(spent)}
@@ -282,7 +282,7 @@ function BudgetRow({
         )}
         <span className="text-[12px] text-app-muted">
           limite{" "}
-          <button onClick={() => setEditing(true)} className="font-mono font-semibold hover:text-[#3b82f6] transition">
+          <button onClick={() => setEditing(true)} className="tabular-nums font-semibold hover:text-[#3b82f6] transition">
             {planned > 0 ? formatCurrency(planned) : <span className="text-[#3b82f6]">Definir</span>}
           </button>
         </span>

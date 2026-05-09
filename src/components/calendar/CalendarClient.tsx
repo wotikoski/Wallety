@@ -208,7 +208,7 @@ export function CalendarClient() {
                           {t.projected ? "Previsto" : t.isPaid ? "Pago" : "Pendente"}
                         </span>
                       </div>
-                      <span className={`text-sm font-semibold font-mono ml-2 ${
+                      <span className={`text-sm font-semibold tabular-nums ml-2 ${
                         t.projected
                           ? t.type === "income" ? "text-income/60" : "text-[var(--color-text)]/60"
                           : t.type === "income" ? "text-income" : "text-[var(--color-text)]"
@@ -219,7 +219,7 @@ export function CalendarClient() {
                   ))}
                   <div className="pt-2 border-t border-app-border flex justify-between text-sm font-semibold">
                     <span className="text-app-text">Saldo do dia</span>
-                    <span className={`font-mono ${
+                    <span className={`tabular-nums ${
                       selectedTxns.reduce((a, t) => t.type === "income" ? a + parseFloat(t.value) : a - parseFloat(t.value), 0) >= 0
                         ? "text-income" : "text-[var(--color-text)]"
                     }`}>

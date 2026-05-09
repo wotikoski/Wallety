@@ -321,7 +321,7 @@ export function ReportsClient() {
                             <Icon size={11} className={textColor} />
                             <span className="text-[11px] font-semibold text-app-muted">{label}</span>
                           </div>
-                          <p className="text-[15px] font-bold font-mono text-app-text tabular-nums leading-tight">{formatCurrency(value)}</p>
+                          <p className="text-[15px] font-bold tabular-nums text-app-text tabular-nums leading-tight">{formatCurrency(value)}</p>
                           <p className={`text-[11px] font-semibold tabular-nums ${textColor}`}>{pct.toFixed(1)}%</p>
                         </div>
                       </div>
@@ -396,8 +396,8 @@ export function ReportsClient() {
                             <span className={`text-[13px] font-semibold truncate flex-1 ${isSelected ? "text-[#3b82f6]" : "text-app-text"}`}>
                               {item.label}
                             </span>
-                            <span className="text-[11px] text-app-muted shrink-0 font-mono tabular-nums">{item.count} lanç.</span>
-                            <span className="text-[12px] font-mono font-semibold tabular-nums shrink-0" style={{ color }}>
+                            <span className="text-[11px] text-app-muted shrink-0 tabular-nums tabular-nums">{item.count} lanç.</span>
+                            <span className="text-[12px] tabular-nums font-semibold tabular-nums shrink-0" style={{ color }}>
                               {formatCurrency(item.total)}
                             </span>
                             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 tabular-nums" style={{ background: color + "20", color }}>
@@ -445,7 +445,7 @@ export function ReportsClient() {
                                         <p className="text-[11px] text-app-muted mt-0.5">{formatDate(t.effectiveDate ?? t.date)}</p>
                                       </div>
                                       <div className="flex items-center gap-1.5 shrink-0">
-                                        <span className={`text-[12px] font-mono font-semibold tabular-nums ${valueColor}`}>
+                                        <span className={`text-[12px] tabular-nums font-semibold tabular-nums ${valueColor}`}>
                                           {sign}{formatCurrency(t.value)}
                                         </span>
                                         {t.isPaid
@@ -464,7 +464,7 @@ export function ReportsClient() {
                                   <span className="text-[11px] font-semibold text-app-muted">
                                     {drillTxns.length} lançamento(s)
                                   </span>
-                                  <span className={`text-[12px] font-mono font-bold tabular-nums ${valueColor}`}>
+                                  <span className={`text-[12px] tabular-nums font-bold tabular-nums ${valueColor}`}>
                                     {sign}{formatCurrency(drillTxns.reduce((a, t) => a + parseFloat(t.value), 0))}
                                   </span>
                                 </div>
