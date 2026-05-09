@@ -26,6 +26,13 @@ interface Budget {
   category: { name: string; color: string | null; icon: string | null } | null;
 }
 
+/** Monochromatic blue palette — same as Relatórios for visual consistency. */
+const CATEGORY_COLORS = [
+  "#3b82f6", "#60a5fa", "#2563eb", "#1e40af",
+  "#06b6d4", "#0ea5e9", "#64748b", "#94a3b8",
+  "#475569", "#334155",
+];
+
 const MONTHS = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
@@ -187,12 +194,13 @@ export function BudgetsClient() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {rows.map(({ category, budget }) => (
+          {rows.map(({ category, budget }, index) => (
             <BudgetRow
               key={category.id}
               category={category}
               budget={budget}
               projected={projectedByCat.get(category.id) ?? 0}
+              accentColor={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
               onSave={(amount) => saveMutation.mutate({ categoryId: category.id, amount })}
               onDelete={budget ? () => deleteMutation.mutate(budget.id) : undefined}
             />
@@ -204,11 +212,12 @@ export function BudgetsClient() {
 }
 
 function BudgetRow({
-  category, budget, projected, onSave, onDelete,
+  category, budget, projected, accentColor, onSave, onDelete,
 }: {
   category: Category;
   budget?: Budget;
   projected: number;
+  accentColor: string;
   onSave: (amount: number) => void;
   onDelete?: () => void;
 }) {
@@ -217,7 +226,7 @@ function BudgetRow({
   const pct = planned > 0 ? (spent / planned) * 100 : 0;
   const projectedPct = planned > 0 ? ((spent + projected) / planned) * 100 : 0;
   const state = pct >= 100 ? "over" : pct >= 80 ? "warn" : "ok";
-  const barColor = state === "over" ? "#f87171" : state === "warn" ? "#f59e0b" : category.color ?? "#3b82f6";
+  const barColor = state === "over" ? "#f87171" : state === "warn" ? "#f59e0b" : accentColor;
 
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(planned > 0 ? String(planned).replace(".", ",") : "");
@@ -236,7 +245,7 @@ function BudgetRow({
         <div className="flex items-center gap-2.5">
           <div
             className="w-2.5 h-2.5 rounded-full shrink-0"
-            style={{ background: category.color ?? "#3b82f6" }}
+            style={{ background: accentColor }}
           />
           <span className="text-[14px] font-semibold text-app-text">{category.name}</span>
         </div>
