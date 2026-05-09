@@ -30,7 +30,7 @@ export function DailyLimitClient() {
   const nextMonthName = MONTHS[month % 12];
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="space-y-5 animate-fade-in max-w-3xl">
       <PageHeader
         title="Limite Diário"
         subtitle="Quanto você pode gastar por dia, considerando compromissos do próximo mês"
