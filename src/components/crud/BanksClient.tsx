@@ -12,6 +12,7 @@ import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, Building2, X } from "lucide-react";
 import { COLOR_PALETTE, ColorPicker, suggestPaletteColor, rotatePaletteColor } from "@/components/ui/ColorPicker";
 import { getBankBrandColor } from "@/lib/utils/bank-colors";
+import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
 
 interface Bank {
   id: string;
@@ -87,26 +88,25 @@ export function BanksClient() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-title">Bancos</h1>
-          <p className="page-subtitle">Gerencie seus bancos e instituições financeiras</p>
-        </div>
-        <button
-          onClick={() => {
-            if (showForm) { setShowForm(false); setEditing(null); reset(); }
-            else {
-              setEditing(null);
-              reset({ name: "", code: "", color: suggestPaletteColor(banks.map((b) => b.color)) });
-              setShowForm(true);
-            }
-          }}
-          className="flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
-        >
-          <Plus size={16} />
-          <span className="hidden sm:inline">Novo Banco</span>
-        </button>
-      </div>
+      <PageHeader
+        title="Bancos"
+        subtitle="Gerencie seus bancos e instituições financeiras"
+        right={
+          <PrimaryButton
+            onClick={() => {
+              if (showForm) { setShowForm(false); setEditing(null); reset(); }
+              else {
+                setEditing(null);
+                reset({ name: "", code: "", color: suggestPaletteColor(banks.map((b) => b.color)) });
+                setShowForm(true);
+              }
+            }}
+          >
+            <Plus size={15} />
+            <span className="hidden sm:inline">Novo Banco</span>
+          </PrimaryButton>
+        }
+      />
 
       {showForm && (
         <Portal>

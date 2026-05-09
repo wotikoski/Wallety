@@ -18,6 +18,7 @@ import {
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/currency";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 interface Transaction {
   id: string;
@@ -93,29 +94,29 @@ export function CalendarClient() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-title">Calendário</h1>
-          <p className="page-subtitle">Visualize seus lançamentos por data</p>
-        </div>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
-          >
-            <ChevronLeft size={15} />
-          </button>
-          <span className="text-[13px] font-semibold text-app-text px-3 whitespace-nowrap">
-            {format(currentDate, "MMMM yyyy", { locale: ptBR }).replace(/^\w/, c => c.toUpperCase())}
-          </span>
-          <button
-            onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-            className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
-          >
-            <ChevronRight size={15} />
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Calendário"
+        subtitle="Visualize seus lançamentos por data"
+        right={
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCurrentDate(subMonths(currentDate, 1))}
+              className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+            >
+              <ChevronLeft size={15} />
+            </button>
+            <span className="text-[13px] font-semibold text-app-text px-3 whitespace-nowrap">
+              {format(currentDate, "MMMM yyyy", { locale: ptBR }).replace(/^\w/, c => c.toUpperCase())}
+            </span>
+            <button
+              onClick={() => setCurrentDate(addMonths(currentDate, 1))}
+              className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+            >
+              <ChevronRight size={15} />
+            </button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar Grid */}

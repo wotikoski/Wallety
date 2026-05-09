@@ -11,6 +11,7 @@ import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, CreditCard, X } from "lucide-react";
 import { PAYMENT_METHOD_TYPES, getPaymentMethodLabel } from "@/lib/constants/payment-method-types";
+import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
 
 interface PaymentMethod {
   id: string;
@@ -117,20 +118,16 @@ export function PaymentMethodsClient() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-title">Formas de Pagamento</h1>
-          <p className="page-subtitle">Gerencie contas, cartões e formas de pagamento</p>
-        </div>
-        <button
-          onClick={() => { setShowForm(!showForm); setEditing(null); reset(); }}
-          title="Nova Forma de Pagamento"
-          className="flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
-        >
-          <Plus size={16} />
-          <span className="hidden sm:inline">Nova Forma</span>
-        </button>
-      </div>
+      <PageHeader
+        title="Formas de Pagamento"
+        subtitle="Gerencie contas, cartões e formas de pagamento"
+        right={
+          <PrimaryButton onClick={() => { setShowForm(!showForm); setEditing(null); reset(); }}>
+            <Plus size={15} />
+            <span className="hidden sm:inline">Nova Forma</span>
+          </PrimaryButton>
+        }
+      />
 
       {showForm && (
         <Portal>

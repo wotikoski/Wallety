@@ -7,6 +7,7 @@ import { useState } from "react";
 import { AlertTriangle, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 interface Category {
   id: string;
@@ -118,30 +119,28 @@ export function BudgetsClient() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-title">Orçamentos</h1>
-          <p className="page-subtitle">Defina um teto mensal de gastos por categoria</p>
-        </div>
-        {/* Month nav */}
-        <div className="flex items-center gap-2">
-          <select
-            value={month}
-            onChange={(e) => setMonth(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-app-text focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
-          >
-            {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-          </select>
-          <select
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-app-text focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
-          >
-            {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
-          </select>
-        </div>
-      </div>
+      <PageHeader
+        title="Orçamentos"
+        subtitle="Defina um teto mensal de gastos por categoria"
+        right={
+          <>
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-app-text focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+            >
+              {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+            </select>
+            <select
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-app-text focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+            >
+              {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </>
+        }
+      />
 
       {/* Hero summary card */}
       <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-5">

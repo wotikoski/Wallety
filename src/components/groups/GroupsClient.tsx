@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Portal } from "@/components/ui/Portal";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Users, Crown, Trash2, UserPlus, Copy, Check, X } from "lucide-react";
+import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/date";
 
@@ -114,20 +115,16 @@ export function GroupsClient() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-title">Grupos</h1>
-          <p className="page-subtitle">Compartilhe finanças com família ou parceiros</p>
-        </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          title="Novo Grupo"
-          className="flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
-        >
-          <Plus size={16} />
-          <span className="hidden sm:inline">Novo Grupo</span>
-        </button>
-      </div>
+      <PageHeader
+        title="Grupos"
+        subtitle="Compartilhe finanças com família ou parceiros"
+        right={
+          <PrimaryButton onClick={() => setShowForm(!showForm)}>
+            <Plus size={15} />
+            <span className="hidden sm:inline">Novo Grupo</span>
+          </PrimaryButton>
+        }
+      />
 
       {showForm && (
         <Portal>

@@ -8,6 +8,7 @@ import { FileText, ShieldCheck, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Portal } from "@/components/ui/Portal";
 import { useRouter } from "next/navigation";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 interface User {
   id: string;
@@ -73,10 +74,10 @@ export function ProfileClient() {
 
   return (
     <div className="space-y-6 max-w-lg animate-fade-in">
-      <div>
-        <h1 className="page-title">Meu Perfil</h1>
-        <p className="page-subtitle">Gerencie suas informações pessoais</p>
-      </div>
+      <PageHeader
+        title="Meu Perfil"
+        subtitle="Gerencie suas informações pessoais"
+      />
 
       {/* Profile form */}
       <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-6">

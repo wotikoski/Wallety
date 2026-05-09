@@ -11,6 +11,7 @@ import { Portal } from "@/components/ui/Portal";
 import { Plus, RefreshCcw, Trash2, Edit, Play, Pause, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SwipeableRow } from "@/components/transactions/SwipeableRow";
+import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
 
 // "2026-02-17" → "17/02/2026"
 function fmtDate(iso: string) {
@@ -211,22 +212,16 @@ export function RecurringClient() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-title">Recorrências</h1>
-          <p className="page-subtitle">Receitas e despesas automáticas</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={openNew}
-            title="Nova recorrência"
-            className="hidden sm:flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
-          >
-            <Plus size={14} />
-            Nova Recorrência
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Recorrências"
+        subtitle="Receitas e despesas automáticas"
+        right={
+          <PrimaryButton onClick={openNew}>
+            <Plus size={15} />
+            <span className="hidden sm:inline">Nova Recorrência</span>
+          </PrimaryButton>
+        }
+      />
 
       {/* Stats */}
       {rows.length > 0 && (

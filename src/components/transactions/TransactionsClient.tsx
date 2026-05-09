@@ -66,6 +66,7 @@ import { SwipeableRow } from "./SwipeableRow";
 import { usePullToRefresh } from "@/lib/hooks/usePullToRefresh";
 import { TransactionForm } from "./TransactionForm";
 import { TransactionEditClient } from "./TransactionEditClient";
+import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
 
 interface Transaction {
   id: string;
@@ -287,47 +288,41 @@ export function TransactionsClient() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-title">Lançamentos</h1>
-          <p className="text-[13px] font-medium mt-1 text-[var(--text-mute)]">Gerencie todas as suas transações</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <a
-            href={`/api/transactions/export?${params}`}
-            className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
-            title="Baixar CSV com os filtros atuais"
-          >
-            <Download size={16} />
-            <span className="hidden sm:inline">Exportar CSV</span>
-          </a>
-          {/* FilterSheet trigger — visible only on mobile */}
-          <FilterSheet
-            type={type}
-            setType={setType}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
-            showFuture={showFuture}
-            setShowFuture={setShowFuture}
-            isPaidFilter={isPaidFilter}
-            setIsPaidFilter={setIsPaidFilter}
-            navigateMonth={navigateMonth}
-            setPage={setPage}
-          />
-          {/* "Novo Lançamento" button — hidden on mobile (FAB is used instead) */}
-          <button
-            onClick={() => setShowNewForm(true)}
-            title="Novo Lançamento"
-            className="hidden md:flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
-          >
-            <Plus size={16} />
-            Novo Lançamento
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Lançamentos"
+        subtitle="Gerencie todas as suas transações"
+        right={
+          <>
+            <a
+              href={`/api/transactions/export?${params}`}
+              className="inline-flex items-center gap-2 h-[38px] px-3.5 rounded-[9px] border border-[var(--color-border)] text-[13px] font-semibold text-[var(--text-dim)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)] transition"
+              title="Baixar CSV com os filtros atuais"
+            >
+              <Download size={15} />
+              <span className="hidden sm:inline">Exportar CSV</span>
+            </a>
+            <FilterSheet
+              type={type}
+              setType={setType}
+              startDate={startDate}
+              setStartDate={setStartDate}
+              endDate={endDate}
+              setEndDate={setEndDate}
+              showFuture={showFuture}
+              setShowFuture={setShowFuture}
+              isPaidFilter={isPaidFilter}
+              setIsPaidFilter={setIsPaidFilter}
+              navigateMonth={navigateMonth}
+              setPage={setPage}
+            />
+            {/* Plus — desktop only (mobile uses FAB) */}
+            <PrimaryButton onClick={() => setShowNewForm(true)} className="hidden md:inline-flex">
+              <Plus size={15} />
+              Novo Lançamento
+            </PrimaryButton>
+          </>
+        }
+      />
 
       {/* FAB — mobile only, above the bottom nav */}
       <button

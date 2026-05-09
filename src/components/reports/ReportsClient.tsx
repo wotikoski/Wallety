@@ -9,6 +9,7 @@ import { TrendingUp, TrendingDown, CheckCircle2, Circle, ChevronLeft, ChevronRig
 import { ReportFilterSheet } from "./ReportFilterSheet";
 import { format, startOfMonth, endOfMonth, addMonths, parseISO } from "date-fns";
 import { clampEndDate } from "@/lib/utils/date";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 interface ReportItem {
   label: string;
@@ -173,23 +174,25 @@ export function ReportsClient() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      <div className="no-print flex items-start justify-between gap-2">
-        <div>
-          <h1 className="page-title">Relatórios</h1>
-          <p className="page-subtitle">Análise do histórico financeiro</p>
-        </div>
-        <ReportFilterSheet
-          reportType={reportType}
-          setReportType={setReportType}
-          startDate={startDate}
-          setStartDate={setStartDate}
-          endDate={endDate}
-          setEndDate={setEndDate}
-          groupBy={groupBy}
-          setGroupBy={setGroupBy}
-          navigateMonth={navigateMonth}
-          activeGroupId={activeGroupId ?? null}
-          onFilterChange={handleFilterChange}
+      <div className="no-print">
+        <PageHeader
+          title="Relatórios"
+          subtitle="Análise do histórico financeiro"
+          right={
+            <ReportFilterSheet
+              reportType={reportType}
+              setReportType={setReportType}
+              startDate={startDate}
+              setStartDate={setStartDate}
+              endDate={endDate}
+              setEndDate={setEndDate}
+              groupBy={groupBy}
+              setGroupBy={setGroupBy}
+              navigateMonth={navigateMonth}
+              activeGroupId={activeGroupId ?? null}
+              onFilterChange={handleFilterChange}
+            />
+          }
         />
       </div>
 

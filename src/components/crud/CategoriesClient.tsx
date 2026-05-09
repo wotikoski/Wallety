@@ -11,6 +11,7 @@ import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { Plus, Trash2, Edit, X, Check } from "lucide-react";
 import { COLOR_PALETTE, ColorPicker, suggestPaletteColor, rotatePaletteColor } from "@/components/ui/ColorPicker";
+import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
 
 /** Common category emojis, grouped visually. Covers most finance use cases. */
 const EMOJI_SUGGESTIONS = [
@@ -132,20 +133,18 @@ export function CategoriesClient() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-title">Categorias</h1>
-          <p className="page-subtitle">Organize seus lançamentos por categoria</p>
-        </div>
-        <button
-          onClick={() => { if (showForm) { setShowForm(false); setEditing(null); reset(); } else startNew(); }}
-          title="Nova Categoria"
-          className="flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
-        >
-          <Plus size={16} />
-          <span className="hidden sm:inline">Nova Categoria</span>
-        </button>
-      </div>
+      <PageHeader
+        title="Categorias"
+        subtitle="Organize seus lançamentos por categoria"
+        right={
+          <PrimaryButton
+            onClick={() => { if (showForm) { setShowForm(false); setEditing(null); reset(); } else startNew(); }}
+          >
+            <Plus size={15} />
+            <span className="hidden sm:inline">Nova Categoria</span>
+          </PrimaryButton>
+        }
+      />
 
       {/* Form modal */}
       {showForm && (

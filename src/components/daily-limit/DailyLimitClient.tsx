@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/utils/currency";
 import { useState } from "react";
 import { CalendarClock, Info } from "lucide-react";
 import type { DailyLimitResult } from "@/lib/utils/daily-limit";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
@@ -30,31 +31,28 @@ export function DailyLimitClient() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-title">Limite Diário</h1>
-          <p className="page-subtitle">
-            Quanto você pode gastar por dia, considerando compromissos do próximo mês
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <select
-            value={month}
-            onChange={(e) => setMonth(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
-          >
-            {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-          </select>
-          <select
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
-          >
-            {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
-          </select>
-        </div>
-      </div>
+      <PageHeader
+        title="Limite Diário"
+        subtitle="Quanto você pode gastar por dia, considerando compromissos do próximo mês"
+        right={
+          <>
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+            >
+              {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+            </select>
+            <select
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+            >
+              {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </>
+        }
+      />
 
       {isLoading ? (
         <div className="text-center text-app-muted py-12 text-sm">Calculando...</div>
