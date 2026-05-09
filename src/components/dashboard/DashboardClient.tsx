@@ -477,12 +477,7 @@ export function DashboardClient() {
             <select
               value={month}
               onChange={(e) => setMonth(Number(e.target.value))}
-              style={{
-                background: "transparent", border: "1px solid var(--color-border)",
-                color: "var(--color-text)", padding: "9px 10px", borderRadius: 9,
-                fontSize: 12, fontWeight: 500, cursor: "pointer",
-                flex: 1, minWidth: 0,
-              }}
+              className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-app-text focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
             >
               {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
             </select>
@@ -490,13 +485,7 @@ export function DashboardClient() {
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="dash-year"
-              style={{
-                background: "transparent", border: "1px solid var(--color-border)",
-                color: "var(--color-text)", padding: "9px 10px", borderRadius: 9,
-                fontSize: 12, fontWeight: 500, cursor: "pointer",
-                flexShrink: 0,
-              }}
+              className="text-[13px] font-semibold border-[1.5px] border-app-border rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-app-text focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
             >
               {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
             </select>

@@ -278,8 +278,6 @@
   .kpi-label     { font-size: 10px; }
   .kpi-val       { font-size: 20px; margin-top: 6px; }
 
-  .dash-year     { flex: 1 !important; min-width: 0; }
-
   .hero-grid     { grid-template-columns: 1fr; }
   .charts-grid   { grid-template-columns: 1fr; }
 }
