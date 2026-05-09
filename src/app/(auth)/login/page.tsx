@@ -8,18 +8,18 @@ export default function LoginPage() {
   return (
     <div>
       <LoginForm />
-      <p style={{ textAlign: "center", fontSize: "13px", color: "#475569", marginTop: "20px" }}>
+      <p className="text-center text-[13px] text-slate-500 mt-5">
         Não tem conta?{" "}
-        <Link href="/register" style={{ color: "#3b82f6", textDecoration: "none", fontWeight: 500 }}>
+        <Link href="/register" className="text-blue-500 no-underline font-medium hover:underline">
           Cadastre-se
         </Link>
       </p>
-      <p style={{ textAlign: "center", fontSize: "12px", color: "#64748b", marginTop: "16px" }}>
-        <Link href="/termos" style={{ color: "#64748b", textDecoration: "none" }}>
+      <p className="text-center text-[12px] text-slate-500 mt-4">
+        <Link href="/termos" className="text-slate-500 hover:text-slate-400 no-underline">
           Termos de Uso
         </Link>
         {" · "}
-        <Link href="/privacidade" style={{ color: "#64748b", textDecoration: "none" }}>
+        <Link href="/privacidade" className="text-slate-500 hover:text-slate-400 no-underline">
           Privacidade
         </Link>
       </p>

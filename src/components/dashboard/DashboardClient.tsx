@@ -94,7 +94,7 @@ function AreaTooltip({ active, payload, label, theme }: {
         <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
           <div style={{ width: 8, height: 8, borderRadius: "50%", background: p.stroke, flexShrink: 0 }} />
           <span style={{ color: theme.tooltipMuted, fontSize: 12, flex: 1 }}>{p.name}</span>
-          <span style={{ color: theme.tooltipText, fontWeight: 700, fontSize: 12, fontFamily: "monospace" }}>
+          <span style={{ color: theme.tooltipText, fontWeight: 700, fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
             {formatCurrency(p.value)}
           </span>
         </div>
@@ -480,7 +480,7 @@ export function DashboardClient() {
               style={{
                 background: "transparent", border: "1px solid var(--color-border)",
                 color: "var(--color-text)", padding: "9px 10px", borderRadius: 9,
-                fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer",
+                fontSize: 12, fontWeight: 500, cursor: "pointer",
                 flex: 1, minWidth: 0,
               }}
             >
@@ -495,7 +495,7 @@ export function DashboardClient() {
               style={{
                 background: "transparent", border: "1px solid var(--color-border)",
                 color: "var(--color-text)", padding: "9px 10px", borderRadius: 9,
-                fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer",
+                fontSize: 12, fontWeight: 500, cursor: "pointer",
                 flexShrink: 0,
               }}
             >

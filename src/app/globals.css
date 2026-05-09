@@ -46,6 +46,9 @@
   --expense-bar:   #cbd5d0;
   --color-amber:   #d97706;
 
+  /* Auth page canvas (deep navy — used in (auth)/layout.tsx inline style) */
+  --auth-canvas: #0b1120;
+
   /* Shadow */
   --shadow-card: rgba(0, 0, 0, 0.06) 0px 4px 16px 0px, rgba(0, 0, 0, 0.04) 0px 1px 4px 0px;
 

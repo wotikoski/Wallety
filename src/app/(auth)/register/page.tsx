@@ -8,19 +8,19 @@ export default function RegisterPage() {
   return (
     <div>
       <RegisterForm />
-      <p style={{ textAlign: "center", fontSize: "13px", color: "#475569", marginTop: "20px" }}>
+      <p className="text-center text-[13px] text-slate-500 mt-5">
         Já tem conta?{" "}
-        <Link href="/login" style={{ color: "#3b82f6", textDecoration: "none", fontWeight: 500 }}>
+        <Link href="/login" className="text-blue-500 no-underline font-medium hover:underline">
           Entrar
         </Link>
       </p>
-      <p style={{ textAlign: "center", fontSize: "12px", color: "#64748b", marginTop: "16px" }}>
+      <p className="text-center text-[12px] text-slate-500 mt-4">
         Ao criar sua conta, você concorda com os{" "}
-        <Link href="/termos" style={{ color: "#3b82f6", textDecoration: "none" }}>
+        <Link href="/termos" className="text-blue-500 no-underline hover:underline">
           Termos de Uso
         </Link>
         {" "}e a{" "}
-        <Link href="/privacidade" style={{ color: "#3b82f6", textDecoration: "none" }}>
+        <Link href="/privacidade" className="text-blue-500 no-underline hover:underline">
           Política de Privacidade
         </Link>
         .

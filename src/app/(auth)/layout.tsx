@@ -36,7 +36,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0b1120", overflow: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "var(--auth-canvas)", overflow: "hidden" }}>
       <BackgroundCanvas />
 
       {/* Noise overlay */}
