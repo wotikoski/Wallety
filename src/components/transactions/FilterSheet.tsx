@@ -82,7 +82,7 @@ export function FilterSheet({
         onClick={openSheet}
         className={`md:hidden relative flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border transition ${
           hasActiveFilters
-            ? "border-brand-500 bg-brand-50 text-brand-600 font-medium"
+            ? "border-[#3b82f6] bg-[rgba(59,130,246,.08)] text-[#3b82f6] font-medium"
             : "border-app-border text-app-muted bg-[var(--surface-card)] hover:bg-[var(--surface-raised)]"
         }`}
         aria-label="Filtros"
@@ -90,7 +90,7 @@ export function FilterSheet({
         <Filter size={15} />
         Filtros
         {hasActiveFilters && (
-          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-brand-600" />
+          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#2563eb]" />
         )}
       </button>
 
@@ -134,7 +134,7 @@ export function FilterSheet({
                 type="button"
                 onClick={() => setDraftType("")}
                 className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
-                  draftType === "" ? "bg-brand-600 text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                  draftType === "" ? "bg-[#2563eb] text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
                 }`}
               >
                 <Layers size={14} /> Todos
@@ -168,7 +168,7 @@ export function FilterSheet({
                 type="button"
                 onClick={() => setDraftIsPaid("")}
                 className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
-                  draftIsPaid === "" ? "bg-brand-600 text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
+                  draftIsPaid === "" ? "bg-[#2563eb] text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
                 }`}
               >
                 <Layers size={14} /> Todos
@@ -240,7 +240,7 @@ export function FilterSheet({
             onClick={() => setDraftFuture((v) => !v)}
             className={`w-full h-[42px] flex items-center justify-center gap-2 text-sm rounded-xl border transition ${
               draftFuture
-                ? "border-brand-500 bg-brand-50 text-brand-600 font-medium"
+                ? "border-[#3b82f6] bg-[rgba(59,130,246,.08)] text-[#3b82f6] font-medium"
                 : "border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text"
             }`}
           >
@@ -259,7 +259,7 @@ export function FilterSheet({
           </button>
           <button
             onClick={apply}
-            className="flex-1 h-[44px] text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition"
+            className="flex-1 h-[44px] text-sm font-medium text-white bg-[#2563eb] hover:bg-[#1d4ed8] rounded-xl transition"
           >
             Aplicar
           </button>

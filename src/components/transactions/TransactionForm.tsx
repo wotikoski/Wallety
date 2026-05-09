@@ -424,7 +424,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
           <input
             {...register("isPaid")}
             type="checkbox"
-            className="w-4 h-4 rounded border-app-border text-brand-600 focus:ring-brand-500"
+            className="w-4 h-4 rounded border-app-border text-[#2563eb] focus:ring-[#3b82f6]"
           />
           <span className="text-sm text-app-text">Marcar como pago</span>
         </label>
@@ -432,7 +432,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
           <input
             {...register("isFixed")}
             type="checkbox"
-            className="w-4 h-4 rounded border-app-border text-brand-600 focus:ring-brand-500"
+            className="w-4 h-4 rounded border-app-border text-[#2563eb] focus:ring-[#3b82f6]"
           />
           <span className="text-sm text-app-text">Custo fixo</span>
         </label>
@@ -467,7 +467,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
                   value={opt.value}
                   checked={installmentScope === opt.value}
                   onChange={() => setInstallmentScope(opt.value)}
-                  className="w-4 h-4 text-brand-600 border-app-border focus:ring-brand-500"
+                  className="w-4 h-4 text-[#2563eb] border-app-border focus:ring-[#3b82f6]"
                 />
                 <span className="text-sm text-app-text">{opt.label}</span>
               </label>
@@ -487,7 +487,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
         <button
           type="submit"
           disabled={saveMutation.isPending}
-          className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 rounded-lg text-sm transition disabled:opacity-50"
+          className="flex-1 h-9 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium px-4 rounded-lg text-sm transition disabled:opacity-50"
         >
           {saveMutation.isPending ? "Salvando..." : isEdit ? "Atualizar" : "Salvar"}
         </button>

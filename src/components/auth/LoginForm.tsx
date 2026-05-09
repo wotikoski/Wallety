@@ -59,7 +59,7 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#f1f5f9", letterSpacing: "-0.03em", marginBottom: "6px" }}>
+      <h1 style={{ fontSize: "28px", fontWeight: 600, color: "#f1f5f9", letterSpacing: "-0.03em", marginBottom: "6px" }}>
         Bem-vindo
       </h1>
       <p style={{ fontSize: "14px", color: "#64748b", marginBottom: "28px" }}>
@@ -72,7 +72,7 @@ export function LoginForm() {
         </div>
       )}
 
-      <label style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "var(--color-muted)", marginBottom: "6px" }}>
+      <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "var(--color-muted)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.07em" }}>
         E-mail
       </label>
       <input
@@ -85,7 +85,7 @@ export function LoginForm() {
       />
       {errors.email && <p style={{ color: "#f87171", fontSize: "12px", marginTop: "-12px", marginBottom: "12px" }}>{errors.email.message}</p>}
 
-      <label style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "var(--color-muted)", marginBottom: "6px" }}>
+      <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "var(--color-muted)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.07em" }}>
         Senha
       </label>
       <input

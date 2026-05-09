@@ -220,7 +220,7 @@ export function RecurringClient() {
           <button
             onClick={openNew}
             title="Nova recorrência"
-            className="hidden sm:flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+            className="hidden sm:flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
           >
             <Plus size={14} />
             Nova Recorrência
@@ -252,7 +252,7 @@ export function RecurringClient() {
           <div className="p-12 text-center">
             <div className="text-4xl mb-3">🔁</div>
             <p className="text-app-muted text-sm">Nenhuma recorrência cadastrada</p>
-            <button onClick={openNew} className="mt-3 inline-flex items-center gap-1 text-brand-500 text-sm font-semibold hover:text-brand-700">
+            <button onClick={openNew} className="mt-3 inline-flex items-center gap-1 text-[#3b82f6] text-sm font-semibold hover:text-[#2563eb]">
               <Plus size={14} /> Criar primeira recorrência
             </button>
           </div>
@@ -269,7 +269,7 @@ export function RecurringClient() {
                       <div className="flex h-full w-full">
                         <button
                           onClick={() => openEdit(r)}
-                          className="flex-1 flex flex-col items-center justify-center gap-1 bg-brand-500 text-white text-xs font-medium"
+                          className="flex-1 flex flex-col items-center justify-center gap-1 bg-[#2563eb] text-white text-xs font-medium"
                         >
                           <Edit size={16} />
                           Editar
@@ -309,7 +309,7 @@ export function RecurringClient() {
                         <button
                           onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
                           title={r.isActive ? "Pausar recorrência" : "Ativar recorrência"}
-                          className={`p-1.5 rounded-lg transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(16,185,129,.1)]"}`}
+                          className={`p-1.5 rounded-lg transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(59,130,246,.1)]"}`}
                         >
                           {r.isActive ? <Pause size={15} /> : <Play size={15} />}
                         </button>
@@ -371,13 +371,13 @@ export function RecurringClient() {
                           <button
                             onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
                             title={r.isActive ? "Pausar recorrência" : "Ativar recorrência"}
-                            className={`p-1.5 rounded-lg transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(16,185,129,.1)]"}`}
+                            className={`p-1.5 rounded-lg transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(59,130,246,.1)]"}`}
                           >
                             {r.isActive ? <Pause size={14} /> : <Play size={14} />}
                           </button>
                           <button
                             onClick={() => openEdit(r)}
-                            className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
+                            className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-lg transition"
                           >
                             <Edit size={14} />
                           </button>
@@ -442,7 +442,7 @@ export function RecurringClient() {
         onClick={openNew}
         title="Nova recorrência"
         aria-label="Nova recorrência"
-        className="md:hidden fixed right-4 z-50 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(99,102,241,.4)] transition" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)" }}
+        className="md:hidden fixed right-4 z-50 w-14 h-14 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,.4)] transition" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)" }}
       >
         <Plus size={24} />
       </button>
@@ -724,7 +724,7 @@ function RecurringForm({
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 h-9 px-4 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-60"
+            className="flex-1 h-9 px-4 text-sm font-medium text-white bg-[#2563eb] rounded-lg hover:bg-[#1d4ed8] disabled:opacity-60"
           >
             {saving ? "Salvando..." : editing ? "Atualizar" : "Salvar"}
           </button>

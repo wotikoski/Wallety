@@ -321,7 +321,7 @@ export function TransactionsClient() {
           <button
             onClick={() => setShowNewForm(true)}
             title="Novo Lançamento"
-            className="hidden md:flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+            className="hidden md:flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
           >
             <Plus size={16} />
             Novo Lançamento
@@ -333,7 +333,7 @@ export function TransactionsClient() {
       <button
         onClick={() => setShowNewForm(true)}
         title="Novo Lançamento"
-        className="md:hidden fixed right-4 z-50 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-lg transition" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)" }}
+        className="md:hidden fixed right-4 z-50 w-14 h-14 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex items-center justify-center shadow-lg transition" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)" }}
         aria-label="Novo Lançamento"
       >
         <Plus size={24} />
@@ -462,9 +462,9 @@ export function TransactionsClient() {
             <SummaryChip
               label="Receitas"
               value={totalIncome}
-              labelColor="#059669"
-              valueColor="#10b981"
-              bg="rgba(16,185,129,.1)"
+              labelColor="#2563eb"
+              valueColor="#3b82f6"
+              bg="rgba(59,130,246,.1)"
             />
             <SummaryChip
               label="Despesas"
@@ -476,9 +476,9 @@ export function TransactionsClient() {
             <SummaryChip
               label="Saldo"
               value={totalIncome - totalExpense}
-              labelColor={totalIncome - totalExpense >= 0 ? "#059669" : "#ef4444"}
-              valueColor={totalIncome - totalExpense >= 0 ? "#10b981" : "#f87171"}
-              bg={totalIncome - totalExpense >= 0 ? "rgba(16,185,129,.1)" : "rgba(248,113,113,.1)"}
+              labelColor={totalIncome - totalExpense >= 0 ? "#2563eb" : "#ef4444"}
+              valueColor={totalIncome - totalExpense >= 0 ? "#3b82f6" : "#f87171"}
+              bg={totalIncome - totalExpense >= 0 ? "rgba(59,130,246,.1)" : "rgba(248,113,113,.1)"}
             />
           </div>
         </div>
@@ -492,7 +492,7 @@ export function TransactionsClient() {
           <div className="p-12 text-center">
             <div className="text-4xl mb-3">💳</div>
             <p className="text-[var(--text-mute)] text-sm">Nenhum lançamento encontrado</p>
-            <button onClick={() => setShowNewForm(true)} className="mt-3 inline-flex items-center gap-1 text-brand-600 text-sm font-medium hover:text-brand-700">
+            <button onClick={() => setShowNewForm(true)} className="mt-3 inline-flex items-center gap-1 text-[#3b82f6] text-sm font-medium hover:text-[#2563eb]">
               <Plus size={14} /> Criar primeiro lançamento
             </button>
           </div>
@@ -507,7 +507,7 @@ export function TransactionsClient() {
                     <div className="flex h-full w-full">
                       <button
                         onClick={() => setEditingId(t.id)}
-                        className="flex-1 flex flex-col items-center justify-center gap-1 bg-brand-500 text-white text-xs font-medium"
+                        className="flex-1 flex flex-col items-center justify-center gap-1 bg-[#2563eb] text-white text-xs font-medium"
                       >
                         <Edit size={16} />
                         Editar
@@ -525,7 +525,7 @@ export function TransactionsClient() {
                   <div className="px-4 py-3.5 flex items-center gap-3 bg-[var(--surface-card)] hover:bg-[var(--surface-raised)] transition">
                     <div
                       className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
-                      style={{ background: t.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                      style={{ background: t.type === "income" ? "rgba(59,130,246,.12)" : "rgba(248,113,113,.12)" }}
                     >
                       {t.type === "income"
                         ? <ArrowUpRight size={14} className="text-income" strokeWidth={2.5} />
@@ -603,7 +603,7 @@ export function TransactionsClient() {
                       <div className="flex items-center gap-2.5">
                         <div
                           className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0"
-                          style={{ background: t.type === "income" ? "rgba(16,185,129,.12)" : "rgba(248,113,113,.12)" }}
+                          style={{ background: t.type === "income" ? "rgba(59,130,246,.12)" : "rgba(248,113,113,.12)" }}
                         >
                           {t.type === "income"
                             ? <ArrowUpRight size={13} className="text-income" strokeWidth={2.5} />
@@ -794,7 +794,7 @@ function InstallmentDeleteDialog({
                 key={opt.value}
                 className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
                   scope === opt.value
-                    ? "border-brand-500 bg-brand-50"
+                    ? "border-[#3b82f6] bg-[rgba(59,130,246,.08)]"
                     : "border-app-border hover:bg-[var(--surface-raised)]"
                 }`}
               >

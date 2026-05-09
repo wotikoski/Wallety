@@ -125,7 +125,7 @@ export function PaymentMethodsClient() {
         <button
           onClick={() => { setShowForm(!showForm); setEditing(null); reset(); }}
           title="Nova Forma de Pagamento"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+          className="flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Nova Forma</span>
@@ -210,7 +210,7 @@ export function PaymentMethodsClient() {
                 <input
                   {...register("supportsInstallments")}
                   type="checkbox"
-                  className="w-4 h-4 rounded border-app-border text-brand-600 focus:ring-brand-500 shrink-0"
+                  className="w-4 h-4 rounded border-app-border text-[#2563eb] focus:ring-[#3b82f6] shrink-0"
                 />
               </label>
               <button
@@ -223,7 +223,7 @@ export function PaymentMethodsClient() {
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
+                className="h-9 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
               >
                 {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
               </button>
@@ -240,8 +240,8 @@ export function PaymentMethodsClient() {
             <p className="px-6 py-12 text-[13px] text-app-muted text-center">Nenhuma forma de pagamento</p>
           ) : paymentMethods.map((pm) => (
             <div key={pm.id} className="flex items-center px-6 py-4 gap-4 hover:bg-[#f8f9fd] transition">
-              <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
-                <CreditCard size={18} className="text-brand-500" />
+              <div className="w-10 h-10 rounded-xl bg-[rgba(59,130,246,.12)] flex items-center justify-center shrink-0">
+                <CreditCard size={18} className="text-[#3b82f6]" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-semibold text-app-text">{pm.name}</p>
@@ -252,7 +252,7 @@ export function PaymentMethodsClient() {
                   )}
                 </p>
               </div>
-              {pm.isDefault && <span className="text-[10px] font-semibold text-brand-500 bg-[rgba(99,102,241,.08)] px-1.5 py-0.5 rounded-full">Padrão</span>}
+              {pm.isDefault && <span className="text-[10px] font-semibold text-[#3b82f6] bg-[rgba(59,130,246,.08)] px-1.5 py-0.5 rounded-full">Padrão</span>}
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => {
@@ -267,7 +267,7 @@ export function PaymentMethodsClient() {
                     });
                     setShowForm(true);
                   }}
-                  className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
+                  className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-lg transition"
                 >
                   <Edit size={14} />
                 </button>

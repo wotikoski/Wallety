@@ -268,13 +268,13 @@ function BudgetRow({
             onChange={(e) => setDraft(e.target.value)}
             onBlur={commit}
             onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
-            className="w-32 px-2.5 h-8 text-[13px] font-mono border-[1.5px] border-brand-500 rounded-[8px] focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-32 px-2.5 h-8 text-[13px] font-mono border-[1.5px] border-[#3b82f6] rounded-[8px] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
             placeholder="0,00"
           />
         ) : (
           <button
             onClick={() => setEditing(true)}
-            className="text-[18px] font-bold font-mono text-app-text hover:text-brand-500 transition"
+            className="text-[18px] font-bold font-mono text-app-text hover:text-[#3b82f6] transition"
             style={{ color: state === "over" ? "#f87171" : undefined }}
           >
             {formatCurrency(spent)}
@@ -282,8 +282,8 @@ function BudgetRow({
         )}
         <span className="text-[12px] text-app-muted">
           limite{" "}
-          <button onClick={() => setEditing(true)} className="font-mono font-semibold hover:text-brand-500 transition">
-            {planned > 0 ? formatCurrency(planned) : <span className="text-brand-500">Definir</span>}
+          <button onClick={() => setEditing(true)} className="font-mono font-semibold hover:text-[#3b82f6] transition">
+            {planned > 0 ? formatCurrency(planned) : <span className="text-[#3b82f6]">Definir</span>}
           </button>
         </span>
       </div>

@@ -122,7 +122,7 @@ export function GroupsClient() {
         <button
           onClick={() => setShowForm(!showForm)}
           title="Novo Grupo"
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+          className="flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Novo Grupo</span>
@@ -150,7 +150,7 @@ export function GroupsClient() {
                 <label className="block text-xs font-medium text-app-muted mb-1">Nome do grupo</label>
                 <input
                   {...register("name", { required: true })}
-                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-card)] text-app-text"
                   placeholder="Ex: Família Silva"
                 />
               </div>
@@ -158,13 +158,13 @@ export function GroupsClient() {
                 <label className="block text-xs font-medium text-app-muted mb-1">Descrição (opcional)</label>
                 <input
                   {...register("description")}
-                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-card)] text-app-text"
                   placeholder="Breve descrição do grupo"
                 />
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => { setShowForm(false); reset(); }} className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition">Cancelar</button>
-                <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
+                <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
                   {createMutation.isPending ? "Criando..." : "Criar"}
                 </button>
               </div>
@@ -191,8 +191,8 @@ export function GroupsClient() {
                 className={`w-full text-left bg-[var(--surface-card)] rounded-[14px] border p-4 transition ${g.id === selectedGroup ? "border-[#3b82f6] ring-1 ring-[#3b82f6]" : "border-[var(--color-border)] hover:border-[#3b82f6]"}`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center shrink-0">
-                    <Users size={18} className="text-brand-600" />
+                  <div className="w-10 h-10 rounded-xl bg-[rgba(59,130,246,.12)] flex items-center justify-center shrink-0">
+                    <Users size={18} className="text-[#3b82f6]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-app-text truncate">{g.name}</p>
@@ -216,7 +216,7 @@ export function GroupsClient() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveGroupId(activeGroupId === selectedGroup ? null : selectedGroup)}
-                    className={`text-sm px-3.5 h-9 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-brand-600 text-white" : "border border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text"}`}
+                    className={`text-sm px-3.5 h-9 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-[#2563eb] text-white" : "border border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text"}`}
                   >
                     {activeGroupId === selectedGroup ? "Ativo" : "Ativar"}
                   </button>
@@ -239,7 +239,7 @@ export function GroupsClient() {
               <div className="space-y-2">
                 {members.map((m) => (
                   <div key={m.user.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-[var(--surface-raised)]">
-                    <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700 shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-[rgba(59,130,246,.12)] flex items-center justify-center text-sm font-semibold text-[#3b82f6] shrink-0">
                       {m.user.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -262,12 +262,12 @@ export function GroupsClient() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="email@exemplo.com"
-                  className="flex-1 h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex-1 h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
                 />
                 <button
                   onClick={() => inviteMutation.mutate()}
                   disabled={!inviteEmail || inviteMutation.isPending}
-                  className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 h-9 rounded-lg transition disabled:opacity-50"
+                  className="flex items-center gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-4 h-9 rounded-lg transition disabled:opacity-50"
                 >
                   <UserPlus size={14} />
                   Convidar
@@ -279,7 +279,7 @@ export function GroupsClient() {
                   <p className="text-xs text-[var(--text-mute)] mb-1.5">Link de convite (válido por 7 dias):</p>
                   <div className="flex items-center gap-2">
                     <code className="text-xs text-app-text flex-1 truncate">{inviteUrl}</code>
-                    <button onClick={copyInviteUrl} className="p-1.5 text-app-muted hover:text-brand-600 transition">
+                    <button onClick={copyInviteUrl} className="p-1.5 text-app-muted hover:text-[#3b82f6] transition">
                       {copied ? <Check size={14} className="text-income" /> : <Copy size={14} />}
                     </button>
                   </div>

@@ -101,7 +101,7 @@ export function BanksClient() {
               setShowForm(true);
             }
           }}
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
+          className="flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-3.5 h-9 rounded-lg transition"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Novo Banco</span>
@@ -167,7 +167,7 @@ export function BanksClient() {
                 <button
                   type="submit"
                   disabled={saveMutation.isPending}
-                  className="flex-1 h-9 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
+                  className="flex-1 h-9 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
                 >
                   {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
                 </button>
@@ -195,7 +195,7 @@ export function BanksClient() {
                 <p className="text-[13px] font-semibold text-app-text">{bank.name}</p>
                 {bank.code && <p className="text-[11px] text-app-muted">Cód. {bank.code}</p>}
               </div>
-              {bank.isDefault && <span className="text-[10px] font-semibold text-brand-500 bg-[rgba(99,102,241,.08)] px-1.5 py-0.5 rounded-full">Padrão</span>}
+              {bank.isDefault && <span className="text-[10px] font-semibold text-[#3b82f6] bg-[rgba(59,130,246,.08)] px-1.5 py-0.5 rounded-full">Padrão</span>}
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => {
@@ -203,7 +203,7 @@ export function BanksClient() {
                     reset({ name: bank.name, code: bank.code ?? "", color: bank.color ?? COLOR_PALETTE[0] });
                     setShowForm(true);
                   }}
-                  className="p-1.5 text-app-muted hover:text-brand-500 hover:bg-[rgba(99,102,241,.08)] rounded-lg transition"
+                  className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-lg transition"
                 >
                   <Edit size={14} />
                 </button>

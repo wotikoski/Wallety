@@ -145,9 +145,9 @@ export function CalendarClient() {
                 <button
                   key={day.toISOString()}
                   onClick={() => setSelectedDay(isSelected ? null : day)}
-                  className={`h-14 md:h-24 border-b border-r border-app-border p-1 md:p-2 text-left transition hover:bg-[var(--surface-raised)] ${isSelected ? "bg-[rgba(99,102,241,0.07)]" : ""}`}
+                  className={`h-14 md:h-24 border-b border-r border-app-border p-1 md:p-2 text-left transition hover:bg-[var(--surface-raised)] ${isSelected ? "bg-[rgba(59,130,246,0.07)]" : ""}`}
                 >
-                  <span className={`inline-flex w-6 h-6 items-center justify-center rounded-full text-xs font-medium mb-1 ${today ? "bg-brand-600 text-white" : isSelected ? "ring-1 ring-brand-500 text-brand-600 font-semibold" : "text-app-muted"}`}>
+                  <span className={`inline-flex w-6 h-6 items-center justify-center rounded-full text-xs font-medium mb-1 ${today ? "bg-[#2563eb] text-white" : isSelected ? "ring-1 ring-[#3b82f6] text-[#3b82f6] font-semibold" : "text-app-muted"}`}>
                     {format(day, "d")}
                   </span>
                   <div className="space-y-0.5 hidden md:block">

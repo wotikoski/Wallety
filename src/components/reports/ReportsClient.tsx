@@ -400,7 +400,7 @@ export function ReportsClient() {
                         >
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-[3px] h-3.5 rounded-full shrink-0" style={{ background: color }} />
-                            <span className={`text-[13px] font-semibold truncate flex-1 ${isSelected ? "text-brand-500" : "text-app-text"}`}>
+                            <span className={`text-[13px] font-semibold truncate flex-1 ${isSelected ? "text-[#3b82f6]" : "text-app-text"}`}>
                               {item.label}
                             </span>
                             <span className="text-[11px] text-app-muted shrink-0 font-mono tabular-nums">{item.count} lanç.</span>
