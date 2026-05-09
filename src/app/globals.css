@@ -270,15 +270,17 @@
   .dash-controls { width: 100%; }
   .dash-title    { font-size: 22px; }
 
-  .hero-card     { padding: 18px 20px; min-height: 140px; }
-  .hero-num      { font-size: 38px; }
-  .hero-cents    { font-size: 19px; }
+  /* Hero card: full-width, compact */
+  .hero-grid     { grid-template-columns: 1fr 1fr; }
+  .hero-card     { grid-column: 1 / -1; padding: 16px 18px; min-height: unset; }
+  .hero-num      { font-size: 30px; }
+  .hero-cents    { font-size: 15px; }
 
-  .kpi-card      { padding: 14px 16px; }
+  /* KPI cards: side by side */
+  .kpi-card      { padding: 12px 14px; }
   .kpi-label     { font-size: 10px; }
-  .kpi-val       { font-size: 20px; margin-top: 6px; }
+  .kpi-val       { font-size: 18px; margin-top: 5px; }
 
-  .hero-grid     { grid-template-columns: 1fr; }
   .charts-grid   { grid-template-columns: 1fr; }
 }
 
