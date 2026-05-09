@@ -25,7 +25,7 @@ function SummaryChip({
   }, [tooltip]);
 
   return (
-    <div className="relative rounded-[12px] px-3 py-2.5 text-center" style={{ background: bg }}>
+    <div className="relative rounded-[14px] px-3 py-2.5 text-center border border-[var(--color-border)]" style={{ background: bg }}>
       <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: labelColor }}>{label}</p>
       {/* Mobile: abbreviated + tap-to-reveal tooltip */}
       <button
@@ -462,23 +462,23 @@ export function TransactionsClient() {
             <SummaryChip
               label="Receitas"
               value={totalIncome}
-              labelColor="#2563eb"
+              labelColor="var(--text-mute)"
               valueColor="#3b82f6"
-              bg="rgba(59,130,246,.1)"
+              bg="var(--surface-card)"
             />
             <SummaryChip
               label="Despesas"
               value={totalExpense}
-              labelColor="#ef4444"
-              valueColor="#f87171"
-              bg="rgba(248,113,113,.1)"
+              labelColor="var(--text-mute)"
+              valueColor="var(--color-text)"
+              bg="var(--surface-card)"
             />
             <SummaryChip
               label="Saldo"
               value={totalIncome - totalExpense}
-              labelColor={totalIncome - totalExpense >= 0 ? "#2563eb" : "#ef4444"}
-              valueColor={totalIncome - totalExpense >= 0 ? "#3b82f6" : "#f87171"}
-              bg={totalIncome - totalExpense >= 0 ? "rgba(59,130,246,.1)" : "rgba(248,113,113,.1)"}
+              labelColor="var(--text-mute)"
+              valueColor={totalIncome - totalExpense >= 0 ? "#3b82f6" : "var(--color-text)"}
+              bg="var(--surface-card)"
             />
           </div>
         </div>
@@ -558,7 +558,7 @@ export function TransactionsClient() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
-                        <p className={`text-[13px] font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                        <p className={`text-[13px] font-semibold font-mono ${t.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
                           {t.type === "income" ? "+" : "−"}{formatCurrency(t.value)}
                         </p>
                         <span className={`text-[10px] font-semibold ${t.isPaid ? "text-income" : "text-amber-500"}`}>
@@ -630,7 +630,7 @@ export function TransactionsClient() {
                       ) : null}
                     </td>
                     <td className="px-5 py-3.5 text-right">
-                      <span className={`text-[13px] font-semibold font-mono ${t.type === "income" ? "text-income" : "text-expense"}`}>
+                      <span className={`text-[13px] font-semibold font-mono ${t.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
                         {t.type === "income" ? "+" : "−"}{formatCurrency(t.value)}
                       </span>
                     </td>

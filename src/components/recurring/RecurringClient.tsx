@@ -85,7 +85,7 @@ function CommittedCard({ value }: { value: number }) {
       <div className="relative md:hidden">
         <button
           onClick={() => setTooltip((v) => !v)}
-          className="text-[15px] font-bold font-mono leading-tight text-expense text-left"
+          className="text-[15px] font-bold font-mono leading-tight text-[var(--color-text)] text-left"
         >
           {fmtShort(value)}
         </button>
@@ -97,7 +97,7 @@ function CommittedCard({ value }: { value: number }) {
         )}
       </div>
       {/* Desktop: full value, no interaction */}
-      <p className="hidden md:block text-[15px] font-bold font-mono leading-tight text-expense">
+      <p className="hidden md:block text-[15px] font-bold font-mono leading-tight text-[var(--color-text)]">
         {formatCurrency(value)}
       </p>
     </div>
@@ -306,7 +306,7 @@ export function RecurringClient() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
-                        <p className={`text-[13px] font-semibold font-mono whitespace-nowrap ${r.type === "income" ? "text-income" : "text-expense"}`}>
+                        <p className={`text-[13px] font-semibold font-mono whitespace-nowrap ${r.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
                           {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
                         </p>
                         <button
@@ -368,7 +368,7 @@ export function RecurringClient() {
                         {r.endDate && <p className="text-[11px] text-app-muted">até {fmtDate(r.endDate)}</p>}
                       </td>
                       <td className="px-5 py-3.5 text-right">
-                        <span className={`text-[13px] font-semibold font-mono ${r.type === "income" ? "text-income" : "text-expense"}`}>
+                        <span className={`text-[13px] font-semibold font-mono ${r.type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
                           {r.type === "income" ? "+" : "−"}{formatCurrency(r.value)}
                         </span>
                       </td>

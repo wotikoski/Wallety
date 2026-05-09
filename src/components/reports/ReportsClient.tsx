@@ -376,7 +376,7 @@ export function ReportsClient() {
                     const color      = COLORS[index % COLORS.length];
                     const isSelected = drilldown?.groupKey === item.groupKey;
                     const sign       = reportType === "income" ? "+" : "−";
-                    const valueColor = reportType === "income" ? "text-income" : "text-expense";
+                    const valueColor = reportType === "income" ? "text-income" : "text-[var(--color-text)]";
 
                     return (
                       <div key={index} className="rounded-xl overflow-hidden">

@@ -153,7 +153,7 @@ function Row({ label, value, type }: { label: string; value: number; type: "inco
   return (
     <div className="flex justify-between">
       <span>{label}</span>
-      <span className={`font-mono ${type === "income" ? "text-income" : "text-expense"}`}>
+      <span className={`font-mono ${type === "income" ? "text-income" : "text-[var(--color-text)]"}`}>
         {formatCurrency(value)}
       </span>
     </div>
@@ -163,7 +163,7 @@ function Row({ label, value, type }: { label: string; value: number; type: "inco
 function StatCard({ label, value, color }: { label: string; value: number; color: "income" | "expense" | "warning" | "neutral" }) {
   const colors = {
     income: "text-income",
-    expense: "text-expense",
+    expense: "text-[var(--color-text)]",
     warning: "text-amber-600",
     neutral: "text-app-muted",
   };

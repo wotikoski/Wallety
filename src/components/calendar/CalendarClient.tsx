@@ -157,7 +157,7 @@ export function CalendarClient() {
                       </div>
                     )}
                     {expenses.length > 0 && (
-                      <div className={`text-xs truncate ${expenses.every((t) => t.projected) ? "text-expense/60 italic" : "text-expense"}`}>
+                      <div className={`text-xs truncate ${expenses.every((t) => t.projected) ? "text-[var(--color-text)]/60 italic" : "text-[var(--color-text)]"}`}>
                         -{formatCurrency(expenses.reduce((a, t) => a + parseFloat(t.value), 0))}
                       </div>
                     )}
@@ -210,8 +210,8 @@ export function CalendarClient() {
                       </div>
                       <span className={`text-sm font-semibold font-mono ml-2 ${
                         t.projected
-                          ? t.type === "income" ? "text-income/60" : "text-expense/60"
-                          : t.type === "income" ? "text-income" : "text-expense"
+                          ? t.type === "income" ? "text-income/60" : "text-[var(--color-text)]/60"
+                          : t.type === "income" ? "text-income" : "text-[var(--color-text)]"
                       }`}>
                         {t.type === "income" ? "+" : "-"}{formatCurrency(t.value)}
                       </span>
@@ -221,7 +221,7 @@ export function CalendarClient() {
                     <span className="text-app-text">Saldo do dia</span>
                     <span className={`font-mono ${
                       selectedTxns.reduce((a, t) => t.type === "income" ? a + parseFloat(t.value) : a - parseFloat(t.value), 0) >= 0
-                        ? "text-income" : "text-expense"
+                        ? "text-income" : "text-[var(--color-text)]"
                     }`}>
                       {formatCurrency(
                         selectedTxns.reduce((a, t) => t.type === "income" ? a + parseFloat(t.value) : a - parseFloat(t.value), 0)
