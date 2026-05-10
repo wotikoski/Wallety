@@ -21,6 +21,10 @@ async function ensureSchema() {
         SET supports_installments = true
         WHERE type = 'credit_card' AND supports_installments = false
     `;
+    await sql`
+      ALTER TABLE payment_methods
+        ADD COLUMN IF NOT EXISTS color text
+    `;
   } catch {
     // Non-critical — ignore.
   }
