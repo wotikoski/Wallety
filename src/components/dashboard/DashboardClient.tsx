@@ -692,13 +692,13 @@ export function DashboardClient() {
                           <CheckCircle2 size={11} /> Concluída
                         </span>
                       ) : (
-                        <span style={{ fontSize: 11, fontWeight: 600, color: A, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: goal.color, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
                           {hideBalance ? "••••" : monthly > 0 ? `${formatCurrency(monthly)}/mês` : "—"}
                         </span>
                       )}
                     </div>
                     <div style={{ marginTop: 6, height: 3, background: "var(--surface-raised)", borderRadius: 2, overflow: "hidden" }}>
-                      <div style={{ width: `${percent}%`, height: "100%", background: done ? "#22c55e" : `linear-gradient(90deg,${AD},${A})`, transition: "width 0.5s", borderRadius: 2 }} />
+                      <div style={{ width: `${percent}%`, height: "100%", background: done ? "#22c55e" : goal.color, transition: "width 0.5s", borderRadius: 2 }} />
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
                       <span style={{ fontSize: 10, color: "var(--text-mute)" }}>

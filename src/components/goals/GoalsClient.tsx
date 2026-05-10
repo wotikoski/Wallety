@@ -80,7 +80,7 @@ function GoalCard({
         {/* Emoji icon */}
         <div
           className="w-[28px] h-[28px] rounded-[8px] flex items-center justify-center text-[15px] shrink-0"
-          style={{ background: "rgba(59,130,246,0.12)" }}
+          style={{ background: goal.color + "22" }}
         >
           {goal.emoji}
         </div>
@@ -104,10 +104,8 @@ function GoalCard({
         <div
           className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-bold"
           style={{
-            background: done
-              ? "rgba(34,197,94,0.15)"
-              : "rgba(59,130,246,0.12)",
-            color: done ? "#22c55e" : "#3b82f6",
+            background: done ? "rgba(34,197,94,0.15)" : goal.color + "22",
+            color: done ? "#22c55e" : goal.color,
           }}
         >
           {percent.toFixed(0)}%
@@ -137,9 +135,7 @@ function GoalCard({
             className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${percent}%`,
-              background: done
-                ? "#22c55e"
-                : "linear-gradient(90deg, #2563eb, #3b82f6)",
+              background: done ? "#22c55e" : goal.color,
             }}
           />
         </div>
@@ -156,7 +152,7 @@ function GoalCard({
             {monthlyNeeded > 0 && (
               <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
                 ~{" "}
-                <span style={{ fontVariantNumeric: "tabular-nums", color: "#3b82f6" }}>
+                <span style={{ fontVariantNumeric: "tabular-nums", color: goal.color }}>
                   {formatCurrency(monthlyNeeded)}
                 </span>
                 /mês
@@ -178,7 +174,8 @@ function GoalCard({
         {!done && (
           <button
             onClick={() => onDeposit(goal)}
-            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-[9px] text-[12px] font-semibold text-white bg-[#3b82f6] hover:bg-[#2563eb] transition-colors duration-150"
+            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-[9px] text-[12px] font-semibold text-white transition-colors duration-150"
+            style={{ background: goal.color }}
           >
             <PiggyBank size={13} />
             Depositar
