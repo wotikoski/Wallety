@@ -28,6 +28,35 @@ export function PageHeader({
 }
 
 /**
+ * FloatingActionButton — mobile-only round CTA pinned to bottom-right.
+ * Sits above the MobileBottomNav (5rem from bottom) and respects
+ * iOS safe-area insets. Use for the primary "create" action on
+ * long-list pages (Lancamentos, Recorrencias) where putting the
+ * action in the header would force the user to scroll back up.
+ */
+export function FloatingActionButton({
+  onClick,
+  label,
+  children,
+}: {
+  onClick: () => void;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={label}
+      aria-label={label}
+      className="md:hidden fixed right-4 z-50 w-14 h-14 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,.4)] transition"
+      style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)" }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/**
  * PrimaryButton — standard brand CTA button matching handoff.
  */
 export function PrimaryButton({

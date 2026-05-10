@@ -38,7 +38,7 @@ import { SwipeableRow } from "./SwipeableRow";
 import { usePullToRefresh } from "@/lib/hooks/usePullToRefresh";
 import { TransactionForm } from "./TransactionForm";
 import { TransactionEditClient } from "./TransactionEditClient";
-import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
+import { PageHeader, PrimaryButton, FloatingActionButton } from "@/components/layout/PageHeader";
 
 interface Transaction {
   id: string;
@@ -300,14 +300,9 @@ export function TransactionsClient() {
       />
 
       {/* FAB — mobile only, above the bottom nav */}
-      <button
-        onClick={() => setShowNewForm(true)}
-        title="Novo Lançamento"
-        className="md:hidden fixed right-4 z-50 w-14 h-14 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex items-center justify-center shadow-lg transition" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)" }}
-        aria-label="Novo Lançamento"
-      >
+      <FloatingActionButton onClick={() => setShowNewForm(true)} label="Novo Lançamento">
         <Plus size={24} />
-      </button>
+      </FloatingActionButton>
 
       {/* Search bar — visible on all screen sizes */}
       <div className="relative">

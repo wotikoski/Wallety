@@ -10,7 +10,7 @@ import { FormModal, formInputCls, formLabelCls } from "@/components/ui/FormModal
 import { Plus, RefreshCcw, Trash2, Edit, Play, Pause, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SwipeableRow } from "@/components/transactions/SwipeableRow";
-import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
+import { PageHeader, PrimaryButton, FloatingActionButton } from "@/components/layout/PageHeader";
 import { SmartCurrency } from "@/components/ui/SmartCurrency";
 
 // "2026-02-17" → "17/02/2026"
@@ -406,14 +406,9 @@ export function RecurringClient() {
       )}
 
       {/* FAB — mobile only, above the bottom nav */}
-      <button
-        onClick={openNew}
-        title="Nova recorrência"
-        aria-label="Nova recorrência"
-        className="md:hidden fixed right-4 z-50 w-14 h-14 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,.4)] transition" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)" }}
-      >
+      <FloatingActionButton onClick={openNew} label="Nova recorrência">
         <Plus size={24} />
-      </button>
+      </FloatingActionButton>
     </div>
   );
 }
