@@ -476,16 +476,22 @@ summary:focus:not(:focus-visible) {
 
 /* ──────────────────────────────────────────────────────────────
    Recharts tooltip on touch devices
-   Recharts dispatches its tooltip via mouseenter/mousemove. iOS
-   synthesizes those on touch, so the tooltip pops up the moment
-   the finger lands on the chart — even when the user only meant
-   to start a scroll. Hide the tooltip entirely on hover-less
-   devices; the chart legend already shows the same data.
+   Recharts activates its tooltip on touchstart (synthesized
+   mouseenter), so it pops up the moment the finger lands on the
+   chart — even when the user only meant to scroll. We gate the
+   tooltip on body classes set by the phantom-click guard:
+     body.is-touching     — finger is currently on the screen
+     body.recent-scroll   — a scroll-drag finished within 500ms
+   Tooltip is hidden during both, so it only appears AFTER a
+   confirmed tap (touch ended without significant movement).
    ────────────────────────────────────────────────────────────── */
 @media (hover: none) {
-  .recharts-tooltip-wrapper,
-  .recharts-tooltip-cursor,
-  .recharts-active-dot {
+  body.is-touching .recharts-tooltip-wrapper,
+  body.is-touching .recharts-tooltip-cursor,
+  body.is-touching .recharts-active-dot,
+  body.recent-scroll .recharts-tooltip-wrapper,
+  body.recent-scroll .recharts-tooltip-cursor,
+  body.recent-scroll .recharts-active-dot {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;

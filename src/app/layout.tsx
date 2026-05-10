@@ -78,19 +78,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `(function(){try{if(localStorage.getItem('theme')!=='light'){document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`,
           }}
         />
-        {/* Phantom-click guard: iOS Safari and Android Chrome synthesize a
-            click event at touchend even when the user dragged across the
-            screen to scroll. We block any click that:
-              - lands within 400ms of a touchmove that traveled >5px, OR
-              - lands within 400ms of a real document scroll event, OR
-              - lands while a touch is still in progress (e.g. user is
-                still resting their finger on the screen mid-scroll).
-            Listening to the scroll event itself (capture phase) catches
-            cases where momentum scroll continues past touchend, when
-            individual touchmoves never crossed the 5px threshold. */}
+        {/* Phantom-click guard + tooltip gate.
+            iOS Safari and Android Chrome synthesize a click event at
+            touchend even when the user dragged to scroll, AND recharts
+            activates its tooltip on touchstart. We solve both by:
+
+              1. Tracking whether the current touch has scrolled (>5px
+                 movement OR a real scroll event fired).
+              2. Cancelling any click that lands during a touch or
+                 within 400ms of a scrolled gesture.
+              3. Setting body.is-touching during the touch and
+                 body.recent-scroll for 500ms after a scrolled touch
+                 ends, so CSS can hide chart tooltips during press
+                 and scroll while still showing them on confirmed taps. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){if(typeof window==='undefined')return;var TH=5,W=400,sx=0,sy=0,m=false,t=0,touching=false;function s(e){if(!e.touches||!e.touches.length)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;m=false;touching=true;}function v(e){if(!e.touches||!e.touches.length)return;if(Math.abs(e.touches[0].clientX-sx)>TH||Math.abs(e.touches[0].clientY-sy)>TH){m=true;t=Date.now();}}function en(){touching=false;}function sc(){m=true;t=Date.now();}function c(e){var now=Date.now();if(touching||(m&&now-t<W)){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}}document.addEventListener('touchstart',s,{passive:true,capture:true});document.addEventListener('touchmove',v,{passive:true,capture:true});document.addEventListener('touchend',en,{passive:true,capture:true});document.addEventListener('touchcancel',en,{passive:true,capture:true});document.addEventListener('scroll',sc,{passive:true,capture:true});document.addEventListener('click',c,{capture:true});})();`,
+            __html: `(function(){if(typeof window==='undefined')return;var TH=5,W=400,RS=500,sx=0,sy=0,m=false,t=0,touching=false,rsTimer=null;var b=function(){return document.body;};function s(e){if(!e.touches||!e.touches.length)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;m=false;touching=true;if(b())b().classList.add('is-touching');}function v(e){if(!e.touches||!e.touches.length)return;if(Math.abs(e.touches[0].clientX-sx)>TH||Math.abs(e.touches[0].clientY-sy)>TH){m=true;t=Date.now();}}function en(){touching=false;if(b())b().classList.remove('is-touching');if(m){if(b())b().classList.add('recent-scroll');clearTimeout(rsTimer);rsTimer=setTimeout(function(){if(b())b().classList.remove('recent-scroll');},RS);}}function sc(){m=true;t=Date.now();if(b())b().classList.add('recent-scroll');clearTimeout(rsTimer);rsTimer=setTimeout(function(){if(b())b().classList.remove('recent-scroll');},RS);}function c(e){var now=Date.now();if(touching||(m&&now-t<W)){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}}document.addEventListener('touchstart',s,{passive:true,capture:true});document.addEventListener('touchmove',v,{passive:true,capture:true});document.addEventListener('touchend',en,{passive:true,capture:true});document.addEventListener('touchcancel',en,{passive:true,capture:true});document.addEventListener('scroll',sc,{passive:true,capture:true});document.addEventListener('click',c,{capture:true});})();`,
           }}
         />
       </head>
