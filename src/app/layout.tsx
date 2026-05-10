@@ -78,6 +78,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `(function(){try{if(localStorage.getItem('theme')!=='light'){document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`,
           }}
         />
+        {/* Phantom-click guard: iOS Safari and Android Chrome synthesize a
+            click event at touchend even when the user dragged across the
+            screen to scroll. That fires onClick handlers on whatever element
+            they happened to be touching at touchstart — making it look like
+            the page reacted to a scroll gesture. We track movement during
+            each touch and cancel the synthetic click that lands within 350ms
+            of a >10px drag. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){if(typeof window==='undefined')return;var TH=10,W=350,sx=0,sy=0,m=false,t=0;function s(e){if(!e.touches||!e.touches.length)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;m=false;}function v(e){if(!e.touches||!e.touches.length)return;if(Math.abs(e.touches[0].clientX-sx)>TH||Math.abs(e.touches[0].clientY-sy)>TH){m=true;t=Date.now();}}function c(e){if(m&&Date.now()-t<W){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}}document.addEventListener('touchstart',s,{passive:true,capture:true});document.addEventListener('touchmove',v,{passive:true,capture:true});document.addEventListener('click',c,{capture:true});})();`,
+          }}
+        />
       </head>
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}>
         <Providers>
