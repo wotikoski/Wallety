@@ -408,3 +408,33 @@
 .dark select {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Scrollbars
+   Default browser scrollbars are bright in dark mode and clash with
+   the surface palette. We restyle them globally — both the modern
+   `scrollbar-color` standard (Firefox 64+, Chromium 121+) and the
+   legacy `::-webkit-scrollbar` family (Safari, older Chromium).
+   ────────────────────────────────────────────────────────────── */
+.dark {
+  scrollbar-color: #334155 transparent;
+  scrollbar-width: thin;
+}
+.dark *::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.dark *::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark *::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 8px;
+  border: 3px solid var(--surface-base, #0f172a);
+}
+.dark *::-webkit-scrollbar-thumb:hover {
+  background-color: #475569;
+}
+.dark *::-webkit-scrollbar-corner {
+  background: transparent;
+}
