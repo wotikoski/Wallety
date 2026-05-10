@@ -268,7 +268,7 @@ export function TransactionsClient() {
           <>
             <a
               href={`/api/transactions/export?${params}`}
-              className="inline-flex items-center gap-2 h-[38px] px-3.5 rounded-[10px] border border-[var(--color-border)] text-[13px] font-semibold text-[var(--text-mute)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)] transition"
+              className="inline-flex items-center gap-2 px-3.5 py-[9px] rounded-[10px] border border-[var(--color-border)] text-[13px] font-semibold text-[var(--text-mute)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)] transition"
               title="Baixar CSV com os filtros atuais"
             >
               <Download size={15} />
