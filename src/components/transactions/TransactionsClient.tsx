@@ -270,8 +270,9 @@ export function TransactionsClient() {
           <>
             <a
               href={`/api/transactions/export?${params}`}
-              className="inline-flex items-center justify-center gap-2 h-[38px] min-w-[38px] px-4 rounded-[10px] border border-[var(--color-border)] text-[13px] font-semibold text-[var(--text-mute)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)] transition"
+              className="inline-flex items-center justify-center gap-2 h-[38px] min-w-[38px] px-4 rounded-[10px] bg-[var(--surface-raised)] text-[var(--text-mute)] text-[13px] font-semibold leading-none hover:bg-[var(--surface-hover)] hover:text-[var(--color-text)] transition-colors duration-150"
               title="Baixar CSV com os filtros atuais"
+              style={{ boxShadow: "inset 0 0 0 1px var(--color-border)" }}
             >
               <Download size={15} />
               <span className="hidden sm:inline">Exportar CSV</span>

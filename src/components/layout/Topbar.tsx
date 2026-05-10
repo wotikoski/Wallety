@@ -3,7 +3,7 @@
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 
 interface Group {
@@ -21,6 +21,7 @@ const dateLabel = new Date().toLocaleDateString("pt-BR", {
 export function Topbar() {
   const { activeGroupId, setActiveGroupId } = useActiveGroup();
   const [showGroupMenu, setShowGroupMenu] = useState(false);
+  const groupMenuRef = useRef<HTMLDivElement>(null);
 
   const { data } = useQuery<{ groups: Group[] }>({
     queryKey: ["groups"],
@@ -30,10 +31,31 @@ export function Topbar() {
   const groups = data?.groups ?? [];
   const activeGroup = groups.find((g) => g.id === activeGroupId);
 
+  // Close on outside click + Escape key while the dropdown is open.
+  useEffect(() => {
+    if (!showGroupMenu) return;
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      if (groupMenuRef.current && !groupMenuRef.current.contains(e.target as Node)) {
+        setShowGroupMenu(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowGroupMenu(false);
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [showGroupMenu]);
+
   return (
     <header className="sticky top-0 z-30 h-14 bg-[var(--surface-card)] border-b border-[var(--color-border)] flex items-center px-5 gap-3 no-print shrink-0">
       {/* Group selector */}
-      <div className="relative">
+      <div className="relative" ref={groupMenuRef}>
         <button
           onClick={() => setShowGroupMenu(!showGroupMenu)}
           className="inline-flex items-center gap-2 h-8 px-3 text-[12px] font-semibold text-app-text bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] rounded-[8px] border border-app-border transition"

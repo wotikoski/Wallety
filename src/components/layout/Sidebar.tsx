@@ -80,13 +80,13 @@ export function Sidebar() {
         </div>
       </nav>
 
-      {/* Logout */}
-      <div className="h-14 flex items-center px-3 border-t border-white/[0.07] shrink-0">
+      {/* Logout — intentionally smaller / quieter than nav items */}
+      <div className="h-12 flex items-center px-3 border-t border-white/[0.07] shrink-0">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-white/30 hover:text-white/60 hover:bg-white/[0.05] transition text-[13px] font-medium tracking-wide"
+          className="flex items-center gap-2 w-full px-2.5 py-1.5 rounded-[8px] text-white/30 hover:text-white/60 hover:bg-white/[0.05] transition text-[12px] font-medium tracking-wide"
         >
-          <LogOut size={14} />
+          <LogOut size={12} />
           <span>Sair</span>
         </button>
       </div>

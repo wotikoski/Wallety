@@ -74,12 +74,12 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
           </nav>
         </div>
 
-        <div className="px-4 pb-6 border-t border-white/[0.07] pt-3 mt-2">
+        <div className="px-4 pb-5 border-t border-white/[0.07] pt-2 mt-1">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-3 rounded-[10px] text-white/30 text-sm tracking-wide hover:text-white/55 hover:bg-white/[0.05] transition"
+            className="flex items-center gap-2 w-full px-2.5 py-2 rounded-[8px] text-white/30 text-[12px] tracking-wide hover:text-white/55 hover:bg-white/[0.05] transition"
           >
-            <LogOut size={16} />
+            <LogOut size={13} />
             <span>Sair</span>
           </button>
         </div>
