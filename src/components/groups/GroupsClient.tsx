@@ -37,6 +37,7 @@ export function GroupsClient() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data: groupsData } = useQuery<{ groups: Group[] }>({
     queryKey: ["groups"],
@@ -249,15 +250,7 @@ export function GroupsClient() {
                     </p>
                   </div>
                   <button
-                    onClick={() => {
-                      const gid = selectedGroup!;
-                      const gname = currentGroup.name;
-                      setSelectedGroup(null);
-                      schedule(gid, `Grupo "${gname}" excluído`, async () => {
-                        await fetch(`/api/groups/${gid}`, { method: "DELETE" });
-                        queryClient.invalidateQueries({ queryKey: ["groups"] });
-                      });
-                    }}
+                    onClick={() => setConfirmDelete({ id: selectedGroup!, name: currentGroup.name })}
                     className="shrink-0 inline-flex items-center gap-2 py-[9px] px-4 text-[13px] font-semibold text-[#ef4444] border border-[var(--color-border)] rounded-[10px] hover:bg-[rgba(239,68,68,.08)] transition"
                   >
                     <Trash2 size={14} />
@@ -270,6 +263,57 @@ export function GroupsClient() {
         )}
       </div>
 
+      {/* Delete confirmation dialog */}
+      {confirmDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.55)" }}
+          onClick={() => setConfirmDelete(null)}
+        >
+          <div
+            className="w-full max-w-sm bg-[var(--surface-card)] rounded-[18px] border border-[var(--color-border)] shadow-xl p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Icon + title */}
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-[rgba(239,68,68,.12)] flex items-center justify-center">
+                <Trash2 size={22} className="text-[#ef4444]" />
+              </div>
+              <div>
+                <h2 className="text-[16px] font-bold text-app-text">Excluir grupo?</h2>
+                <p className="text-[13px] text-app-muted mt-1">
+                  O grupo <span className="font-semibold text-app-text">"{confirmDelete.name}"</span> e todos
+                  os seus dados compartilhados serão removidos permanentemente.
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 h-[40px] rounded-[10px] text-[13px] font-semibold border border-[var(--color-border)] text-app-text hover:bg-[var(--surface-raised)] transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  const { id: gid, name: gname } = confirmDelete;
+                  setConfirmDelete(null);
+                  setSelectedGroup(null);
+                  schedule(gid, `Grupo "${gname}" excluído`, async () => {
+                    await fetch(`/api/groups/${gid}`, { method: "DELETE" });
+                    queryClient.invalidateQueries({ queryKey: ["groups"] });
+                  });
+                }}
+                className="flex-1 h-[40px] rounded-[10px] text-[13px] font-semibold text-white bg-[#ef4444] hover:bg-[#dc2626] transition"
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
