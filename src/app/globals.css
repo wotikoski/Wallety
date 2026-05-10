@@ -438,3 +438,29 @@
 .dark *::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Mobile tap behavior
+   By default mobile browsers paint a translucent gray/blue rect
+   on top of any tappable element when touched, and persist the
+   :focus ring after the tap finishes. Both look ugly on rows in
+   our lists (Lancamentos, Recorrencias, Relatorios, Categorias,
+   Formas de Pagamento, Bancos).
+   ────────────────────────────────────────────────────────────── */
+
+/* Kill the iOS / Android default tap-highlight rect everywhere */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove the persistent :focus outline on touch devices, but keep
+   it for keyboard users (focus-visible). Targets <button>, <a>,
+   and any element with role="button" — the same surface that the
+   tap-highlight covers. */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+summary:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
