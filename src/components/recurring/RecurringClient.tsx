@@ -12,6 +12,7 @@ import { Plus, RefreshCcw, Trash2, Edit, Play, Pause, ArrowUpRight, ArrowDownRig
 import { useState, useEffect } from "react";
 import { SwipeableRow } from "@/components/transactions/SwipeableRow";
 import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
+import { SmartCurrency } from "@/components/ui/SmartCurrency";
 
 // "2026-02-17" → "17/02/2026"
 function fmtDate(iso: string) {
@@ -61,46 +62,16 @@ const FREQ_LABEL: Record<string, string> = {
   yearly: "Anual",
 };
 
-function fmtShort(value: number): string {
-  const abs = Math.abs(value);
-  const sign = value < 0 ? "-" : "";
-  if (abs >= 1_000_000) return `${sign}R$ ${(abs / 1_000_000).toFixed(1).replace(".", ",")}M`;
-  if (abs >= 1_000) return `${sign}R$ ${(abs / 1_000).toFixed(1).replace(".", ",")}k`;
-  return formatCurrency(value);
-}
-
 function CommittedCard({ value }: { value: number }) {
-  const [tooltip, setTooltip] = useState(false);
-  useEffect(() => {
-    if (!tooltip) return;
-    const t = setTimeout(() => setTooltip(false), 2500);
-    return () => clearTimeout(t);
-  }, [tooltip]);
-
   return (
     <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-3">
       <p className="text-[10px] font-bold text-app-muted uppercase tracking-[0.06em] mb-1.5 leading-tight">
         Comprometido<span className="hidden md:inline normal-case font-medium">/mês</span>
       </p>
-      {/* Mobile: abbreviated + tap-to-reveal tooltip */}
-      <div className="relative md:hidden">
-        <button
-          onClick={() => setTooltip((v) => !v)}
-          className="text-[15px] font-bold tabular-nums leading-tight text-[var(--color-text)] text-left"
-        >
-          {fmtShort(value)}
-        </button>
-        {tooltip && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] tabular-nums font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
-            {formatCurrency(value)}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#0f172a]" />
-          </div>
-        )}
-      </div>
-      {/* Desktop: full value, no interaction */}
-      <p className="hidden md:block text-[15px] font-bold tabular-nums leading-tight text-[var(--color-text)]">
-        {formatCurrency(value)}
-      </p>
+      <SmartCurrency
+        value={value}
+        className="text-[15px] font-bold tabular-nums leading-tight text-[var(--color-text)] text-left"
+      />
     </div>
   );
 }

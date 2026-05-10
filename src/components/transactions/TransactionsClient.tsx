@@ -3,48 +3,21 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
-
-function formatCurrencyShort(value: number): string {
-  const abs = Math.abs(value);
-  const sign = value < 0 ? "-" : "";
-  if (abs >= 1_000_000) return `${sign}R$ ${(abs / 1_000_000).toFixed(1).replace(".", ",")}M`;
-  if (abs >= 1_000) return `${sign}R$ ${(abs / 1_000).toFixed(1).replace(".", ",")}k`;
-  return formatCurrency(value);
-}
+import { SmartCurrency } from "@/components/ui/SmartCurrency";
 
 function SummaryChip({
   label, value, labelColor, valueColor, bg,
 }: {
   label: string; value: number; labelColor: string; valueColor: string; bg: string;
 }) {
-  const [tooltip, setTooltip] = useState(false);
-  useEffect(() => {
-    if (!tooltip) return;
-    const t = setTimeout(() => setTooltip(false), 2500);
-    return () => clearTimeout(t);
-  }, [tooltip]);
-
   return (
-    <div className="relative rounded-[14px] px-3 py-2.5 text-center border border-[var(--color-border)]" style={{ background: bg }}>
+    <div className="rounded-[14px] px-3 py-2.5 text-center border border-[var(--color-border)]" style={{ background: bg }}>
       <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: labelColor }}>{label}</p>
-      {/* Mobile: abbreviated + tap-to-reveal tooltip */}
-      <button
-        onClick={() => setTooltip((v) => !v)}
-        className="md:hidden text-sm font-semibold tabular-nums block w-full text-center"
+      <SmartCurrency
+        value={value}
+        className="text-sm font-semibold tabular-nums"
         style={{ color: valueColor }}
-      >
-        {formatCurrencyShort(value)}
-      </button>
-      {tooltip && (
-        <div className="md:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f172a] text-white text-[12px] tabular-nums font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in">
-          {formatCurrency(value)}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-[#0f172a]" />
-        </div>
-      )}
-      {/* Desktop: full value, no interaction */}
-      <p className="hidden md:block text-sm font-semibold tabular-nums" style={{ color: valueColor }}>
-        {formatCurrency(value)}
-      </p>
+      />
     </div>
   );
 }

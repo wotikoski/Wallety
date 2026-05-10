@@ -3,6 +3,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency } from "@/lib/utils/currency";
+import { SmartCurrency } from "@/components/ui/SmartCurrency";
 import { formatDate } from "@/lib/utils/date";
 import { useEffect, useId, useState } from "react";
 import {
@@ -224,13 +225,6 @@ function KpiCard({ label, value, hint, hintColor, hideBalance, icon }: {
   label: string; value: number; hint: string;
   hintColor?: string; hideBalance: boolean; icon: React.ReactNode;
 }) {
-  const fmtShort = (v: number) => {
-    const abs = Math.abs(v);
-    const s = v < 0 ? "-" : "";
-    if (abs >= 1_000_000) return `${s}R$ ${(abs / 1e6).toFixed(1).replace(".", ",")}M`;
-    if (abs >= 1_000)     return `${s}R$ ${(abs / 1e3).toFixed(1).replace(".", ",")}k`;
-    return formatCurrency(v);
-  };
   return (
     <div className="kpi-card" style={{
       background: "var(--surface-card)",
@@ -250,7 +244,7 @@ function KpiCard({ label, value, hint, hintColor, hideBalance, icon }: {
         letterSpacing: "-0.025em", fontVariantNumeric: "tabular-nums",
         color: "var(--color-text)", lineHeight: 1.1,
       }}>
-        {hideBalance ? "••••" : fmtShort(value)}
+        {hideBalance ? "••••" : <SmartCurrency value={value} />}
       </div>
       <div style={{ fontSize: 11, color: hintColor ?? "var(--text-mute)", marginTop: 10 }}>
         {hint}
