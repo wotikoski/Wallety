@@ -5,7 +5,51 @@ export const alt = "Wallety — Sua vida financeira, simplificada.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+/** SVG donut-arc path for a single segment. */
+function arcPath(
+  cx: number, cy: number,
+  r: number, ri: number,
+  startDeg: number, endDeg: number,
+): string {
+  const rad = (d: number) => ((d - 90) * Math.PI) / 180;
+  const s = rad(startDeg);
+  const e = rad(endDeg);
+  const x1 = cx + r  * Math.cos(s), y1 = cy + r  * Math.sin(s);
+  const x2 = cx + r  * Math.cos(e), y2 = cy + r  * Math.sin(e);
+  const x3 = cx + ri * Math.cos(e), y3 = cy + ri * Math.sin(e);
+  const x4 = cx + ri * Math.cos(s), y4 = cy + ri * Math.sin(s);
+  const lg = endDeg - startDeg > 180 ? 1 : 0;
+  const f = (n: number) => n.toFixed(2);
+  return `M${f(x1)} ${f(y1)} A${r} ${r} 0 ${lg} 1 ${f(x2)} ${f(y2)} L${f(x3)} ${f(y3)} A${ri} ${ri} 0 ${lg} 0 ${f(x4)} ${f(y4)}Z`;
+}
+
+const DONUT_SEGMENTS = [
+  { color: "#f59e0b", pct: 42 },
+  { color: "#3b82f6", pct: 24 },
+  { color: "#22c55e", pct: 12 },
+  { color: "#f87171", pct: 7  },
+  { color: "#8b5cf6", pct: 7  },
+  { color: "#475569", pct: 8  },
+];
+
+const DONUT_CATS = [
+  { label: "Moradia",        pct: "42%", color: "#f59e0b" },
+  { label: "Financiamentos", pct: "24%", color: "#3b82f6" },
+  { label: "Transporte",     pct: "12%", color: "#22c55e" },
+  { label: "Saúde",          pct: "7%",  color: "#f87171" },
+  { label: "Assinaturas",    pct: "7%",  color: "#8b5cf6" },
+];
+
 export default function Image() {
+  // Pre-compute donut arc paths
+  let cursor = 0;
+  const arcs = DONUT_SEGMENTS.map(({ color, pct }) => {
+    const start = cursor;
+    const end   = cursor + pct * 3.6; // pct → degrees
+    cursor = end;
+    return { color, d: arcPath(48, 48, 44, 28, start, end) };
+  });
+
   return new ImageResponse(
     (
       <div
@@ -23,7 +67,7 @@ export default function Image() {
       >
         {/* Background glows */}
         <div style={{ position: "absolute", top: -120, right: -80, width: 420, height: 420, borderRadius: "50%", background: OG.glowAccent }} />
-        <div style={{ position: "absolute", bottom: -80, left: 60, width: 320, height: 320, borderRadius: "50%", background: OG.glowGreen }} />
+        <div style={{ position: "absolute", bottom: -80, left: 60,  width: 320, height: 320, borderRadius: "50%", background: OG.glowGreen }} />
 
         {/* ── Header ── */}
         <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
@@ -54,7 +98,6 @@ export default function Image() {
 
         {/* ── Row 1: Saldo | Receitas | Despesas ── */}
         <div style={{ display: "flex", gap: 10, marginBottom: 9 }}>
-          {/* Saldo Total */}
           <div style={{ flex: 1.35, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 13, padding: "14px 18px", display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
               <div style={{ color: OG.textMute, fontSize: 10, fontWeight: 600, letterSpacing: "0.07em" }}>SALDO TOTAL</div>
@@ -69,7 +112,6 @@ export default function Image() {
             </div>
           </div>
 
-          {/* Receitas */}
           <div style={{ flex: 1, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 13, padding: "14px 18px", display: "flex", flexDirection: "column" }}>
             <div style={{ color: OG.textMute, fontSize: 10, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 3 }}>RECEITAS</div>
             <div style={{ color: OG.income, fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px", lineHeight: 1.1 }}>
@@ -78,7 +120,6 @@ export default function Image() {
             <div style={{ color: OG.textFaint, fontSize: 11, marginTop: 5 }}>no período</div>
           </div>
 
-          {/* Despesas */}
           <div style={{ flex: 1, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 13, padding: "14px 18px", display: "flex", flexDirection: "column" }}>
             <div style={{ color: OG.textMute, fontSize: 10, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 3 }}>DESPESAS</div>
             <div style={{ color: OG.expense, fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px", lineHeight: 1.1 }}>
@@ -88,16 +129,14 @@ export default function Image() {
           </div>
         </div>
 
-        {/* ── Row 2: Taxa Poupança | Dias Restantes | Gasto Médio/Dia ── */}
+        {/* ── Row 2: Poupança | Dias Restantes | Gasto Médio ── */}
         <div style={{ display: "flex", gap: 10, marginBottom: 11 }}>
-          {/* Taxa de Poupança */}
           <div style={{ flex: 1, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 11, padding: "10px 16px", display: "flex", flexDirection: "column" }}>
             <div style={{ color: OG.textMute, fontSize: 9, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 3 }}>TAXA DE POUPANÇA</div>
             <div style={{ color: "#22c55e", fontSize: 20, fontWeight: 700 }}>68%</div>
             <div style={{ color: OG.textFaint, fontSize: 10, marginTop: 2 }}>da renda guardada</div>
           </div>
 
-          {/* Dias Restantes */}
           <div style={{ flex: 1, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 11, padding: "10px 16px", display: "flex", flexDirection: "column" }}>
             <div style={{ color: OG.textMute, fontSize: 9, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 3 }}>DIAS RESTANTES</div>
             <div style={{ color: "white", fontSize: 20, fontWeight: 700 }}>21 dias</div>
@@ -106,7 +145,6 @@ export default function Image() {
             </div>
           </div>
 
-          {/* Gasto Médio/Dia */}
           <div style={{ flex: 1, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 11, padding: "10px 16px", display: "flex", flexDirection: "column" }}>
             <div style={{ color: OG.textMute, fontSize: 9, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 3 }}>GASTO MÉDIO/DIA</div>
             <div style={{ color: OG.expense, fontSize: 20, fontWeight: 700 }}>R$ 273,53</div>
@@ -114,7 +152,7 @@ export default function Image() {
           </div>
         </div>
 
-        {/* ── Bottom: Line chart + Donut chart ── */}
+        {/* ── Bottom: Line chart + Donut ── */}
         <div style={{ display: "flex", gap: 10, flex: 1 }}>
 
           {/* Receitas e despesas — line chart */}
@@ -135,53 +173,23 @@ export default function Image() {
               <div style={{ color: OG.textFaint, fontSize: 10 }}>Últimos 6 meses · em R$</div>
             </div>
 
-            {/* SVG line chart */}
             <svg width="100%" height="100%" viewBox="0 0 520 110" preserveAspectRatio="none" style={{ flex: 1 }}>
-              {/* Horizontal grid */}
               <line x1="0" y1="15" x2="520" y2="15" stroke="#1e3358" strokeWidth="1" />
               <line x1="0" y1="45" x2="520" y2="45" stroke="#1e3358" strokeWidth="1" />
               <line x1="0" y1="75" x2="520" y2="75" stroke="#1e3358" strokeWidth="1" />
+              <text x="0" y="12"  fill="#334155" fontSize="9">4k</text>
+              <text x="0" y="42"  fill="#334155" fontSize="9">3k</text>
+              <text x="0" y="72"  fill="#334155" fontSize="9">1k</text>
 
-              {/* Y labels */}
-              <text x="0" y="12" fill="#334155" fontSize="9">4k</text>
-              <text x="0" y="42" fill="#334155" fontSize="9">3k</text>
-              <text x="0" y="72" fill="#334155" fontSize="9">1k</text>
+              <polygon points="30,95 110,82 200,66 290,46 380,28 480,10 480,100 30,100" fill="rgba(59,130,246,0.07)" />
+              <polyline points="30,95 110,82 200,66 290,46 380,28 480,10" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
 
-              {/* Income area fill */}
-              <polygon
-                points="30,95 110,82 200,66 290,46 380,28 480,10 480,100 30,100"
-                fill="rgba(59,130,246,0.07)"
-              />
-              {/* Income line */}
-              <polyline
-                points="30,95 110,82 200,66 290,46 380,28 480,10"
-                fill="none"
-                stroke="#3b82f6"
-                strokeWidth="2.5"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
+              <polygon points="30,100 110,98 200,94 290,90 380,87 480,84 480,100 30,100" fill="rgba(248,113,113,0.07)" />
+              <polyline points="30,100 110,98 200,94 290,90 380,87 480,84" fill="none" stroke="#f87171" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
 
-              {/* Expense area fill */}
-              <polygon
-                points="30,100 110,98 200,94 290,90 380,87 480,84 480,100 30,100"
-                fill="rgba(248,113,113,0.07)"
-              />
-              {/* Expense line */}
-              <polyline
-                points="30,100 110,98 200,94 290,90 380,87 480,84"
-                fill="none"
-                stroke="#f87171"
-                strokeWidth="2.5"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-
-              {/* Current month dot */}
               <circle cx="480" cy="10" r="4" fill="#3b82f6" />
               <circle cx="480" cy="84" r="4" fill="#f87171" />
 
-              {/* Month labels */}
               <text x="18"  y="110" fill="#475569" fontSize="9">dez/25</text>
               <text x="96"  y="110" fill="#475569" fontSize="9">jan/26</text>
               <text x="186" y="110" fill="#475569" fontSize="9">fev/26</text>
@@ -191,7 +199,7 @@ export default function Image() {
             </svg>
           </div>
 
-          {/* Onde foi o dinheiro — donut */}
+          {/* Onde foi o dinheiro — SVG donut */}
           <div style={{ flex: 2, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 13, padding: "13px 16px", display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <div style={{ color: OG.textDim, fontSize: 13, fontWeight: 600 }}>Onde foi o dinheiro</div>
@@ -199,23 +207,23 @@ export default function Image() {
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1 }}>
-              {/* Donut */}
-              <div style={{ width: 96, height: 96, borderRadius: "50%", flexShrink: 0, background: "conic-gradient(#f59e0b 0deg 151deg, #3b82f6 151deg 237deg, #22c55e 237deg 280deg, #f87171 280deg 306deg, #8b5cf6 306deg 331deg, #475569 331deg 360deg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ width: 60, height: 60, borderRadius: "50%", background: OG.surface, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+              {/* SVG donut — avoids conic-gradient which Satori doesn't support */}
+              <div style={{ position: "relative", width: 96, height: 96, flexShrink: 0 }}>
+                <svg width="96" height="96" viewBox="0 0 96 96" style={{ position: "absolute", top: 0, left: 0 }}>
+                  {arcs.map(({ color, d }, i) => (
+                    <path key={i} d={d} fill={color} />
+                  ))}
+                </svg>
+                {/* Center hole with label */}
+                <div style={{ position: "absolute", top: 20, left: 20, width: 56, height: 56, borderRadius: "50%", background: OG.surface, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                   <div style={{ color: OG.textMute, fontSize: 8, fontWeight: 600, letterSpacing: "0.05em" }}>GASTO</div>
-                  <div style={{ color: "white", fontSize: 12, fontWeight: 700, lineHeight: 1.2 }}>R$ 4,1k</div>
+                  <div style={{ color: "white", fontSize: 12, fontWeight: 700 }}>R$ 4,1k</div>
                 </div>
               </div>
 
               {/* Category list */}
               <div style={{ display: "flex", flexDirection: "column", gap: 7, flex: 1 }}>
-                {[
-                  { label: "Moradia",        pct: "42%", color: "#f59e0b" },
-                  { label: "Financiamentos", pct: "24%", color: "#3b82f6" },
-                  { label: "Transporte",     pct: "12%", color: "#22c55e" },
-                  { label: "Saúde",          pct: "7%",  color: "#f87171" },
-                  { label: "Assinaturas",    pct: "7%",  color: "#8b5cf6" },
-                ].map(({ label, pct, color }) => (
+                {DONUT_CATS.map(({ label, pct, color }) => (
                   <div key={label} style={{ display: "flex", alignItems: "center", gap: 7 }}>
                     <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, flexShrink: 0 }} />
                     <div style={{ color: "white", fontSize: 12, flex: 1 }}>{label}</div>
@@ -235,6 +243,6 @@ export default function Image() {
         </div>
       </div>
     ),
-    { ...size }
+    { ...size },
   );
 }

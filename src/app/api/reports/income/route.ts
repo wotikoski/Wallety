@@ -3,22 +3,38 @@ import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware
 import { db } from "@/lib/db";
 import { transactions, categories, banks, users, paymentMethods } from "@/lib/db/schema";
 import { and, eq, gte, lte, isNull, sql } from "drizzle-orm";
+import { neon } from "@neondatabase/serverless";
+
+const PM_TYPE_COLORS: Record<string, string> = {
+  cash:         "#22c55e",
+  pix:          "#00bdae",
+  credit_card:  "#f59e0b",
+  debit_card:   "#8b5cf6",
+  bank_account: "#3b82f6",
+  other:        "#94a3b8",
+};
+
+async function ensurePaymentMethodColor() {
+  try {
+    const sql2 = neon(process.env.DATABASE_URL!);
+    await sql2`ALTER TABLE payment_methods ADD COLUMN IF NOT EXISTS color text`;
+  } catch { /* non-critical */ }
+}
 
 export async function GET(req: NextRequest) {
+  await ensurePaymentMethodColor();
   try {
     const auth = await requireAuth(req);
     const { searchParams } = new URL(req.url);
     const groupId = searchParams.get("groupId");
     const startDate = searchParams.get("startDate") ?? "";
     const endDate = searchParams.get("endDate") ?? "";
-    const groupBy = searchParams.get("groupBy") ?? "category"; // category | bank | user
+    const groupBy = searchParams.get("groupBy") ?? "category"; // category | bank | paymentMethod | user
 
     const scopeCondition = groupId
       ? eq(transactions.groupId, groupId)
       : eq(transactions.userId, auth.sub);
 
-    // Use effectiveDate when set (credit-card billing month), else purchase date.
-    // Mirrors the dashboard logic so report totals match dashboard totals.
     const effDate = sql<string>`COALESCE(${transactions.effectiveDate}, ${transactions.date})`;
 
     const txns = await db
@@ -36,25 +52,41 @@ export async function GET(req: NextRequest) {
 
     const grandTotal = txns.reduce((acc, t) => acc + parseFloat(t.value), 0);
 
-    let groups: Record<string, { label: string; total: number; count: number; groupKey: string }> = {};
+    let groups: Record<string, { label: string; total: number; count: number; groupKey: string; color?: string | null }> = {};
 
     if (groupBy === "category") {
       const cats = await db.select().from(categories).where(isNull(categories.deletedAt));
-      const catMap = Object.fromEntries(cats.map((c) => [c.id, c.name]));
+      const catMap = Object.fromEntries(cats.map((c) => [c.id, { name: c.name, color: c.color }]));
       for (const t of txns) {
         const key = t.categoryId ?? "__none__";
-        const label = t.categoryId ? (catMap[t.categoryId] ?? "Outros") : "Sem Categoria";
-        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
+        const catInfo = t.categoryId ? catMap[t.categoryId] : null;
+        const label = catInfo?.name ?? (t.categoryId ? "Outros" : "Sem Categoria");
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key, color: catInfo?.color ?? null };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;
       }
     } else if (groupBy === "bank") {
       const bks = await db.select().from(banks).where(isNull(banks.deletedAt));
-      const bankMap = Object.fromEntries(bks.map((b) => [b.id, b.name]));
+      const bankMap = Object.fromEntries(bks.map((b) => [b.id, { name: b.name, color: b.color }]));
       for (const t of txns) {
         const key = t.bankId ?? "__none__";
-        const label = t.bankId ? (bankMap[t.bankId] ?? "Outro Banco") : "Sem Banco";
-        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
+        const bkInfo = t.bankId ? bankMap[t.bankId] : null;
+        const label = bkInfo?.name ?? (t.bankId ? "Outro Banco" : "Sem Banco");
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key, color: bkInfo?.color ?? null };
+        groups[key].total += parseFloat(t.value);
+        groups[key].count++;
+      }
+    } else if (groupBy === "paymentMethod") {
+      const pms = await db.select({ id: paymentMethods.id, name: paymentMethods.name, color: paymentMethods.color, type: paymentMethods.type }).from(paymentMethods).where(isNull(paymentMethods.deletedAt));
+      const pmMap = Object.fromEntries(pms.map((p) => [p.id, {
+        name:  p.name,
+        color: p.color ?? PM_TYPE_COLORS[p.type] ?? "#94a3b8",
+      }]));
+      for (const t of txns) {
+        const key = t.paymentMethodId ?? "__none__";
+        const pmInfo = t.paymentMethodId ? pmMap[t.paymentMethodId] : null;
+        const label = pmInfo?.name ?? (t.paymentMethodId ? "Outra Forma" : "Sem Forma de Pagamento");
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key, color: pmInfo?.color ?? null };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;
       }
@@ -64,16 +96,6 @@ export async function GET(req: NextRequest) {
       for (const t of txns) {
         const key = t.userId;
         const label = userMap[t.userId] ?? "Usuário";
-        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
-        groups[key].total += parseFloat(t.value);
-        groups[key].count++;
-      }
-    } else if (groupBy === "paymentMethod") {
-      const pms = await db.select({ id: paymentMethods.id, name: paymentMethods.name }).from(paymentMethods).where(isNull(paymentMethods.deletedAt));
-      const pmMap = Object.fromEntries(pms.map((p) => [p.id, p.name]));
-      for (const t of txns) {
-        const key = t.paymentMethodId ?? "__none__";
-        const label = t.paymentMethodId ? (pmMap[t.paymentMethodId] ?? "Outra Forma") : "Sem Forma de Pagamento";
         if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;
