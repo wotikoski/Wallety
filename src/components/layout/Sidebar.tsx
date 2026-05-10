@@ -84,7 +84,7 @@ export function Sidebar() {
       <div className="h-14 flex items-center px-3 border-t border-white/[0.07] shrink-0">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-white/30 hover:text-white/60 hover:bg-white/[0.05] transition text-[13px] font-medium tracking-wide"
+          className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-white/30 hover:text-white/60 hover:bg-white/[0.05] transition text-[13px] font-medium tracking-wide"
         >
           <LogOut size={14} />
           <span>Sair</span>
@@ -109,7 +109,7 @@ function NavItem({
     <Link
       href={href}
       className={cn(
-        "relative flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-[13px] transition-all mb-0.5 tracking-wide",
+        "relative flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[10px] text-[13px] transition-all mb-0.5 tracking-wide",
         active
           ? "bg-[rgba(59,130,246,0.15)] text-[#3b82f6] font-semibold"
           : "text-white/35 hover:text-white/65 hover:bg-white/[0.05] font-medium",
