@@ -27,13 +27,6 @@ interface Budget {
   category: { name: string; color: string | null; icon: string | null } | null;
 }
 
-/** Monochromatic blue palette — same as Relatórios for visual consistency. */
-const CATEGORY_COLORS = [
-  "#3b82f6", "#60a5fa", "#2563eb", "#1e40af",
-  "#06b6d4", "#0ea5e9", "#64748b", "#94a3b8",
-  "#475569", "#334155",
-];
-
 const MONTHS = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
@@ -193,13 +186,13 @@ export function BudgetsClient() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {rows.map(({ category, budget }, index) => (
+          {rows.map(({ category, budget }) => (
             <BudgetRow
               key={category.id}
               category={category}
               budget={budget}
               projected={projectedByCat.get(category.id) ?? 0}
-              accentColor={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
+              accentColor={category.color ?? "#94a3b8"}
               onSave={(amount) => saveMutation.mutate({ categoryId: category.id, amount })}
               onDelete={budget ? () => deleteMutation.mutate(budget.id) : undefined}
             />

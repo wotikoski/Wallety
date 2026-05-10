@@ -5,9 +5,8 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
-import { useConfirm } from "@/lib/hooks/useConfirm";
+import { useUndoDelete } from "@/lib/hooks/useUndoDelete";
 import { Plus, Trash2, Edit, CreditCard } from "lucide-react";
 import { PAYMENT_METHOD_TYPES, getPaymentMethodLabel } from "@/lib/constants/payment-method-types";
 import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
@@ -48,7 +47,7 @@ export function PaymentMethodsClient() {
     queryFn: () => fetch(`/api/payment-methods?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
-  const { confirm, dialogProps } = useConfirm();
+  const { schedule, isPending } = useUndoDelete();
 
   const { data: banksData } = useQuery<{ banks: { id: string; name: string }[] }>({
     queryKey: ["banks", "all", activeGroupId],
@@ -98,22 +97,7 @@ export function PaymentMethodsClient() {
     onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/payment-methods/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}));
-        throw new Error(json.error ?? "Erro ao excluir");
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
-      toast({ title: "Forma de pagamento excluída" });
-    },
-    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
-  });
-
-  const paymentMethods = pmData?.paymentMethods ?? [];
+  const paymentMethods = (pmData?.paymentMethods ?? []).filter((pm) => !isPending(pm.id));
   const banks = banksData?.banks ?? [];
 
   return (
@@ -247,10 +231,9 @@ export function PaymentMethodsClient() {
                 </button>
                 {!pm.isDefault && (
                   <button
-                    onClick={() => confirm(() => deleteMutation.mutate(pm.id), {
-                      title: "Excluir forma de pagamento",
-                      description: `Tem certeza que deseja excluir "${pm.name}"?`,
-                      confirmLabel: "Excluir",
+                    onClick={() => schedule(pm.id, `"${pm.name}" excluída`, async () => {
+                      await fetch(`/api/payment-methods/${pm.id}`, { method: "DELETE" });
+                      queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
                     })}
                     className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
                   >
@@ -264,7 +247,6 @@ export function PaymentMethodsClient() {
         )}
       </div>
 
-      <ConfirmDialog {...dialogProps} loading={deleteMutation.isPending} />
     </div>
   );
 }

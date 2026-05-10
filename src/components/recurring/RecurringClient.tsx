@@ -5,8 +5,7 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { formatCurrency, parseCurrency } from "@/lib/utils/currency";
 import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
-import { useConfirm } from "@/lib/hooks/useConfirm";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useUndoDelete } from "@/lib/hooks/useUndoDelete";
 import { FormModal, formInputCls, formLabelCls } from "@/components/ui/FormModal";
 import { Plus, RefreshCcw, Trash2, Edit, Play, Pause, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -80,7 +79,7 @@ export function RecurringClient() {
   const { activeGroupId } = useActiveGroup();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { confirm, dialogProps } = useConfirm();
+  const { schedule, isPending } = useUndoDelete();
   const [showForm, setShowForm] = useState(false);
   const [editingRule, setEditingRule] = useState<Recurring | null>(null);
 
@@ -105,23 +104,6 @@ export function RecurringClient() {
   const { data: pmsData } = useQuery<{ paymentMethods: PaymentMethod[] }>({
     queryKey: ["payment-methods", activeGroupId],
     queryFn: () => fetch(`/api/payment-methods?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/recurring/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Erro ao remover");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recurring"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["budgets"] });
-      queryClient.invalidateQueries({ queryKey: ["recurring-projected"] });
-      queryClient.invalidateQueries({ queryKey: ["report"] });
-      toast({ title: "Recorrência e lançamentos removidos" });
-    },
-    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
   const toggleMutation = useMutation({
@@ -152,7 +134,7 @@ export function RecurringClient() {
     onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
-  const rows = data?.recurring ?? [];
+  const rows = (data?.recurring ?? []).filter((r) => !isPending(r.id));
   const categories = catsData?.categories ?? [];
   const catMap = new Map(categories.map((c) => [c.id, c]));
   const banks = banksData?.banks ?? [];
@@ -241,7 +223,15 @@ export function RecurringClient() {
                           Editar
                         </button>
                         <button
-                          onClick={() => confirm(() => deleteMutation.mutate(r.id), { title: "Remover recorrência?", description: "A regra e todos os lançamentos gerados por ela serão removidos.", variant: "danger" })}
+                          onClick={() => schedule(r.id, "Recorrência removida", async () => {
+                            await fetch(`/api/recurring/${r.id}`, { method: "DELETE" });
+                            queryClient.invalidateQueries({ queryKey: ["recurring"] });
+                            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+                            queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+                            queryClient.invalidateQueries({ queryKey: ["budgets"] });
+                            queryClient.invalidateQueries({ queryKey: ["recurring-projected"] });
+                            queryClient.invalidateQueries({ queryKey: ["report"] });
+                          })}
                           className="flex-1 flex flex-col items-center justify-center gap-1 bg-expense text-white text-xs font-medium"
                         >
                           <Trash2 size={16} />
@@ -354,7 +344,15 @@ export function RecurringClient() {
                             <Edit size={14} />
                           </button>
                           <button
-                            onClick={() => confirm(() => deleteMutation.mutate(r.id), { title: "Remover recorrência?", description: "A regra e todos os lançamentos gerados por ela serão removidos.", variant: "danger" })}
+                            onClick={() => schedule(r.id, "Recorrência removida", async () => {
+                            await fetch(`/api/recurring/${r.id}`, { method: "DELETE" });
+                            queryClient.invalidateQueries({ queryKey: ["recurring"] });
+                            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+                            queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+                            queryClient.invalidateQueries({ queryKey: ["budgets"] });
+                            queryClient.invalidateQueries({ queryKey: ["recurring-projected"] });
+                            queryClient.invalidateQueries({ queryKey: ["report"] });
+                          })}
                             className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
                           >
                             <Trash2 size={14} />
@@ -406,8 +404,6 @@ export function RecurringClient() {
           onError={(msg) => toast({ title: "Erro", description: msg, variant: "destructive" })}
         />
       )}
-
-      <ConfirmDialog {...dialogProps} />
 
       {/* FAB — mobile only, above the bottom nav */}
       <button

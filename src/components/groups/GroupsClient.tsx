@@ -5,8 +5,7 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { useConfirm } from "@/lib/hooks/useConfirm";
+import { useUndoDelete } from "@/lib/hooks/useUndoDelete";
 import { Plus, Users, Crown, Trash2, UserPlus, Copy, Check } from "lucide-react";
 import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
 import { FormModal, formInputCls, formLabelCls } from "@/components/ui/FormModal";
@@ -32,7 +31,7 @@ export function GroupsClient() {
   const queryClient = useQueryClient();
   const { setActiveGroupId, activeGroupId } = useActiveGroup();
   const { toast } = useToast();
-  const { confirm, dialogProps } = useConfirm();
+  const { schedule, isPending } = useUndoDelete();
   const [showForm, setShowForm] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -70,21 +69,6 @@ export function GroupsClient() {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/groups/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Erro ao excluir grupo");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["groups"] });
-      toast({ title: "Grupo excluído" });
-      setSelectedGroup(null);
-    },
-    onError: () => {
-      toast({ title: "Erro ao excluir grupo", description: "Apenas o dono pode excluir o grupo.", variant: "destructive" });
-    },
-  });
-
   const inviteMutation = useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/groups/${selectedGroup}/members`, {
@@ -101,7 +85,7 @@ export function GroupsClient() {
     },
   });
 
-  const groups = groupsData?.groups ?? [];
+  const groups = (groupsData?.groups ?? []).filter((g) => !isPending(g.id));
   const members = memberData?.members ?? [];
   const currentGroup = memberData?.group;
 
@@ -265,11 +249,15 @@ export function GroupsClient() {
                     </p>
                   </div>
                   <button
-                    onClick={() => confirm(() => deleteMutation.mutate(selectedGroup!), {
-                      title: "Excluir grupo",
-                      description: `Tem certeza que deseja excluir o grupo "${currentGroup.name}"? Todos os lançamentos, categorias e dados compartilhados serão perdidos permanentemente.`,
-                      confirmLabel: "Excluir",
-                    })}
+                    onClick={() => {
+                      const gid = selectedGroup!;
+                      const gname = currentGroup.name;
+                      setSelectedGroup(null);
+                      schedule(gid, `Grupo "${gname}" excluído`, async () => {
+                        await fetch(`/api/groups/${gid}`, { method: "DELETE" });
+                        queryClient.invalidateQueries({ queryKey: ["groups"] });
+                      });
+                    }}
                     className="shrink-0 inline-flex items-center gap-2 py-[9px] px-4 text-[13px] font-semibold text-[#ef4444] border border-[var(--color-border)] rounded-[10px] hover:bg-[rgba(239,68,68,.08)] transition"
                   >
                     <Trash2 size={14} />
@@ -282,7 +270,6 @@ export function GroupsClient() {
         )}
       </div>
 
-      <ConfirmDialog {...dialogProps} loading={deleteMutation.isPending} />
     </div>
   );
 }

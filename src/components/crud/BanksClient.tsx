@@ -5,9 +5,8 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
-import { useConfirm } from "@/lib/hooks/useConfirm";
+import { useUndoDelete } from "@/lib/hooks/useUndoDelete";
 import { Plus, Trash2, Edit, Building2 } from "lucide-react";
 import { COLOR_PALETTE, ColorPicker, suggestPaletteColor, rotatePaletteColor } from "@/components/ui/ColorPicker";
 import { getBankBrandColor } from "@/lib/utils/bank-colors";
@@ -37,7 +36,7 @@ export function BanksClient() {
     queryFn: () => fetch(`/api/banks?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
-  const { confirm, dialogProps } = useConfirm();
+  const { schedule, isPending } = useUndoDelete();
 
   const { register, handleSubmit, reset, watch, setValue } = useForm<{ name: string; code: string; color: string }>({
     defaultValues: { color: COLOR_PALETTE[0] },
@@ -69,22 +68,7 @@ export function BanksClient() {
     onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/banks/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}));
-        throw new Error(json.error ?? "Erro ao excluir banco");
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["banks"] });
-      toast({ title: "Banco excluído" });
-    },
-    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
-  });
-
-  const banks = data?.banks ?? [];
+  const banks = (data?.banks ?? []).filter((b) => !isPending(b.id));
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -184,10 +168,9 @@ export function BanksClient() {
                 </button>
                 {!bank.isDefault && (
                   <button
-                    onClick={() => confirm(() => deleteMutation.mutate(bank.id), {
-                      title: "Excluir banco",
-                      description: `Tem certeza que deseja excluir o banco "${bank.name}"? Essa ação não pode ser desfeita.`,
-                      confirmLabel: "Excluir",
+                    onClick={() => schedule(bank.id, `Banco "${bank.name}" excluído`, async () => {
+                      await fetch(`/api/banks/${bank.id}`, { method: "DELETE" });
+                      queryClient.invalidateQueries({ queryKey: ["banks"] });
                     })}
                     className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
                   >
@@ -201,7 +184,6 @@ export function BanksClient() {
         )}
       </div>
 
-      <ConfirmDialog {...dialogProps} loading={deleteMutation.isPending} />
     </div>
   );
 }

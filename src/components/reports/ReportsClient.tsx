@@ -17,6 +17,7 @@ interface ReportItem {
   count: number;
   percentage: number;
   groupKey: string;
+  color?: string | null;
 }
 
 interface ReportData {
@@ -127,7 +128,8 @@ export function ReportsClient() {
   const drillTxns = drillData?.transactions ?? [];
 
   function openDrilldown(item: ReportItem, index: number) {
-    setDrilldown({ label: item.label, groupKey: item.groupKey, color: COLORS[index % COLORS.length] });
+    const color = (item.color && item.color.trim()) ? item.color : COLORS[index % COLORS.length];
+    setDrilldown({ label: item.label, groupKey: item.groupKey, color });
   }
 
   function closeDrilldown() {
@@ -376,7 +378,7 @@ export function ReportsClient() {
                 )}
                 <div className="space-y-1.5">
                   {items.map((item, index) => {
-                    const color      = COLORS[index % COLORS.length];
+                    const color      = (item.color && item.color.trim()) ? item.color : COLORS[index % COLORS.length];
                     const isSelected = drilldown?.groupKey === item.groupKey;
                     const sign       = reportType === "income" ? "+" : "−";
                     const valueColor = reportType === "income" ? "text-income" : "text-[var(--color-text)]";

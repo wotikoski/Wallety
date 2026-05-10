@@ -42,8 +42,6 @@ const AT   = "#1e3a8a";
 const BS   = "#243042";
 const EB   = "#334155";
 const EB_L = "#cbd5d0";
-const SHADES = [A, AD, AS, AT, BS, EB];
-
 const MONTHS = [
   "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
   "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro",
@@ -255,15 +253,15 @@ function KpiCard({ label, value, hint, hintColor, hideBalance, icon }: {
 
 /* ── CategoryBreakdown — CSS conic-gradient ───────────────────────────── */
 function CategoryBreakdown({ cats, catTotal, hideBalance }: {
-  cats: { name: string; total: number }[];
+  cats: { name: string; total: number; color: string }[];
   catTotal: number;
   hideBalance: boolean;
 }) {
   let acc = 0;
-  const stops = cats.slice(0, 6).map((c, i) => {
+  const stops = cats.slice(0, 6).map((c) => {
     const start = acc;
     acc += catTotal > 0 ? (c.total / catTotal) * 100 : 0;
-    return `${SHADES[i % SHADES.length]} ${start.toFixed(2)}% ${acc.toFixed(2)}%`;
+    return `${c.color} ${start.toFixed(2)}% ${acc.toFixed(2)}%`;
   }).join(", ");
 
   const fmtS = (v: number) => {
@@ -293,18 +291,17 @@ function CategoryBreakdown({ cats, catTotal, hideBalance }: {
 
       {/* Legend */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 9 }}>
-        {cats.slice(0, 5).map((c, i) => {
+        {cats.slice(0, 5).map((c) => {
           const pct = catTotal > 0 ? Math.round((c.total / catTotal) * 100) : 0;
-          const shade = SHADES[i % SHADES.length];
           return (
             <div key={c.name}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: shade, flexShrink: 0 }} />
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: c.color, flexShrink: 0 }} />
                 <span style={{ fontSize: 12, color: "var(--color-text)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</span>
                 <span style={{ fontSize: 11, color: "var(--text-mute)", fontVariantNumeric: "tabular-nums", fontWeight: 600, flexShrink: 0 }}>{pct}%</span>
               </div>
               <div style={{ height: 2, background: "var(--color-border)", borderRadius: 1, overflow: "hidden" }}>
-                <div style={{ width: `${pct}%`, height: "100%", background: shade, transition: "width 0.4s" }} />
+                <div style={{ width: `${pct}%`, height: "100%", background: c.color, transition: "width 0.4s" }} />
               </div>
             </div>
           );

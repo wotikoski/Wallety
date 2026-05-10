@@ -30,9 +30,8 @@ import {
   TrendingUp, TrendingDown, BadgeCheck, Search, X as XIcon,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
-import { useConfirm } from "@/lib/hooks/useConfirm";
+import { useUndoDelete } from "@/lib/hooks/useUndoDelete";
 import { Portal } from "@/components/ui/Portal";
 import { FilterSheet } from "./FilterSheet";
 import { SwipeableRow } from "./SwipeableRow";
@@ -158,7 +157,7 @@ export function TransactionsClient() {
     placeholderData: (prev) => prev,
   });
 
-  const { confirm: askConfirm, dialogProps } = useConfirm();
+  const { schedule, isPending: isTxnPending } = useUndoDelete();
 
   const togglePaid = useMutation({
     mutationFn: async (t: Transaction) => {
@@ -246,14 +245,17 @@ export function TransactionsClient() {
       setInstallmentDelete(t);
       return;
     }
-    askConfirm(() => deleteTransaction.mutate({ id: t.id, scope: "single" }), {
-      title: "Excluir lançamento",
-      description: `Tem certeza que deseja excluir "${t.description}"?`,
-      confirmLabel: "Excluir",
+    schedule(t.id, `"${t.description}" excluído`, async () => {
+      await fetch(`/api/transactions/${t.id}?scope=single`, { method: "DELETE" });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions-calendar"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["daily-limit"] });
     });
   };
 
-  const txns = data?.transactions ?? [];
+  const txns = (data?.transactions ?? []).filter((t) => !isTxnPending(t.id));
   const totalCount = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / 30));
   const totalIncome = txns.filter((t) => t.type === "income").reduce((a, t) => a + parseFloat(t.value), 0);
@@ -658,8 +660,6 @@ export function TransactionsClient() {
 
       {/* Mobile spacer so the FAB never covers the pagination row */}
       <div className="md:hidden h-14" />
-
-      <ConfirmDialog {...dialogProps} loading={deleteTransaction.isPending} />
 
       {installmentDelete && (
         <InstallmentDeleteDialog

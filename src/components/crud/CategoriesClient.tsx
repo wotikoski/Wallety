@@ -5,9 +5,8 @@ import { useActiveGroup } from "@/lib/hooks/useActiveGroup";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListSkeleton } from "@/components/ui/Skeleton";
-import { useConfirm } from "@/lib/hooks/useConfirm";
+import { useUndoDelete } from "@/lib/hooks/useUndoDelete";
 import { Plus, Trash2, Edit, Check } from "lucide-react";
 import { COLOR_PALETTE, ColorPicker, suggestPaletteColor, rotatePaletteColor } from "@/components/ui/ColorPicker";
 import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
@@ -58,7 +57,7 @@ export function CategoriesClient() {
     queryFn: () => fetch(`/api/categories?${params}`).then((r) => { if (!r.ok) { return r.json().then((b) => { throw new Error(b?.error ?? `API ${r.status}`); }); } return r.json(); }),
   });
 
-  const { confirm, dialogProps } = useConfirm();
+  const { schedule, isPending } = useUndoDelete();
 
   const { register, handleSubmit, reset, watch, setValue } = useForm<FormData>({
     defaultValues: { type: "expense", icon: "💳", color: COLOR_PALETTE[0] },
@@ -88,29 +87,13 @@ export function CategoriesClient() {
     onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}));
-        throw new Error(json.error ?? "Erro ao excluir categoria");
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-      toast({ title: "Categoria excluída" });
-    },
-    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
-  });
-
   const askDelete = (id: string, name: string) =>
-    confirm(() => deleteMutation.mutate(id), {
-      title: "Excluir categoria",
-      description: `Tem certeza que deseja excluir "${name}"? Lançamentos que usam essa categoria ficarão sem categoria.`,
-      confirmLabel: "Excluir",
+    schedule(id, `Categoria "${name}" excluída`, async () => {
+      await fetch(`/api/categories/${id}`, { method: "DELETE" });
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
     });
 
-  const categories = data?.categories ?? [];
+  const categories = (data?.categories ?? []).filter((c) => !isPending(c.id));
   const incomeCategories = categories.filter((c) => c.type === "income" || c.type === "both");
   const expenseCategories = categories.filter((c) => c.type === "expense" || c.type === "both");
 
@@ -242,7 +225,6 @@ export function CategoriesClient() {
         </div>
       )}
 
-      <ConfirmDialog {...dialogProps} loading={deleteMutation.isPending} />
     </div>
   );
 }

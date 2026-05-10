@@ -54,25 +54,27 @@ export async function GET(req: NextRequest) {
       txns;
 
     const grandTotal = filteredTxns.reduce((acc, t) => acc + parseFloat(t.value), 0);
-    let groups: Record<string, { label: string; total: number; count: number; groupKey: string }> = {};
+    let groups: Record<string, { label: string; total: number; count: number; groupKey: string; color?: string | null }> = {};
 
     if (groupBy === "category") {
       const cats = await db.select().from(categories).where(isNull(categories.deletedAt));
-      const catMap = Object.fromEntries(cats.map((c) => [c.id, c.name]));
+      const catMap = Object.fromEntries(cats.map((c) => [c.id, { name: c.name, color: c.color }]));
       for (const t of filteredTxns) {
         const key = t.categoryId ?? "__none__";
-        const label = t.categoryId ? (catMap[t.categoryId] ?? "Outros") : "Sem Categoria";
-        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
+        const catInfo = t.categoryId ? catMap[t.categoryId] : null;
+        const label = catInfo?.name ?? (t.categoryId ? "Outros" : "Sem Categoria");
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key, color: catInfo?.color ?? null };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;
       }
     } else if (groupBy === "bank") {
       const bks = await db.select().from(banks).where(isNull(banks.deletedAt));
-      const bankMap = Object.fromEntries(bks.map((b) => [b.id, b.name]));
+      const bankMap = Object.fromEntries(bks.map((b) => [b.id, { name: b.name, color: b.color }]));
       for (const t of filteredTxns) {
         const key = t.bankId ?? "__none__";
-        const label = t.bankId ? (bankMap[t.bankId] ?? "Outro Banco") : "Sem Banco";
-        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
+        const bkInfo = t.bankId ? bankMap[t.bankId] : null;
+        const label = bkInfo?.name ?? (t.bankId ? "Outro Banco" : "Sem Banco");
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key, color: bkInfo?.color ?? null };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;
       }

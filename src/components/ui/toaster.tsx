@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Toast, registerToastHandler } from "./use-toast";
 import { X, CheckCircle2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
@@ -8,12 +8,16 @@ import { cn } from "@/lib/utils/cn";
 export function Toaster() {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
+  const dismiss = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   useEffect(() => {
     registerToastHandler((toast) => {
       setToasts((prev) => [...prev, toast]);
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== toast.id));
-      }, 4000);
+      }, toast.duration ?? 4000);
     });
   }, []);
 
@@ -39,8 +43,16 @@ export function Toaster() {
             <p>{toast.title}</p>
             {toast.description && <p className="opacity-70 text-xs mt-0.5">{toast.description}</p>}
           </div>
+          {toast.action && (
+            <button
+              onClick={() => { toast.action!.onClick(); dismiss(toast.id); }}
+              className="shrink-0 text-[13px] font-semibold text-[#3b82f6] hover:text-[#60a5fa] transition px-1"
+            >
+              {toast.action.label}
+            </button>
+          )}
           <button
-            onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
+            onClick={() => dismiss(toast.id)}
             className="opacity-60 hover:opacity-100 transition"
           >
             <X size={14} />

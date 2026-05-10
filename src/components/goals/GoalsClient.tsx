@@ -6,9 +6,8 @@ import { formatCurrency, parseCurrency } from "@/lib/utils/currency";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Portal } from "@/components/ui/Portal";
-import { useConfirm } from "@/lib/hooks/useConfirm";
+import { useUndoDelete } from "@/lib/hooks/useUndoDelete";
 import { COLOR_PALETTE, ColorPicker, suggestPaletteColor, rotatePaletteColor } from "@/components/ui/ColorPicker";
 import {
   Plus,
@@ -232,7 +231,7 @@ export function GoalsClient() {
   const { activeGroupId } = useActiveGroup();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { confirm, dialogProps } = useConfirm();
+  const { schedule, isPending } = useUndoDelete();
 
   const [mode, setMode] = useState<FormMode>(null);
   const [editing, setEditing] = useState<Goal | null>(null);
@@ -304,19 +303,6 @@ export function GoalsClient() {
     onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/goals/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Erro ao excluir");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["goals"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      toast({ title: "Meta excluída" });
-    },
-    onError: (err: Error) => toast({ title: "Erro", description: err.message, variant: "destructive" }),
-  });
-
   // ── Handlers ───────────────────────────────────────────
   function openCreate() {
     setEditing(null);
@@ -372,13 +358,14 @@ export function GoalsClient() {
   }
 
   function handleDelete(id: string) {
-    confirm(
-      () => deleteMutation.mutate(id),
-      { title: "Excluir meta?", description: "Esta ação não pode ser desfeita.", confirmLabel: "Excluir", variant: "danger" },
-    );
+    schedule(id, "Meta excluída", async () => {
+      await fetch(`/api/goals/${id}`, { method: "DELETE" });
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    });
   }
 
-  const goalList = data?.goals ?? [];
+  const goalList = (data?.goals ?? []).filter((g) => !isPending(g.id));
 
   return (
     <div className="animate-fade-in">
@@ -702,7 +689,6 @@ export function GoalsClient() {
         </Portal>
       )}
 
-      <ConfirmDialog {...dialogProps} />
     </div>
   );
 }
