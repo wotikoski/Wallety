@@ -266,11 +266,16 @@
 .hero-grid    { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 14px; }
 .charts-grid  { display: grid; grid-template-columns: 1.5fr 1fr;    gap: 14px; }
 
-/* ── Medium (641px – 900px) — narrow desktop / tablet ── */
-@media (min-width: 641px) and (max-width: 900px) {
+/* ── Medium (641px – 1280px) — narrow desktop / tablet ──
+   Sidebar = 240px + padding 48px = 288px overhead.
+   At 1280px viewport the net content is only ~992px → 3 cols becomes cramped.
+   Switch hero to 2 cols (hero full-width + 2 KPI side-by-side). ── */
+@media (min-width: 641px) and (max-width: 1280px) {
   .hero-grid   { grid-template-columns: 1fr 1fr; }
   .hero-card   { grid-column: 1 / -1; padding: 20px 22px; min-height: unset; }
   .kpi-val     { font-size: 18px; }
+}
+@media (min-width: 641px) and (max-width: 960px) {
   .charts-grid { grid-template-columns: 1fr; }
 }
 
