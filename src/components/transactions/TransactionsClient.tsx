@@ -798,18 +798,18 @@ function InstallmentDeleteDialog({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
-          <h2 className="text-base font-semibold text-app-text">Excluir parcelamento</h2>
-          <p className="text-sm text-app-muted mt-1">
+          <h2 className="text-[15px] font-semibold text-[var(--color-text)]">Excluir parcelamento</h2>
+          <p className="text-[13px] text-[var(--text-mute)] mt-1">
             &quot;{transaction.description}&quot; faz parte de um parcelamento de {total} parcelas. O que você quer excluir?
           </p>
           <div className="mt-4 space-y-2">
             {options.map((opt) => (
               <label
                 key={opt.value}
-                className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
+                className={`flex items-start gap-3 p-3 rounded-[10px] border cursor-pointer transition ${
                   scope === opt.value
                     ? "border-[#3b82f6] bg-[rgba(59,130,246,.08)]"
-                    : "border-app-border hover:bg-[var(--surface-raised)]"
+                    : "border-[var(--color-border)] hover:bg-[var(--surface-raised)]"
                 }`}
               >
                 <input
@@ -818,28 +818,28 @@ function InstallmentDeleteDialog({
                   value={opt.value}
                   checked={scope === opt.value}
                   onChange={() => setScope(opt.value)}
-                  className="mt-1 accent-brand-600"
+                  className="mt-1 accent-[#3b82f6]"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-app-text">{opt.label}</p>
-                  <p className="text-xs text-app-muted mt-0.5">{opt.hint}</p>
+                  <p className="text-[13px] font-medium text-[var(--color-text)]">{opt.label}</p>
+                  <p className="text-[11px] text-[var(--text-mute)] mt-0.5">{opt.hint}</p>
                 </div>
               </label>
             ))}
           </div>
         </div>
-        <div className="flex items-center justify-end gap-2 px-6 py-4 bg-[var(--surface-raised)] border-t border-app-border">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--color-border)]">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-app-muted hover:bg-[var(--surface-hover)] hover:text-app-text rounded-lg transition disabled:opacity-50"
+            className="h-[42px] px-5 rounded-[10px] border border-[var(--color-border)] text-[13px] font-semibold text-[var(--text-mute)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)] transition disabled:opacity-50"
           >
             Cancelar
           </button>
           <button
             onClick={() => onConfirm(scope)}
             disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-white bg-expense hover:bg-expense-dark rounded-lg transition disabled:opacity-50"
+            className="h-[42px] px-5 rounded-[10px] text-[13px] font-semibold text-white bg-[#ef4444] hover:bg-[#dc2626] transition disabled:opacity-50"
           >
             {loading ? "Excluindo..." : "Excluir"}
           </button>
