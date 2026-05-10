@@ -191,30 +191,16 @@ export function GroupsClient() {
           <div className="lg:col-span-2 space-y-4">
             <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-semibold text-app-text">{currentGroup.name}</h2>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setActiveGroupId(activeGroupId === selectedGroup ? null : selectedGroup)}
-                    className={`h-[38px] px-4 rounded-[10px] text-[13px] font-semibold transition ${activeGroupId === selectedGroup ? "bg-[#3b82f6] hover:bg-[#2563eb] text-white" : "border border-[var(--color-border)] text-[var(--text-mute)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)]"}`}
-                  >
-                    {activeGroupId === selectedGroup ? "Ativo" : "Ativar"}
-                  </button>
-                  {currentGroup.role === "owner" && (
-                    <button
-                      onClick={() => confirm(() => deleteMutation.mutate(selectedGroup), {
-                      title: "Excluir grupo",
-                      description: `Tem certeza que deseja excluir o grupo "${currentGroup.name}"? Todos os lançamentos, categorias e dados compartilhados serão perdidos.`,
-                      confirmLabel: "Excluir",
-                    })}
-                      className="p-1.5 text-[var(--text-mute)] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,.08)] rounded-[8px] transition"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  )}
-                </div>
+                <h2 className="text-[15px] font-semibold text-[var(--color-text)]">{currentGroup.name}</h2>
+                <button
+                  onClick={() => setActiveGroupId(activeGroupId === selectedGroup ? null : selectedGroup)}
+                  className={`h-[38px] px-4 rounded-[10px] text-[13px] font-semibold transition ${activeGroupId === selectedGroup ? "bg-[#3b82f6] hover:bg-[#2563eb] text-white" : "border border-[var(--color-border)] text-[var(--text-mute)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)]"}`}
+                >
+                  {activeGroupId === selectedGroup ? "Ativo" : "Ativar"}
+                </button>
               </div>
 
-              <h3 className="text-sm font-medium text-app-muted mb-3">Membros ({members.length})</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-mute)] mb-3">Membros ({members.length})</h3>
               <div className="space-y-2">
                 {members.map((m) => (
                   <div key={m.user.id} className="flex items-center gap-3 p-2.5 rounded-[10px] bg-[var(--surface-raised)]">
@@ -265,6 +251,33 @@ export function GroupsClient() {
                 </div>
               )}
             </div>
+            {/* Danger zone — owners only */}
+            {currentGroup.role === "owner" && (
+              <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
+                <div className="px-5 py-3.5 border-b border-[var(--color-border)]">
+                  <h3 className="text-[13px] font-semibold text-[#ef4444]">Zona de Perigo</h3>
+                </div>
+                <div className="px-5 py-4 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[13px] font-medium text-[var(--color-text)]">Excluir grupo</p>
+                    <p className="text-[11px] text-[var(--text-mute)] mt-0.5">
+                      Todos os dados compartilhados serão removidos permanentemente.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => confirm(() => deleteMutation.mutate(selectedGroup!), {
+                      title: "Excluir grupo",
+                      description: `Tem certeza que deseja excluir o grupo "${currentGroup.name}"? Todos os lançamentos, categorias e dados compartilhados serão perdidos permanentemente.`,
+                      confirmLabel: "Excluir",
+                    })}
+                    className="shrink-0 inline-flex items-center gap-2 py-[9px] px-4 text-[13px] font-semibold text-[#ef4444] border border-[var(--color-border)] rounded-[10px] hover:bg-[rgba(239,68,68,.08)] transition"
+                  >
+                    <Trash2 size={14} />
+                    Excluir grupo
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
