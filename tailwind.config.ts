@@ -2,6 +2,13 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   darkMode: ["class"],
+  // Gate every `hover:` utility behind `@media (hover: hover)`. iOS Safari
+  // synthesizes :hover on tap and keeps it set until the user taps another
+  // element — making list rows look highlighted while the user is actually
+  // trying to scroll. Default in Tailwind 3.5+, opt-in here for our 3.4.
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",

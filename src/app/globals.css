@@ -170,11 +170,14 @@
 /* App background */
 .dark .bg-app-bg { background-color: var(--surface-bg) !important; }
 
-/* Hover states */
-.dark .hover\:bg-\[\#f8f9fd\]:hover,
-.dark .hover\:bg-\[\#f4f5fb\]:hover,
-.dark .hover\:bg-\[\#eceef7\]:hover,
-.dark .hover\:bg-\[\#f1f3f9\]:hover { background-color: var(--surface-hover) !important; }
+/* Hover states — gated so iOS / Android do not "stick" the hover
+   background when the user is just pressing to start a scroll. */
+@media (hover: hover) {
+  .dark .hover\:bg-\[\#f8f9fd\]:hover,
+  .dark .hover\:bg-\[\#f4f5fb\]:hover,
+  .dark .hover\:bg-\[\#eceef7\]:hover,
+  .dark .hover\:bg-\[\#f1f3f9\]:hover { background-color: var(--surface-hover) !important; }
+}
 
 /* Divider / border colours */
 .dark .border-\[\#f1f3f9\],
@@ -189,9 +192,11 @@
 .dark .bg-\[rgba\(59\,130\,246\,\.03\)\] {
   background-color: rgba(var(--brand-rgb), 0.12) !important;
 }
-.dark .hover\:bg-\[rgba\(99\,102\,241\,\.03\)\]:hover,
-.dark .hover\:bg-\[rgba\(59\,130\,246\,\.03\)\]:hover {
-  background-color: rgba(var(--brand-rgb), 0.12) !important;
+@media (hover: hover) {
+  .dark .hover\:bg-\[rgba\(99\,102\,241\,\.03\)\]:hover,
+  .dark .hover\:bg-\[rgba\(59\,130\,246\,\.03\)\]:hover {
+    background-color: rgba(var(--brand-rgb), 0.12) !important;
+  }
 }
 
 /* Text overrides */
@@ -203,8 +208,10 @@
 /* Brand colour overrides */
 .dark .bg-brand-600,
 .dark .bg-brand-500  { background-color: var(--brand) !important; }
-.dark .hover\:bg-brand-700:hover,
-.dark .hover\:bg-brand-600:hover { background-color: var(--brand-hover) !important; }
+@media (hover: hover) {
+  .dark .hover\:bg-brand-700:hover,
+  .dark .hover\:bg-brand-600:hover { background-color: var(--brand-hover) !important; }
+}
 .dark .text-brand-500,
 .dark .text-brand-600 { color: var(--brand) !important; }
 .dark .border-brand-500 { border-color: var(--brand) !important; }
@@ -320,9 +327,11 @@
   line-height: 1.4;
   letter-spacing: 0.01em;
 }
-.chip-filter:hover {
-  border-color: var(--brand);
-  color: var(--brand);
+@media (hover: hover) {
+  .chip-filter:hover {
+    border-color: var(--brand);
+    color: var(--brand);
+  }
 }
 .chip-filter.active {
   background: var(--brand);
@@ -463,4 +472,22 @@ a:focus:not(:focus-visible),
 summary:focus:not(:focus-visible) {
   outline: none;
   box-shadow: none;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Recharts tooltip on touch devices
+   Recharts dispatches its tooltip via mouseenter/mousemove. iOS
+   synthesizes those on touch, so the tooltip pops up the moment
+   the finger lands on the chart — even when the user only meant
+   to start a scroll. Hide the tooltip entirely on hover-less
+   devices; the chart legend already shows the same data.
+   ────────────────────────────────────────────────────────────── */
+@media (hover: none) {
+  .recharts-tooltip-wrapper,
+  .recharts-tooltip-cursor,
+  .recharts-active-dot {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
 }
