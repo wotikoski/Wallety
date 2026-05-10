@@ -3,8 +3,29 @@ import { requireAuth, authErrorResponse, AuthError } from "@/lib/auth/middleware
 import { db } from "@/lib/db";
 import { transactions, categories, banks, users, paymentMethods } from "@/lib/db/schema";
 import { and, eq, gte, lte, isNull, sql } from "drizzle-orm";
+import { neon } from "@neondatabase/serverless";
+
+// Default colors per payment method type — mirrors PaymentMethodsClient.tsx
+const PM_TYPE_COLORS: Record<string, string> = {
+  cash:         "#22c55e",
+  pix:          "#00bdae",
+  credit_card:  "#f59e0b",
+  debit_card:   "#8b5cf6",
+  bank_account: "#3b82f6",
+  other:        "#94a3b8",
+};
+
+// Ensure the color column exists (may not yet if the payment-methods
+// GET route hasn't been called since the last deploy).
+async function ensurePaymentMethodColor() {
+  try {
+    const sql2 = neon(process.env.DATABASE_URL!);
+    await sql2`ALTER TABLE payment_methods ADD COLUMN IF NOT EXISTS color text`;
+  } catch { /* non-critical */ }
+}
 
 export async function GET(req: NextRequest) {
+  await ensurePaymentMethodColor();
   try {
     const auth = await requireAuth(req);
     const { searchParams } = new URL(req.url);
@@ -89,8 +110,12 @@ export async function GET(req: NextRequest) {
         groups[key].count++;
       }
     } else if (groupBy === "paymentMethod") {
-      const pms = await db.select({ id: paymentMethods.id, name: paymentMethods.name, color: paymentMethods.color }).from(paymentMethods).where(isNull(paymentMethods.deletedAt));
-      const pmMap = Object.fromEntries(pms.map((p) => [p.id, { name: p.name, color: p.color }]));
+      const pms = await db.select({ id: paymentMethods.id, name: paymentMethods.name, color: paymentMethods.color, type: paymentMethods.type }).from(paymentMethods).where(isNull(paymentMethods.deletedAt));
+      const pmMap = Object.fromEntries(pms.map((p) => [p.id, {
+        name:  p.name,
+        // Use the saved color; fall back to type-based default so items always have a distinct colour.
+        color: p.color ?? PM_TYPE_COLORS[p.type] ?? "#94a3b8",
+      }]));
       for (const t of filteredTxns) {
         const key = t.paymentMethodId ?? "__none__";
         const pmInfo = t.paymentMethodId ? pmMap[t.paymentMethodId] : null;
