@@ -206,7 +206,7 @@ export function GroupsClient() {
                       description: `Tem certeza que deseja excluir o grupo "${currentGroup.name}"? Todos os lançamentos, categorias e dados compartilhados serão perdidos.`,
                       confirmLabel: "Excluir",
                     })}
-                      className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
+                      className="p-1.5 text-[var(--text-mute)] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,.08)] rounded-[8px] transition"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -217,8 +217,8 @@ export function GroupsClient() {
               <h3 className="text-sm font-medium text-app-muted mb-3">Membros ({members.length})</h3>
               <div className="space-y-2">
                 {members.map((m) => (
-                  <div key={m.user.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-[var(--surface-raised)]">
-                    <div className="w-8 h-8 rounded-full bg-[rgba(59,130,246,.12)] flex items-center justify-center text-sm font-semibold text-[#3b82f6] shrink-0">
+                  <div key={m.user.id} className="flex items-center gap-3 p-2.5 rounded-[10px] bg-[var(--surface-raised)]">
+                    <div className="w-8 h-8 rounded-[8px] bg-[rgba(59,130,246,.12)] flex items-center justify-center text-[13px] font-semibold text-[#3b82f6] shrink-0">
                       {m.user.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -254,7 +254,7 @@ export function GroupsClient() {
               </div>
 
               {inviteUrl && (
-                <div className="mt-3 p-3 bg-[var(--surface-raised)] rounded-lg">
+                <div className="mt-3 p-3 bg-[var(--surface-raised)] rounded-[10px]">
                   <p className="text-xs text-[var(--text-mute)] mb-1.5">Link de convite (válido por 7 dias):</p>
                   <div className="flex items-center gap-2">
                     <code className="text-xs text-app-text flex-1 truncate">{inviteUrl}</code>
