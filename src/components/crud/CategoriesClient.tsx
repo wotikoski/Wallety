@@ -79,6 +79,10 @@ export function CategoriesClient() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      // Category colors flow into reports, dashboard donut and budget rows.
+      queryClient.invalidateQueries({ queryKey: ["report"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
       toast({ title: editing ? "Categoria atualizada!" : "Categoria criada!" });
       reset();
       setShowForm(false);
@@ -91,6 +95,9 @@ export function CategoriesClient() {
     schedule(id, `Categoria "${name}" excluída`, async () => {
       await fetch(`/api/categories/${id}`, { method: "DELETE" });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["report"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
     });
 
   const categories = (data?.categories ?? []).filter((c) => !isPending(c.id));

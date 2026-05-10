@@ -111,6 +111,9 @@ export function PaymentMethodsClient() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
+      // Payment method colors flow into the reports breakdown chart.
+      queryClient.invalidateQueries({ queryKey: ["report"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       toast({ title: editing ? "Forma de pagamento atualizada!" : "Forma de pagamento criada!" });
       reset();
       setShowForm(false);
@@ -283,6 +286,8 @@ export function PaymentMethodsClient() {
                       onClick={() => schedule(pm.id, `"${pm.name}" excluída`, async () => {
                         await fetch(`/api/payment-methods/${pm.id}`, { method: "DELETE" });
                         queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
+                        queryClient.invalidateQueries({ queryKey: ["report"] });
+                        queryClient.invalidateQueries({ queryKey: ["dashboard"] });
                       })}
                       className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
                     >

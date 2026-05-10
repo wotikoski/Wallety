@@ -60,6 +60,9 @@ export function BanksClient() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["banks"] });
+      // Bank colors are surfaced in reports & dashboard charts.
+      queryClient.invalidateQueries({ queryKey: ["report"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       toast({ title: editing ? "Banco atualizado!" : "Banco criado!" });
       reset();
       setShowForm(false);
@@ -171,6 +174,8 @@ export function BanksClient() {
                     onClick={() => schedule(bank.id, `Banco "${bank.name}" excluído`, async () => {
                       await fetch(`/api/banks/${bank.id}`, { method: "DELETE" });
                       queryClient.invalidateQueries({ queryKey: ["banks"] });
+                      queryClient.invalidateQueries({ queryKey: ["report"] });
+                      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
                     })}
                     className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
                   >
