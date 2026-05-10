@@ -27,7 +27,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       .innerJoin(users, eq(groupMembers.userId, users.id))
       .where(eq(groupMembers.groupId, id));
 
-    return NextResponse.json({ group, members });
+    // Include the current user's role so the client can show owner-only actions.
+    return NextResponse.json({ group: { ...group, role: membership[0].role }, members });
   } catch (e) {
     if (e instanceof AuthError) return authErrorResponse();
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });
