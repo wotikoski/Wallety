@@ -125,35 +125,55 @@ export async function GET(req: NextRequest) {
         ),
       );
 
-    // "Lançamentos Recentes" uses purchase date, not effectiveDate.
-    // Financial totals and charts use effectiveDate (cash-flow month), but
-    // the recent list should show what the user physically bought this month —
-    // a credit-card purchase on Apr 20 belongs in April's recent list even
-    // though its invoice lands in May.
-    const recentTxns = await db
+    // "Últimas transações" — show the 5 MOST RECENTLY CREATED entries
+    // (what the user just logged), deduplicated by installmentGroupId
+    // and recurrenceGroupId. A 12x credit-card purchase appears once
+    // with a "12x" badge instead of filling the widget with 12 parcels;
+    // a recurring rule's materialized rows appear once with a recurring
+    // hint. Date filter is intentionally removed — this widget is "what
+    // did I add lately?", not "what's scheduled this month?".
+    const rawRecent = await db
       .select({
-        id: transactions.id,
-        date: transactions.date,
-        description: transactions.description,
-        type: transactions.type,
-        value: transactions.value,
-        isPaid: transactions.isPaid,
-        categoryId: transactions.categoryId,
-        categoryName: categories.name,
-        categoryColor: categories.color,
+        id:                   transactions.id,
+        date:                 transactions.date,
+        description:          transactions.description,
+        type:                 transactions.type,
+        value:                transactions.value,
+        isPaid:               transactions.isPaid,
+        createdAt:            transactions.createdAt,
+        categoryId:           transactions.categoryId,
+        categoryName:         categories.name,
+        categoryColor:        categories.color,
+        installmentGroupId:   transactions.installmentGroupId,
+        installmentCurrent:   transactions.installmentCurrent,
+        installmentTotal:     transactions.installmentTotal,
+        installmentValue:     transactions.installmentValue,
+        recurrenceGroupId:    transactions.recurrenceGroupId,
       })
       .from(transactions)
       .leftJoin(categories, eq(transactions.categoryId, categories.id))
-      .where(
-        and(
-          scopeCondition,
-          isNull(transactions.deletedAt),
-          gte(transactions.date, start),
-          lte(transactions.date, end),
-        ),
-      )
-      .orderBy(desc(transactions.date), desc(transactions.createdAt))
-      .limit(5);
+      .where(and(scopeCondition, isNull(transactions.deletedAt)))
+      .orderBy(desc(transactions.createdAt))
+      .limit(40); // buffer so dedup still leaves >=5 rows
+
+    // Dedup: keep the FIRST (newest by createdAt) row for each group key.
+    // For installments we collapse to one row per purchase; for recurring
+    // rules we collapse to one row per rule.
+    const seenInstallment = new Set<string>();
+    const seenRecurring   = new Set<string>();
+    const recentTxns: typeof rawRecent = [];
+    for (const t of rawRecent) {
+      if (t.installmentGroupId) {
+        if (seenInstallment.has(t.installmentGroupId)) continue;
+        seenInstallment.add(t.installmentGroupId);
+      }
+      if (t.recurrenceGroupId) {
+        if (seenRecurring.has(t.recurrenceGroupId)) continue;
+        seenRecurring.add(t.recurrenceGroupId);
+      }
+      recentTxns.push(t);
+      if (recentTxns.length >= 5) break;
+    }
 
     return NextResponse.json({
       totalIncome,

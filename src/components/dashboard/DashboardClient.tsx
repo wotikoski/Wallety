@@ -31,6 +31,11 @@ interface DashboardData {
   recentTransactions: {
     id: string; date: string; description: string; type: string;
     value: string; isPaid: boolean; categoryName: string | null; categoryColor: string | null;
+    installmentGroupId: string | null;
+    installmentCurrent: number | null;
+    installmentTotal:   number | null;
+    installmentValue:   string | null;
+    recurrenceGroupId:  string | null;
   }[];
 }
 
@@ -721,7 +726,7 @@ export function DashboardClient() {
             <div>
               <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text)" }}>Últimas transações</div>
               <div style={{ fontSize: 11, color: "var(--text-mute)", marginTop: 2 }}>
-                {(data?.recentTransactions ?? []).length} este período
+                Lançamentos recém-criados
               </div>
             </div>
             <Link href="/lancamentos" style={{
@@ -738,11 +743,18 @@ export function DashboardClient() {
 
           {(data?.recentTransactions ?? []).length === 0 ? (
             <p style={{ padding: "28px 0", textAlign: "center", color: "var(--text-mute)", fontSize: 13 }}>
-              Nenhum lançamento no período
+              Nenhum lançamento ainda
             </p>
           ) : (
             (data?.recentTransactions ?? []).map((t) => {
-              const isIncome = t.type === "income";
+              const isIncome    = t.type === "income";
+              const isInstall   = (t.installmentTotal ?? 0) > 1;
+              const isRecurring = !!t.recurrenceGroupId;
+              // For installment purchases the displayed value is the installment
+              // amount (what hits the invoice each month), not the original total.
+              const displayValue = isInstall && t.installmentValue
+                ? t.installmentValue
+                : t.value;
               return (
                 <div key={t.id} style={{ display: "flex", alignItems: "center", padding: "11px 0", borderTop: "1px solid var(--color-border)" }}>
                   {/* Avatar 30×30 */}
@@ -758,15 +770,37 @@ export function DashboardClient() {
                     }
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {t.description}
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>
+                        {t.description}
+                      </div>
+                      {isInstall && (
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, padding: "1px 6px",
+                          borderRadius: 4, flexShrink: 0,
+                          background: "rgba(245, 158, 11, 0.14)",
+                          color: "#f59e0b",
+                        }}>
+                          {t.installmentTotal}x
+                        </span>
+                      )}
+                      {isRecurring && !isInstall && (
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, padding: "1px 6px",
+                          borderRadius: 4, flexShrink: 0,
+                          background: "rgba(168, 85, 247, 0.14)",
+                          color: "#a855f7",
+                        }}>
+                          recorrente
+                        </span>
+                      )}
                     </div>
                     <div style={{ fontSize: 11, color: "var(--text-mute)", marginTop: 1 }}>
                       {t.categoryName ?? (isIncome ? "Receita" : "—")} · {formatDate(t.date)}
                     </div>
                   </div>
                   <div style={{ fontSize: 13, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: isIncome ? A : "var(--color-text)", flexShrink: 0 }}>
-                    {hideBalance ? "••••" : isIncome ? `+ ${formatCurrency(t.value)}` : `− ${formatCurrency(t.value)}`}
+                    {hideBalance ? "••••" : isIncome ? `+ ${formatCurrency(displayValue)}` : `− ${formatCurrency(displayValue)}`}
                   </div>
                 </div>
               );
