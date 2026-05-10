@@ -97,7 +97,7 @@ export default function Image() {
               but <span> handles mixed inline content (bold span + plain text) correctly. */}
           <span style={{ fontSize: 12, color: "#93c5fd" }}>
             <span style={{ fontWeight: 700 }}>Insight do mês · </span>
-            <span>Sua taxa de poupança é de 68% — acima da media. Continue assim!</span>
+            <span>Sua taxa de poupanca e de 68% - acima da media. Continue assim!</span>
           </span>
         </div>
 
@@ -108,27 +108,30 @@ export default function Image() {
               <div style={{ color: OG.textMute, fontSize: 10, fontWeight: 600, letterSpacing: "0.07em" }}>SALDO TOTAL</div>
               <div style={{ background: OG.accent, color: "white", fontSize: 8, fontWeight: 700, padding: "1px 5px", borderRadius: 3 }}>ATUAL</div>
             </div>
-            <div style={{ color: "white", fontSize: 30, fontWeight: 800, letterSpacing: "-1px", lineHeight: 1.1 }}>
-              R$ 8.647<span style={{ fontSize: 18, fontWeight: 600 }}>,00</span>
+            <div style={{ display: "flex", alignItems: "baseline", color: "white", lineHeight: 1.1 }}>
+              <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-1px" }}>R$ 8.647</div>
+              <div style={{ fontSize: 18, fontWeight: 600 }}>,00</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 5 }}>
-              <div style={{ color: "#22c55e", fontSize: 12, fontWeight: 600 }}>↑ 23,4%</div>
-              <div style={{ color: OG.textFaint, fontSize: 11 }}>vs. mês anterior</div>
+              <div style={{ color: "#22c55e", fontSize: 12, fontWeight: 600 }}>+23,4%</div>
+              <div style={{ color: OG.textFaint, fontSize: 11 }}>vs. mes anterior</div>
             </div>
           </div>
 
           <div style={{ flex: 1, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 13, padding: "14px 18px", display: "flex", flexDirection: "column" }}>
             <div style={{ color: OG.textMute, fontSize: 10, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 3 }}>RECEITAS</div>
-            <div style={{ color: OG.income, fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px", lineHeight: 1.1 }}>
-              R$ 12.750<span style={{ fontSize: 16 }}>,00</span>
+            <div style={{ display: "flex", alignItems: "baseline", color: OG.income, lineHeight: 1.1 }}>
+              <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px" }}>R$ 12.750</div>
+              <div style={{ fontSize: 16, fontWeight: 700 }}>,00</div>
             </div>
-            <div style={{ color: OG.textFaint, fontSize: 11, marginTop: 5 }}>no período</div>
+            <div style={{ color: OG.textFaint, fontSize: 11, marginTop: 5 }}>no periodo</div>
           </div>
 
           <div style={{ flex: 1, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 13, padding: "14px 18px", display: "flex", flexDirection: "column" }}>
             <div style={{ color: OG.textMute, fontSize: 10, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 3 }}>DESPESAS</div>
-            <div style={{ color: OG.expense, fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px", lineHeight: 1.1 }}>
-              R$ 4.103<span style={{ fontSize: 16 }}>,00</span>
+            <div style={{ display: "flex", alignItems: "baseline", color: OG.expense, lineHeight: 1.1 }}>
+              <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px" }}>R$ 4.103</div>
+              <div style={{ fontSize: 16, fontWeight: 700 }}>,00</div>
             </div>
             <div style={{ color: OG.textFaint, fontSize: 11, marginTop: 5 }}>77% pago</div>
           </div>
@@ -208,7 +211,7 @@ export default function Image() {
           <div style={{ flex: 2, background: OG.surface, border: `1px solid ${OG.border}`, borderRadius: 13, padding: "13px 16px", display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <div style={{ color: OG.textDim, fontSize: 13, fontWeight: 600 }}>Onde foi o dinheiro</div>
-              <div style={{ color: OG.accent, fontSize: 11 }}>detalhes →</div>
+              <div style={{ color: OG.accent, fontSize: 11 }}>detalhes</div>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1 }}>
