@@ -49,7 +49,7 @@ export function PrimaryButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "inline-flex items-center gap-2 px-4 py-2.5 rounded-[9px]",
+        "inline-flex items-center gap-2 h-[38px] px-4 rounded-[10px]",
         "bg-[#3b82f6] hover:bg-[#2563eb] text-white text-[13px] font-semibold",
         "transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
         className,
