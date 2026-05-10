@@ -215,8 +215,9 @@ export default function Image() {
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1 }}>
-              {/* SVG donut — avoids conic-gradient which Satori doesn't support */}
-              <div style={{ position: "relative", width: 96, height: 96, flexShrink: 0 }}>
+              {/* SVG donut — wrapper needs display:flex because it has 2 children (svg + label).
+                  Satori counts every JSX child of a <div> and refuses unless display is set. */}
+              <div style={{ position: "relative", width: 96, height: 96, flexShrink: 0, display: "flex" }}>
                 <svg width="96" height="96" viewBox="0 0 96 96" style={{ position: "absolute", top: 0, left: 0 }}>
                   {arcs.map(({ color, d }, i) => (
                     <path key={i} d={d} fill={color} />
