@@ -80,14 +80,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         {/* Phantom-click guard: iOS Safari and Android Chrome synthesize a
             click event at touchend even when the user dragged across the
-            screen to scroll. That fires onClick handlers on whatever element
-            they happened to be touching at touchstart — making it look like
-            the page reacted to a scroll gesture. We track movement during
-            each touch and cancel the synthetic click that lands within 350ms
-            of a >10px drag. */}
+            screen to scroll. We block any click that:
+              - lands within 400ms of a touchmove that traveled >5px, OR
+              - lands within 400ms of a real document scroll event, OR
+              - lands while a touch is still in progress (e.g. user is
+                still resting their finger on the screen mid-scroll).
+            Listening to the scroll event itself (capture phase) catches
+            cases where momentum scroll continues past touchend, when
+            individual touchmoves never crossed the 5px threshold. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){if(typeof window==='undefined')return;var TH=10,W=350,sx=0,sy=0,m=false,t=0;function s(e){if(!e.touches||!e.touches.length)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;m=false;}function v(e){if(!e.touches||!e.touches.length)return;if(Math.abs(e.touches[0].clientX-sx)>TH||Math.abs(e.touches[0].clientY-sy)>TH){m=true;t=Date.now();}}function c(e){if(m&&Date.now()-t<W){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}}document.addEventListener('touchstart',s,{passive:true,capture:true});document.addEventListener('touchmove',v,{passive:true,capture:true});document.addEventListener('click',c,{capture:true});})();`,
+            __html: `(function(){if(typeof window==='undefined')return;var TH=5,W=400,sx=0,sy=0,m=false,t=0,touching=false;function s(e){if(!e.touches||!e.touches.length)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;m=false;touching=true;}function v(e){if(!e.touches||!e.touches.length)return;if(Math.abs(e.touches[0].clientX-sx)>TH||Math.abs(e.touches[0].clientY-sy)>TH){m=true;t=Date.now();}}function en(){touching=false;}function sc(){m=true;t=Date.now();}function c(e){var now=Date.now();if(touching||(m&&now-t<W)){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}}document.addEventListener('touchstart',s,{passive:true,capture:true});document.addEventListener('touchmove',v,{passive:true,capture:true});document.addEventListener('touchend',en,{passive:true,capture:true});document.addEventListener('touchcancel',en,{passive:true,capture:true});document.addEventListener('scroll',sc,{passive:true,capture:true});document.addEventListener('click',c,{capture:true});})();`,
           }}
         />
       </head>
