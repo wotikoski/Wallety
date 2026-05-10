@@ -11,11 +11,11 @@ function SummaryChip({
   label: string; value: number; labelColor: string; valueColor: string; bg: string;
 }) {
   return (
-    <div className="rounded-[14px] px-3 py-2.5 text-center border border-[var(--color-border)]" style={{ background: bg }}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5" style={{ color: labelColor }}>{label}</p>
+    <div className="rounded-[14px] px-3 py-2.5 flex flex-col items-center border border-[var(--color-border)]" style={{ background: bg }}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.07em] mb-0.5 text-center" style={{ color: labelColor }}>{label}</p>
       <SmartCurrency
         value={value}
-        className="text-sm font-semibold tabular-nums"
+        className="text-sm font-semibold tabular-nums text-center"
         style={{ color: valueColor }}
       />
     </div>
