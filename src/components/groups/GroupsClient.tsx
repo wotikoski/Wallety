@@ -195,7 +195,7 @@ export function GroupsClient() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveGroupId(activeGroupId === selectedGroup ? null : selectedGroup)}
-                    className={`text-sm px-3.5 h-9 rounded-lg font-medium transition ${activeGroupId === selectedGroup ? "bg-[#2563eb] text-white" : "border border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text"}`}
+                    className={`h-[38px] px-4 rounded-[10px] text-[13px] font-semibold transition ${activeGroupId === selectedGroup ? "bg-[#3b82f6] hover:bg-[#2563eb] text-white" : "border border-[var(--color-border)] text-[var(--text-mute)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)]"}`}
                   >
                     {activeGroupId === selectedGroup ? "Ativo" : "Ativar"}
                   </button>
@@ -241,12 +241,12 @@ export function GroupsClient() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="email@exemplo.com"
-                  className="flex-1 h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+                  className="flex-1 h-[38px] px-3.5 rounded-[10px] border border-[var(--color-border)] text-[13px] bg-[var(--surface-raised)] text-[var(--color-text)] placeholder-[var(--text-faint)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6] transition"
                 />
                 <button
                   onClick={() => inviteMutation.mutate()}
                   disabled={!inviteEmail || inviteMutation.isPending}
-                  className="flex items-center gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-4 h-9 rounded-lg transition disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 h-[38px] px-4 rounded-[10px] text-[13px] font-semibold text-white bg-[#3b82f6] hover:bg-[#2563eb] transition disabled:opacity-50"
                 >
                   <UserPlus size={14} />
                   Convidar

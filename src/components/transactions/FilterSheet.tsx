@@ -80,17 +80,17 @@ export function FilterSheet({
       {/* Trigger button — mobile only */}
       <button
         onClick={openSheet}
-        className={`md:hidden relative flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border transition ${
+        className={`md:hidden relative inline-flex items-center gap-1.5 h-[38px] px-3.5 rounded-[10px] border text-[13px] font-semibold transition ${
           hasActiveFilters
-            ? "border-[#3b82f6] bg-[rgba(59,130,246,.08)] text-[#3b82f6] font-medium"
-            : "border-app-border text-app-muted bg-[var(--surface-card)] hover:bg-[var(--surface-raised)]"
+            ? "border-[#3b82f6] bg-[rgba(59,130,246,.08)] text-[#3b82f6]"
+            : "border-[var(--color-border)] text-[var(--text-mute)] bg-[var(--surface-card)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)]"
         }`}
         aria-label="Filtros"
       >
         <Filter size={15} />
         Filtros
         {hasActiveFilters && (
-          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#2563eb]" />
+          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#3b82f6]" />
         )}
       </button>
 

@@ -70,20 +70,20 @@ export function ConfirmDialog({
             <X size={18} />
           </button>
         </div>
-        <div className="flex items-center justify-end gap-2 px-6 py-4 bg-[var(--surface-raised)] border-t border-app-border">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--color-border)]">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-app-muted hover:bg-[var(--surface-hover)] hover:text-app-text rounded-lg transition disabled:opacity-50"
+            className="h-[42px] px-5 rounded-[10px] border border-[var(--color-border)] text-[13px] font-semibold text-[var(--text-mute)] hover:bg-[var(--surface-raised)] hover:text-[var(--color-text)] transition disabled:opacity-50"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition disabled:opacity-50 ${
+            className={`h-[42px] px-5 rounded-[10px] text-[13px] font-semibold text-white transition disabled:opacity-50 ${
               variant === "danger"
-                ? "bg-expense hover:bg-expense-dark"
+                ? "bg-[#ef4444] hover:bg-[#dc2626]"
                 : "bg-[#3b82f6] hover:bg-[#2563eb]"
             }`}
           >
