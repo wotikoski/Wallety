@@ -2,6 +2,13 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   darkMode: ["class"],
+  // Gate every `hover:` utility behind `@media (hover: hover)`. Without
+  // this, iOS Safari fires :hover on tap and the style sticks until the
+  // user taps somewhere else, making list rows look "selected" after
+  // every tap. Default in Tailwind 3.5+, opt-in here for our 3.4.x.
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
