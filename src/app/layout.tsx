@@ -21,11 +21,15 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  // metadataBase is required for Next.js to resolve the opengraph-image route
+  // to an absolute URL. Without it, the og:image tag is empty when the page
+  // is served from www.wallety.qzz.io or any other variant.
+  metadataBase: new URL("https://wallety.qzz.io"),
   title: {
-    default: "Wallety",
+    default: "Wallety — Sua vida financeira, simplificada.",
     template: "Wallety",
   },
-  description: "Gerencie suas finanças pessoais e em grupo com facilidade e clareza.",
+  description: "Sua vida financeira, simplificada. Gerencie receitas, despesas, metas e finanças em grupo com clareza total.",
   manifest: "/manifest.json",
   icons: {
     icon: "/logo.png",
@@ -37,16 +41,28 @@ export const metadata: Metadata = {
     title: "Wallety",
   },
   openGraph: {
-    title: "Wallety — Controle suas finanças pessoais e em grupo",
-    description: "Gerencie receitas, despesas e finanças em grupo com facilidade e clareza. Visualize tudo em dashboards intuitivos e relatórios detalhados.",
+    title: "Wallety — Sua vida financeira, simplificada.",
+    description: "Sua vida financeira, simplificada. Gerencie receitas, despesas, metas e finanças em grupo com clareza total.",
     url: "https://wallety.qzz.io",
     siteName: "Wallety",
     type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Wallety — Sua vida financeira, simplificada.",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Wallety — Controle suas finanças pessoais e em grupo",
-    description: "Gerencie receitas, despesas e finanças em grupo com facilidade e clareza. Visualize tudo em dashboards intuitivos e relatórios detalhados.",
+    title: "Wallety — Sua vida financeira, simplificada.",
+    description: "Sua vida financeira, simplificada. Gerencie receitas, despesas, metas e finanças em grupo com clareza total.",
+    images: ["/opengraph-image"],
+  },
+  alternates: {
+    canonical: "https://wallety.qzz.io",
   },
 };
 
