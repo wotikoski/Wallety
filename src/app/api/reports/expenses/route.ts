@@ -89,12 +89,13 @@ export async function GET(req: NextRequest) {
         groups[key].count++;
       }
     } else if (groupBy === "paymentMethod") {
-      const pms = await db.select({ id: paymentMethods.id, name: paymentMethods.name }).from(paymentMethods).where(isNull(paymentMethods.deletedAt));
-      const pmMap = Object.fromEntries(pms.map((p) => [p.id, p.name]));
+      const pms = await db.select({ id: paymentMethods.id, name: paymentMethods.name, color: paymentMethods.color }).from(paymentMethods).where(isNull(paymentMethods.deletedAt));
+      const pmMap = Object.fromEntries(pms.map((p) => [p.id, { name: p.name, color: p.color }]));
       for (const t of filteredTxns) {
         const key = t.paymentMethodId ?? "__none__";
-        const label = t.paymentMethodId ? (pmMap[t.paymentMethodId] ?? "Outra Forma") : "Sem Forma de Pagamento";
-        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key };
+        const pmInfo = t.paymentMethodId ? pmMap[t.paymentMethodId] : null;
+        const label = pmInfo?.name ?? (t.paymentMethodId ? "Outra Forma" : "Sem Forma de Pagamento");
+        if (!groups[key]) groups[key] = { label, total: 0, count: 0, groupKey: key, color: pmInfo?.color ?? null };
         groups[key].total += parseFloat(t.value);
         groups[key].count++;
       }
