@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { formatCurrency } from "@/lib/utils/currency";
 
 /**
  * Threshold above which monetary values get abbreviated (e.g. "R$ 1,5M").
  * Below this, the full BRL string is shown ("R$ 999.999,99").
- *
- * R$ 1.000.000+ is the cutoff — long enough that a full 13-character string
- * starts to overflow tighter cards (KpiCard / SummaryChip).
  */
 const ABBREVIATE_AT = 1_000_000;
 
@@ -24,10 +22,8 @@ function abbreviate(v: number): string {
 /**
  * Shows a BRL value in full ("R$ 3.971,00"). When the value is large enough
  * to be visually awkward (>= 1M), it abbreviates and becomes a button — clicking
- * reveals a tooltip with the full value.
- *
- * The same behavior applies on desktop and mobile, so the user can always
- * recover the exact number via tap/click.
+ * reveals a tooltip with the full value, rendered in a Portal so it is never
+ * clipped by parent overflow or z-index constraints.
  */
 export function SmartCurrency({
   value,
@@ -41,13 +37,31 @@ export function SmartCurrency({
   /** Optional prefix prepended inside the same span, e.g. "+" or "−". */
   prefix?: string;
 }) {
-  const [showTooltip, setShowTooltip] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => { setMounted(true); }, []);
+
+  // Auto-dismiss after 2.5 s
   useEffect(() => {
-    if (!showTooltip) return;
-    const t = setTimeout(() => setShowTooltip(false), 2500);
+    if (!tooltipPos) return;
+    const t = setTimeout(() => setTooltipPos(null), 2500);
     return () => clearTimeout(t);
-  }, [showTooltip]);
+  }, [tooltipPos]);
+
+  const handleClick = useCallback(() => {
+    if (!btnRef.current) return;
+    if (tooltipPos) {
+      setTooltipPos(null);
+      return;
+    }
+    const rect = btnRef.current.getBoundingClientRect();
+    setTooltipPos({
+      top:  rect.top + window.scrollY,   // absolute from page top
+      left: rect.left + rect.width / 2,  // centre of button
+    });
+  }, [tooltipPos]);
 
   const isAbbreviated = Math.abs(value) >= ABBREVIATE_AT;
   const fullText = `${prefix ?? ""}${formatCurrency(value)}`;
@@ -59,31 +73,47 @@ export function SmartCurrency({
   const shortText = `${prefix ?? ""}${abbreviate(value)}`;
 
   return (
-    <span className="relative inline-block">
+    <>
       <button
+        ref={btnRef}
         type="button"
-        onClick={() => setShowTooltip((v) => !v)}
+        onClick={handleClick}
         className={className}
-        style={{ ...style, cursor: "pointer" }}
+        style={{ ...style, cursor: "pointer", background: "none", border: "none", padding: 0, font: "inherit" }}
         title="Toque para ver o valor completo"
       >
         {shortText}
       </button>
-      {showTooltip && (
+
+      {mounted && tooltipPos && createPortal(
         <div
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 text-[12px] tabular-nums font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg z-30 pointer-events-none animate-fade-in"
           style={{
-            background: "var(--color-text)",
-            color: "var(--surface-card)",
+            position: "fixed",
+            top:  tooltipPos.top - window.scrollY - 8,  // 8 px gap above button top
+            left: tooltipPos.left,
+            transform: "translate(-50%, -100%)",
+            zIndex: 9999,
+            pointerEvents: "none",
           }}
+          className="animate-fade-in"
         >
-          {fullText}
           <div
-            className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent"
-            style={{ borderTopColor: "var(--color-text)" }}
-          />
-        </div>
+            className="text-[12px] tabular-nums font-semibold px-3 py-1.5 rounded-[8px] whitespace-nowrap shadow-lg"
+            style={{
+              background: "var(--color-text)",
+              color: "var(--surface-card)",
+            }}
+          >
+            {fullText}
+            {/* caret */}
+            <div
+              className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent"
+              style={{ borderTopColor: "var(--color-text)" }}
+            />
+          </div>
+        </div>,
+        document.body,
       )}
-    </span>
+    </>
   );
 }
