@@ -77,7 +77,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
         <div className="px-4 pb-6 border-t border-white/[0.07] pt-3 mt-2">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-3 rounded-lg text-white/30 text-sm tracking-wide hover:text-white/55 hover:bg-white/[0.05] transition"
+            className="flex items-center gap-3 w-full px-3 py-3 rounded-[10px] text-white/30 text-sm tracking-wide hover:text-white/55 hover:bg-white/[0.05] transition"
           >
             <LogOut size={16} />
             <span>Sair</span>
@@ -103,7 +103,7 @@ function DrawerItem({
       href={item.href}
       onClick={onClose}
       className={cn(
-        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium tracking-wide transition",
+        "flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium tracking-wide transition",
         active
           ? "bg-[rgba(59,130,246,0.15)] text-[#3b82f6] font-semibold"
           : "text-white/35 hover:text-white/65 hover:bg-white/[0.05]",

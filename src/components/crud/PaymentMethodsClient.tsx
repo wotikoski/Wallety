@@ -241,7 +241,7 @@ export function PaymentMethodsClient() {
                     });
                     setShowForm(true);
                   }}
-                  className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-lg transition"
+                  className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-[8px] transition"
                 >
                   <Edit size={14} />
                 </button>
@@ -252,7 +252,7 @@ export function PaymentMethodsClient() {
                       description: `Tem certeza que deseja excluir "${pm.name}"?`,
                       confirmLabel: "Excluir",
                     })}
-                    className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
+                    className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
                   >
                     <Trash2 size={14} />
                   </button>

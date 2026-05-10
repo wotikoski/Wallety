@@ -278,7 +278,7 @@ export function RecurringClient() {
                         <button
                           onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
                           title={r.isActive ? "Pausar recorrência" : "Ativar recorrência"}
-                          className={`p-1.5 rounded-lg transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(59,130,246,.1)]"}`}
+                          className={`p-1.5 rounded-[8px] transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(59,130,246,.1)]"}`}
                         >
                           {r.isActive ? <Pause size={15} /> : <Play size={15} />}
                         </button>
@@ -343,19 +343,19 @@ export function RecurringClient() {
                           <button
                             onClick={() => toggleMutation.mutate({ id: r.id, isActive: !r.isActive })}
                             title={r.isActive ? "Pausar recorrência" : "Ativar recorrência"}
-                            className={`p-1.5 rounded-lg transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(59,130,246,.1)]"}`}
+                            className={`p-1.5 rounded-[8px] transition ${r.isActive ? "text-amber-500 hover:bg-amber-50" : "text-income hover:bg-[rgba(59,130,246,.1)]"}`}
                           >
                             {r.isActive ? <Pause size={14} /> : <Play size={14} />}
                           </button>
                           <button
                             onClick={() => openEdit(r)}
-                            className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-lg transition"
+                            className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-[8px] transition"
                           >
                             <Edit size={14} />
                           </button>
                           <button
                             onClick={() => confirm(() => deleteMutation.mutate(r.id), { title: "Remover recorrência?", description: "A regra e todos os lançamentos gerados por ela serão removidos.", variant: "danger" })}
-                            className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
+                            className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
                           >
                             <Trash2 size={14} />
                           </button>

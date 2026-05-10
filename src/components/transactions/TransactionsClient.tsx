@@ -611,13 +611,13 @@ export function TransactionsClient() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => setEditingId(t.id)}
-                          className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-lg transition"
+                          className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-[8px] transition"
                         >
                           <Edit size={14} />
                         </button>
                         <button
                           onClick={() => askDelete(t)}
-                          className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
+                          className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -639,7 +639,7 @@ export function TransactionsClient() {
               <button
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-lg hover:bg-[var(--surface-raised)]"
+                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-[8px] hover:bg-[var(--surface-raised)]"
               >
                 <ChevronLeft size={15} />
               </button>
@@ -647,7 +647,7 @@ export function TransactionsClient() {
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={page >= totalPages}
-                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-lg hover:bg-[var(--surface-raised)]"
+                className="p-1.5 text-app-muted hover:text-app-text disabled:opacity-30 transition rounded-[8px] hover:bg-[var(--surface-raised)]"
               >
                 <ChevronRight size={15} />
               </button>

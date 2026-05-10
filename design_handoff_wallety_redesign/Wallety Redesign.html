@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Wallety — Direção A · refinada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+  body, html { margin: 0; padding: 0; height: 100%; background: #0a0c10; }
+  #root { min-height: 100vh; }
+  * { box-sizing: border-box; }
+  button { font-family: inherit; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(120,130,150,0.25); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(120,130,150,0.4); }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="app/data.jsx"></script>
+<script type="text/babel" src="app/shared.jsx"></script>
+<script type="text/babel" src="app/dashboard.jsx"></script>
+<script type="text/babel" src="app/screens.jsx"></script>
+
+<script type="text/babel">
+const { THEMES, ACCENTS } = window.WALLETY;
+const { Sidebar, ThemeToggle } = window;
+const { Dashboard, Transacoes, Metas, Relatorios, Configuracoes, AddTxModal } = window;
+const { TweaksPanel, useTweaks, TweakSection, TweakRadio, TweakSelect, TweakToggle, TweakColor } = window;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "mode": "dark",
+  "accent": "blue",
+  "density": "cozy",
+  "font": "geist",
+  "chartKind": "area",
+  "heroBig": false,
+  "rounded": "soft"
+}/*EDITMODE-END*/;
+
+const FONTS = {
+  geist: '"Geist", "Inter", system-ui, -apple-system, sans-serif',
+  inter: '"Inter", system-ui, -apple-system, sans-serif',
+  serif: '"Instrument Serif", Georgia, serif',
+};
+
+const RADII = {
+  square: { card: '4px', btn: '4px' },
+  soft: { card: '14px', btn: '9px' },
+  pill: { card: '24px', btn: '999px' },
+};
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [screen, setScreen] = React.useState('dashboard');
+  const [period, setPeriod] = React.useState('out');
+  const [hide, setHide] = React.useState(false);
+  const [showAddTx, setShowAddTx] = React.useState(false);
+  const [tweaksVisible, setTweaksVisible] = React.useState(false);
+
+  const theme = THEMES[tweaks.mode] || THEMES.dark;
+  const accent = ACCENTS[tweaks.accent] || ACCENTS.blue;
+  const fontFamily = FONTS[tweaks.font] || FONTS.geist;
+  const radii = RADII[tweaks.rounded] || RADII.soft;
+
+  const screenProps = {
+    theme, accent, period, onPeriodChange: setPeriod,
+    hide, onToggleHide: () => setHide(h => !h),
+    onAddTx: () => setShowAddTx(true),
+    density: tweaks.density,
+    chartKind: tweaks.chartKind,
+    heroBig: tweaks.heroBig,
+    onNav: setScreen,
+  };
+
+  const screens = {
+    dashboard: <Dashboard {...screenProps} />,
+    transacoes: <Transacoes {...screenProps} />,
+    metas: <Metas {...screenProps} />,
+    relatorios: <Relatorios {...screenProps} />,
+    configuracoes: <Configuracoes {...screenProps} />,
+  };
+
+  return (
+    <div style={{
+      minHeight: '100vh', display: 'flex',
+      background: theme.bg, color: theme.text,
+      fontFamily, letterSpacing: '-0.005em',
+      ['--r-card']: radii.card, ['--r-btn']: radii.btn,
+    }} data-screen-label="01 Wallety App">
+      <Sidebar theme={theme} accent={accent} current={screen} onNav={setScreen} density={tweaks.density} />
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative' }}>
+        {screens[screen]}
+      </main>
+
+      <ThemeToggle theme={theme} mode={tweaks.mode} onToggle={() => setTweak('mode', tweaks.mode === 'dark' ? 'light' : 'dark')} />
+
+      {showAddTx && <AddTxModal theme={theme} accent={accent} onClose={() => setShowAddTx(false)} />}
+
+      <TweaksPanel visible={tweaksVisible} onVisibilityChange={setTweaksVisible} title="Tweaks">
+        <TweakSection title="Tema">
+          <TweakRadio label="Modo" value={tweaks.mode}
+            options={[{ value: 'dark', label: 'Dark' }, { value: 'light', label: 'Light' }]}
+            onChange={v => setTweak('mode', v)} />
+          <TweakSelect label="Cor de acento" value={tweaks.accent}
+            options={[
+              { value: 'blue', label: 'Azul' },
+              { value: 'green', label: 'Verde' },
+              { value: 'emerald', label: 'Esmeralda' },
+              { value: 'violet', label: 'Violeta' },
+              { value: 'orange', label: 'Laranja' },
+              { value: 'amber', label: 'Âmbar' },
+            ]}
+            onChange={v => setTweak('accent', v)} />
+        </TweakSection>
+
+        <TweakSection title="Layout">
+          <TweakRadio label="Densidade" value={tweaks.density}
+            options={[{ value: 'compact', label: 'Compacta' }, { value: 'cozy', label: 'Confortável' }]}
+            onChange={v => setTweak('density', v)} />
+          <TweakRadio label="Cantos" value={tweaks.rounded}
+            options={[{ value: 'square', label: 'Reto' }, { value: 'soft', label: 'Suave' }, { value: 'pill', label: 'Macio' }]}
+            onChange={v => setTweak('rounded', v)} />
+          <TweakToggle label="Saldo gigante" value={tweaks.heroBig} onChange={v => setTweak('heroBig', v)} />
+        </TweakSection>
+
+        <TweakSection title="Tipografia & gráfico">
+          <TweakSelect label="Fonte display" value={tweaks.font}
+            options={[
+              { value: 'geist', label: 'Geist' },
+              { value: 'inter', label: 'Inter' },
+              { value: 'serif', label: 'Serif (editorial)' },
+            ]}
+            onChange={v => setTweak('font', v)} />
+          <TweakRadio label="Estilo do gráfico" value={tweaks.chartKind}
+            options={[{ value: 'bars', label: 'Barras' }, { value: 'lines', label: 'Linhas' }, { value: 'area', label: 'Área' }]}
+            onChange={v => setTweak('chartKind', v)} />
+        </TweakSection>
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

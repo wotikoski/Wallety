@@ -360,7 +360,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
 
       {/* Installments — only shown when the selected payment method supports installments */}
       {showInstallments && (
-      <div className="p-4 bg-[var(--surface-raised)] rounded-lg border border-app-border space-y-4">
+      <div className="p-4 bg-[var(--surface-raised)] rounded-[10px] border border-[var(--color-border)] space-y-4">
         <p className="text-sm font-medium text-app-text">Parcelamento</p>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -439,7 +439,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
 
       {/* Installment scope picker — shown when editing a parcelado transaction */}
       {isInstallment && (
-        <div className="p-3 bg-[var(--surface-raised)] rounded-lg border border-app-border space-y-2">
+        <div className="p-3 bg-[var(--surface-raised)] rounded-[10px] border border-[var(--color-border)] space-y-2">
           <p className="text-xs font-medium text-app-muted">Aplicar alteração em:</p>
           <div className="flex flex-col gap-1.5">
             {(

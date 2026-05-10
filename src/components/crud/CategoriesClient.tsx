@@ -273,7 +273,7 @@ function CategoryGroup({
           categories.map((cat) => (
             <div key={cat.id} className="flex items-center px-5 py-3 gap-3 hover:bg-[#f8f9fd] transition">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0"
+                className="w-8 h-8 rounded-[8px] flex items-center justify-center text-sm shrink-0"
                 style={{ backgroundColor: cat.color ? cat.color + "20" : "#f1f5f9" }}
               >
                 {cat.icon || "💳"}
@@ -285,14 +285,14 @@ function CategoryGroup({
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => onEdit(cat)}
-                  className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-lg transition"
+                  className="p-1.5 text-app-muted hover:text-[#3b82f6] hover:bg-[rgba(59,130,246,.08)] rounded-[8px] transition"
                 >
                   <Edit size={13} />
                 </button>
                 {!cat.isDefault && (
                   <button
                     onClick={() => onDelete(cat.id, cat.name)}
-                    className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
+                    className="p-1.5 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
                   >
                     <Trash2 size={13} />
                   </button>

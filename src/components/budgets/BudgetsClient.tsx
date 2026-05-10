@@ -257,7 +257,7 @@ function BudgetRow({
           {onDelete && (
             <button
               onClick={onDelete}
-              className="p-1 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-lg transition"
+              className="p-1 text-app-muted hover:text-expense hover:bg-[rgba(248,113,113,.1)] rounded-[8px] transition"
             >
               <Trash2 size={13} />
             </button>

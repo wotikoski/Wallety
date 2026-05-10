@@ -64,7 +64,7 @@ export function ConfirmDialog({
           <button
             onClick={onCancel}
             disabled={loading}
-            className="p-1 text-app-muted hover:text-app-text rounded-lg transition disabled:opacity-50"
+            className="p-1 text-app-muted hover:text-app-text rounded-[8px] transition disabled:opacity-50"
             aria-label="Fechar"
           >
             <X size={18} />

@@ -36,7 +36,18 @@
       "Bash(git commit -m 'Fix white borders, revert danger zone, standardize Recurring buttons *)",
       "Bash(npm run *)",
       "Bash(npx vercel *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "mcp__6af365b1-3c8b-446f-9746-8308a915a243__get_runtime_logs",
+      "Bash(npx tsx -e ' *)",
+      "Bash(cat)",
+      "Bash(node /tmp/fix-installments.mjs)",
+      "Bash(node --input-type=module)",
+      "Bash(npx drizzle-kit *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(findstr /i \"geist\\\\|next\\\\|inter\")",
+      "Bash(npm install *)",
+      "Bash(node -e \"require\\('geist'\\); console.log\\('ok'\\)\")",
+      "Bash(npx --no-install tsc --noEmit)"
     ]
   }
 }

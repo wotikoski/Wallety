@@ -101,7 +101,7 @@ export function ReportFilterSheet({
           <h2 className="text-base font-semibold text-app-text">Filtros</h2>
           <button
             onClick={() => setOpen(false)}
-            className="p-1.5 text-app-muted hover:text-app-text rounded-lg hover:bg-[var(--surface-raised)] transition"
+            className="p-1.5 text-app-muted hover:text-app-text rounded-[8px] hover:bg-[var(--surface-raised)] transition"
           >
             <X size={18} />
           </button>

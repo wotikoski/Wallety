@@ -192,7 +192,7 @@ export function CalendarClient() {
                   {selectedTxns.map((t) => (
                     <div
                       key={t.id}
-                      className={`flex items-center justify-between p-2.5 rounded-lg ${
+                      className={`flex items-center justify-between p-2.5 rounded-[10px] ${
                         t.projected
                           ? "bg-[var(--surface-card)] border border-dashed border-[var(--color-border)]"
                           : "bg-[var(--surface-raised)]"
