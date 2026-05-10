@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Portal } from "@/components/ui/Portal";
+import { FormModal, formInputCls, formLabelCls } from "@/components/ui/FormModal";
 import { Plus, RefreshCcw, Trash2, Edit, Play, Pause, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SwipeableRow } from "@/components/transactions/SwipeableRow";
@@ -543,195 +543,169 @@ function RecurringForm({
   };
 
   return (
-    <Portal>
-    <div
-      className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
-      onClick={onClose}
+    <FormModal
+      open
+      title={editing ? "Editar Recorrência" : "Nova Recorrência"}
+      onClose={onClose}
+      onSubmit={submit}
+      submitLabel={editing ? "Salvar alterações" : "Criar recorrência"}
+      submitting={saving}
     >
-      <form
-        onSubmit={submit}
-        onClick={(e) => e.stopPropagation()}
-        className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md p-6 space-y-4"
-      >
-        <h2 className="text-lg font-semibold text-app-text">
-          {editing ? "Editar Recorrência" : "Nova Recorrência"}
-        </h2>
+      {/* Type toggle — neutral palette, matches TransactionForm */}
+      <div className="flex rounded-[10px] border border-[var(--color-border)] overflow-hidden h-[42px] bg-[var(--surface-raised)]">
+        <button
+          type="button"
+          onClick={() => setType("income")}
+          className={`flex-1 flex items-center justify-center gap-1.5 text-[13px] font-semibold transition ${
+            type === "income" ? "bg-[#3b82f6] text-white" : "text-[var(--text-mute)] hover:text-[var(--color-text)]"
+          }`}
+        >
+          <TrendingUp size={14} /> Receita
+        </button>
+        <button
+          type="button"
+          onClick={() => setType("expense")}
+          className={`flex-1 flex items-center justify-center gap-1.5 text-[13px] font-semibold transition ${
+            type === "expense" ? "bg-[var(--text-dim)] text-[var(--surface-card)]" : "text-[var(--text-mute)] hover:text-[var(--color-text)]"
+          }`}
+        >
+          <TrendingDown size={14} /> Despesa
+        </button>
+      </div>
 
-        <div className="flex rounded-xl border border-app-border overflow-hidden h-[42px]">
-          <button
-            type="button"
-            onClick={() => setType("income")}
-            className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
-              type === "income" ? "bg-income text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
-            }`}
-          >
-            <TrendingUp size={14} /> Receita
-          </button>
-          <button
-            type="button"
-            onClick={() => setType("expense")}
-            className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
-              type === "expense" ? "bg-expense text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
-            }`}
-          >
-            <TrendingDown size={14} /> Despesa
-          </button>
-        </div>
+      <div>
+        <label className={formLabelCls}>Descrição</label>
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className={formInputCls}
+          placeholder="Ex: Aluguel"
+        />
+      </div>
 
+      <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-app-muted mb-1">Descrição</label>
+          <label className={formLabelCls}>Valor</label>
           <input
             type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-            placeholder="Ex: Aluguel"
+            inputMode="decimal"
+            value={valueStr}
+            onChange={(e) => setValueStr(e.target.value)}
+            className={`${formInputCls} tabular-nums`}
+            placeholder="0,00"
           />
         </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-app-muted mb-1">Valor</label>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={valueStr}
-              onChange={(e) => setValueStr(e.target.value)}
-              className="w-full h-9 px-3 text-sm tabular-nums border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-              placeholder="0,00"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-app-muted mb-1">Categoria</label>
-            <select
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-            >
-              <option value="">Sem categoria</option>
-              {filteredCats.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}{c.icon ? ` ${c.icon}` : ""}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-app-muted mb-1">Banco</label>
-            <select
-              value={bankId}
-              onChange={(e) => setBankId(e.target.value)}
-              className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-            >
-              <option value="">Sem banco</option>
-              {banks.map((b) => (
-                <option key={b.id} value={b.id}>{b.name}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-app-muted mb-1">Forma de Pagamento</label>
-            <select
-              value={paymentMethodId}
-              onChange={(e) => setPaymentMethodId(e.target.value)}
-              className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-            >
-              <option value="">Selecionar...</option>
-              {paymentMethods.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-app-muted mb-1">Frequência</label>
-            <select
-              value={frequency}
-              onChange={(e) => setFrequency(e.target.value as "monthly" | "weekly" | "yearly")}
-              className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-            >
-              <option value="monthly">Mensal</option>
-              <option value="weekly">Semanal</option>
-              <option value="yearly">Anual</option>
-            </select>
-          </div>
-          {frequency === "monthly" && (
-            <div>
-              <label className="block text-xs font-medium text-app-muted mb-1">Dia do mês</label>
-              <select
-                value={dayOfMonth}
-                onChange={(e) => setDayOfMonth(e.target.value)}
-                className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-              >
-                {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-                  <option key={d} value={String(d)}>
-                    {d}
-                  </option>
-                ))}
-                <option value="last">Último</option>
-              </select>
-              {(parseInt(dayOfMonth) >= 29 || dayOfMonth === "last") && (
-                <p className="text-[10px] text-app-muted mt-1">
-                  Em meses com menos dias, usa o último dia do mês.
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-app-muted mb-1">Início</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => handleStartDateChange(e.target.value)}
-              className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-app-muted mb-1">Fim (opcional)</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full h-9 px-3 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-            />
-          </div>
-        </div>
-
         <div>
-          <label className="block text-xs font-medium text-app-muted mb-1">Notas (opcional)</label>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={2}
-            placeholder="Alguma observação..."
-            className="w-full px-3 py-2 text-sm border border-app-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text resize-none"
+          <label className={formLabelCls}>Categoria</label>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className={formInputCls}
+          >
+            <option value="">Sem categoria</option>
+            {filteredCats.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}{c.icon ? ` ${c.icon}` : ""}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={formLabelCls}>Banco</label>
+          <select
+            value={bankId}
+            onChange={(e) => setBankId(e.target.value)}
+            className={formInputCls}
+          >
+            <option value="">Sem banco</option>
+            {banks.map((b) => (
+              <option key={b.id} value={b.id}>{b.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className={formLabelCls}>Forma de Pagamento</label>
+          <select
+            value={paymentMethodId}
+            onChange={(e) => setPaymentMethodId(e.target.value)}
+            className={formInputCls}
+          >
+            <option value="">Selecionar...</option>
+            {paymentMethods.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={formLabelCls}>Frequência</label>
+          <select
+            value={frequency}
+            onChange={(e) => setFrequency(e.target.value as "monthly" | "weekly" | "yearly")}
+            className={formInputCls}
+          >
+            <option value="monthly">Mensal</option>
+            <option value="weekly">Semanal</option>
+            <option value="yearly">Anual</option>
+          </select>
+        </div>
+        {frequency === "monthly" && (
+          <div>
+            <label className={formLabelCls}>Dia do mês</label>
+            <select
+              value={dayOfMonth}
+              onChange={(e) => setDayOfMonth(e.target.value)}
+              className={formInputCls}
+            >
+              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                <option key={d} value={String(d)}>{d}</option>
+              ))}
+              <option value="last">Último</option>
+            </select>
+            {(parseInt(dayOfMonth) >= 29 || dayOfMonth === "last") && (
+              <p className="text-[11px] text-[var(--text-faint)] mt-1">
+                Em meses com menos dias, usa o último dia do mês.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={formLabelCls}>Início</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => handleStartDateChange(e.target.value)}
+            className={formInputCls}
           />
         </div>
-
-        <div className="flex gap-2 pt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex-1 h-9 px-4 text-sm font-medium text-white bg-[#2563eb] rounded-lg hover:bg-[#1d4ed8] disabled:opacity-60"
-          >
-            {saving ? "Salvando..." : editing ? "Atualizar" : "Salvar"}
-          </button>
+        <div>
+          <label className={formLabelCls}>Fim (opcional)</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className={formInputCls}
+          />
         </div>
-      </form>
-    </div>
-    </Portal>
+      </div>
+
+      <div>
+        <label className={formLabelCls}>Notas (opcional)</label>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={2}
+          placeholder="Alguma observação..."
+          className={`${formInputCls} resize-none`}
+        />
+      </div>
+    </FormModal>
   );
 }

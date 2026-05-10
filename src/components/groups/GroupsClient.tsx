@@ -6,10 +6,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Portal } from "@/components/ui/Portal";
 import { useConfirm } from "@/lib/hooks/useConfirm";
-import { Plus, Users, Crown, Trash2, UserPlus, Copy, Check, X } from "lucide-react";
+import { Plus, Users, Crown, Trash2, UserPlus, Copy, Check } from "lucide-react";
 import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
+import { FormModal, formInputCls, formLabelCls } from "@/components/ui/FormModal";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/date";
 
@@ -126,50 +126,32 @@ export function GroupsClient() {
         }
       />
 
-      {showForm && (
-        <Portal>
-        <div
-          className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
-          onClick={() => { setShowForm(false); reset(); }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md p-6 space-y-4"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-app-text">Criar Grupo</h2>
-              <button type="button" onClick={() => { setShowForm(false); reset(); }} className="p-1 text-app-muted hover:text-app-text rounded-lg transition">
-                <X size={18} />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit((d) => createMutation.mutate(d))} className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-app-muted mb-1">Nome do grupo</label>
-                <input
-                  {...register("name", { required: true })}
-                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-card)] text-app-text"
-                  placeholder="Ex: Família Silva"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-app-muted mb-1">Descrição (opcional)</label>
-                <input
-                  {...register("description")}
-                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6] bg-[var(--surface-card)] text-app-text"
-                  placeholder="Breve descrição do grupo"
-                />
-              </div>
-              <div className="flex gap-3">
-                <button type="button" onClick={() => { setShowForm(false); reset(); }} className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition">Cancelar</button>
-                <button type="submit" disabled={createMutation.isPending} className="flex-1 h-9 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50">
-                  {createMutation.isPending ? "Criando..." : "Criar"}
-                </button>
-              </div>
-            </form>
-          </div>
+      <FormModal
+        open={showForm}
+        title="Novo Grupo"
+        onClose={() => { setShowForm(false); reset(); }}
+        onSubmit={handleSubmit((d) => createMutation.mutate(d))}
+        submitLabel="Criar grupo"
+        submitting={createMutation.isPending}
+        submittingLabel="Criando..."
+      >
+        <div>
+          <label className={formLabelCls}>Nome do grupo</label>
+          <input
+            {...register("name", { required: true })}
+            className={formInputCls}
+            placeholder="Ex: Família Silva"
+          />
         </div>
-        </Portal>
-      )}
+        <div>
+          <label className={formLabelCls}>Descrição (opcional)</label>
+          <input
+            {...register("description")}
+            className={formInputCls}
+            placeholder="Breve descrição do grupo"
+          />
+        </div>
+      </FormModal>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Groups list */}

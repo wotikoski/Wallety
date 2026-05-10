@@ -6,12 +6,12 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Portal } from "@/components/ui/Portal";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
-import { Plus, Trash2, Edit, CreditCard, X } from "lucide-react";
+import { Plus, Trash2, Edit, CreditCard } from "lucide-react";
 import { PAYMENT_METHOD_TYPES, getPaymentMethodLabel } from "@/lib/constants/payment-method-types";
 import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
+import { FormModal, formInputCls, formLabelCls } from "@/components/ui/FormModal";
 
 interface PaymentMethod {
   id: string;
@@ -130,105 +130,83 @@ export function PaymentMethodsClient() {
       />
 
       {showForm && (
-        <Portal>
-        <div
-          className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
-          onClick={() => { setShowForm(false); setEditing(null); reset(); }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-app-text">{editing ? "Editar" : "Nova"} Forma de Pagamento</h2>
-              <button type="button" onClick={() => { setShowForm(false); setEditing(null); reset(); }} className="p-1 text-app-muted hover:text-app-text rounded-lg transition">
-                <X size={18} />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-app-muted mb-1">Nome</label>
-                <input
-                  {...register("name", { required: true })}
-                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-                  placeholder="Ex: Nubank Crédito"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-app-muted mb-1">Tipo</label>
-                <select {...register("type")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
-                  <option value="">Selecionar...</option>
-                  {PAYMENT_METHOD_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-span-2">
-                <label className="block text-xs font-medium text-app-muted mb-1">Banco vinculado (opcional)</label>
-                <select {...register("bankId")} className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text">
-                  <option value="">Sem banco vinculado</option>
-                  {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-                </select>
-              </div>
-              {watchedType === "credit_card" && (
-                <>
-                  <div>
-                    <label className="block text-xs font-medium text-app-muted mb-1">Dia de fechamento</label>
-                    <input
-                      {...register("closingDay")}
-                      type="number"
-                      min={1}
-                      max={31}
-                      className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-                      placeholder="25"
-                    />
-                    <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura fecha (1–31)</p>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-app-muted mb-1">Dia de vencimento</label>
-                    <input
-                      {...register("dueDay")}
-                      type="number"
-                      min={1}
-                      max={31}
-                      className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-                      placeholder="5"
-                    />
-                    <p className="text-[11px] text-app-muted mt-1">Dia em que a fatura deve ser paga (1–31)</p>
-                  </div>
-                </>
-              )}
-              {/* Installments toggle — full width, spans both columns */}
-              <label className="col-span-2 flex items-center justify-between gap-3 p-3 rounded-lg border border-app-border bg-[var(--surface-raised)] cursor-pointer select-none">
-                <div>
-                  <p className="text-sm font-medium text-app-text">Permite parcelamento</p>
-                  <p className="text-[11px] text-app-muted mt-0.5">Ao selecionar esta forma, o campo de parcelas abre em Novo Lançamento</p>
-                </div>
-                <input
-                  {...register("supportsInstallments")}
-                  type="checkbox"
-                  className="w-4 h-4 rounded border-app-border text-[#2563eb] focus:ring-[#3b82f6] shrink-0"
-                />
-              </label>
-              <button
-                type="button"
-                onClick={() => { setShowForm(false); setEditing(null); reset(); }}
-                className="h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={saveMutation.isPending}
-                className="h-9 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
-              >
-                {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
-              </button>
-            </form>
+      <FormModal
+        open={showForm}
+        title={editing ? "Editar Forma de Pagamento" : "Nova Forma de Pagamento"}
+        onClose={() => { setShowForm(false); setEditing(null); reset(); }}
+        onSubmit={handleSubmit((d) => saveMutation.mutate(d))}
+        submitLabel={editing ? "Salvar alterações" : "Criar forma de pagamento"}
+        submitting={saveMutation.isPending}
+      >
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={formLabelCls}>Nome</label>
+            <input
+              {...register("name", { required: true })}
+              className={formInputCls}
+              placeholder="Ex: Nubank Crédito"
+            />
+          </div>
+          <div>
+            <label className={formLabelCls}>Tipo</label>
+            <select {...register("type")} className={formInputCls}>
+              <option value="">Selecionar...</option>
+              {PAYMENT_METHOD_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
           </div>
         </div>
-        </Portal>
-      )}
+
+        <div>
+          <label className={formLabelCls}>Banco vinculado (opcional)</label>
+          <select {...register("bankId")} className={formInputCls}>
+            <option value="">Sem banco vinculado</option>
+            {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+          </select>
+        </div>
+
+        {watchedType === "credit_card" && (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={formLabelCls}>Dia de fechamento</label>
+              <input
+                {...register("closingDay")}
+                type="number"
+                min={1}
+                max={31}
+                className={formInputCls}
+                placeholder="25"
+              />
+              <p className="text-[11px] text-[var(--text-faint)] mt-1">Dia em que a fatura fecha (1–31)</p>
+            </div>
+            <div>
+              <label className={formLabelCls}>Dia de vencimento</label>
+              <input
+                {...register("dueDay")}
+                type="number"
+                min={1}
+                max={31}
+                className={formInputCls}
+                placeholder="5"
+              />
+              <p className="text-[11px] text-[var(--text-faint)] mt-1">Dia em que a fatura deve ser paga (1–31)</p>
+            </div>
+          </div>
+        )}
+
+        <label className="flex items-center justify-between gap-3 p-3 rounded-[10px] border border-[var(--color-border)] bg-[var(--surface-raised)] cursor-pointer select-none">
+          <div>
+            <p className="text-[13px] font-medium text-[var(--color-text)]">Permite parcelamento</p>
+            <p className="text-[11px] text-[var(--text-faint)] mt-0.5">Ao selecionar esta forma, o campo de parcelas abre em Novo Lançamento</p>
+          </div>
+          <input
+            {...register("supportsInstallments")}
+            type="checkbox"
+            className="w-4 h-4 rounded border-[var(--color-border)] text-[#2563eb] focus:ring-[#3b82f6] shrink-0"
+          />
+        </label>
+      </FormModal>
 
       <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
         {isLoading ? <ListSkeleton rows={4} /> : (

@@ -6,13 +6,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Portal } from "@/components/ui/Portal";
 import { ListSkeleton } from "@/components/ui/Skeleton";
 import { useConfirm } from "@/lib/hooks/useConfirm";
-import { Plus, Trash2, Edit, Building2, X } from "lucide-react";
+import { Plus, Trash2, Edit, Building2 } from "lucide-react";
 import { COLOR_PALETTE, ColorPicker, suggestPaletteColor, rotatePaletteColor } from "@/components/ui/ColorPicker";
 import { getBankBrandColor } from "@/lib/utils/bank-colors";
 import { PageHeader, PrimaryButton } from "@/components/layout/PageHeader";
+import { FormModal, formInputCls, formLabelCls } from "@/components/ui/FormModal";
 
 interface Bank {
   id: string;
@@ -108,75 +108,50 @@ export function BanksClient() {
         }
       />
 
-      {showForm && (
-        <Portal>
-        <div
-          className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
-          onClick={() => { setShowForm(false); setEditing(null); reset(); }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-app-text">{editing ? "Editar" : "Novo"} Banco</h2>
-              <button type="button" onClick={() => { setShowForm(false); setEditing(null); reset(); }} className="p-1 text-app-muted hover:text-app-text rounded-lg transition">
-                <X size={18} />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="grid grid-cols-3 gap-4">
-              <div className="col-span-2">
-                <label className="block text-xs font-medium text-app-muted mb-1">Nome do banco</label>
-                <input
-                  {...nameReg}
-                  onChange={(e) => {
-                    nameReg.onChange(e);
-                    if (!editing) {
-                      const brand = getBankBrandColor(e.target.value);
-                      if (brand) setValue("color", brand);
-                    }
-                  }}
-                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-                  placeholder="Ex: Nubank"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-app-muted mb-1">Código COMPE</label>
-                <input
-                  {...register("code")}
-                  className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
-                  placeholder="260"
-                />
-              </div>
-              <div className="col-span-3">
-                <ColorPicker
-                  value={watchedColor ?? COLOR_PALETTE[0]}
-                  onChange={(c) => setValue("color", c)}
-                  showSuggest={!editing}
-                  onSuggest={() => setValue("color", rotatePaletteColor(watchedColor))}
-                />
-              </div>
-              <div className="col-span-3 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => { setShowForm(false); setEditing(null); reset(); }}
-                  className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={saveMutation.isPending}
-                  className="flex-1 h-9 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium px-4 rounded-lg transition disabled:opacity-50"
-                >
-                  {saveMutation.isPending ? "Salvando..." : editing ? "Atualizar" : "Criar"}
-                </button>
-              </div>
-            </form>
+      <FormModal
+        open={showForm}
+        title={editing ? "Editar Banco" : "Novo Banco"}
+        onClose={() => { setShowForm(false); setEditing(null); reset(); }}
+        onSubmit={handleSubmit((d) => saveMutation.mutate(d))}
+        submitLabel={editing ? "Salvar alterações" : "Criar banco"}
+        submitting={saveMutation.isPending}
+      >
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-2">
+            <label className={formLabelCls}>Nome do banco</label>
+            <input
+              {...nameReg}
+              onChange={(e) => {
+                nameReg.onChange(e);
+                if (!editing) {
+                  const brand = getBankBrandColor(e.target.value);
+                  if (brand) setValue("color", brand);
+                }
+              }}
+              className={formInputCls}
+              placeholder="Ex: Nubank"
+            />
+          </div>
+          <div>
+            <label className={formLabelCls}>Código COMPE</label>
+            <input
+              {...register("code")}
+              className={formInputCls}
+              placeholder="260"
+            />
           </div>
         </div>
-        </Portal>
-      )}
+
+        <div>
+          <label className={formLabelCls}>Cor</label>
+          <ColorPicker
+            value={watchedColor ?? COLOR_PALETTE[0]}
+            onChange={(c) => setValue("color", c)}
+            showSuggest={!editing}
+            onSuggest={() => setValue("color", rotatePaletteColor(watchedColor))}
+          />
+        </div>
+      </FormModal>
 
       <div className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] overflow-hidden">
         {isLoading ? <ListSkeleton rows={4} /> : (

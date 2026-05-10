@@ -703,15 +703,35 @@ export function TransactionsClient() {
 
       {showNewForm && (
         <Portal>
-          <div
-            className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
-            onClick={(e) => { if (e.target === e.currentTarget) setShowNewForm(false); }}
-          >
+          <div className="fixed inset-0 bg-black/55 backdrop-blur-[6px] z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
             <div
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="w-full sm:max-w-md rounded-t-2xl sm:rounded-[16px] overflow-y-auto"
+              style={{
+                maxHeight: "95vh",
+                background: "var(--surface-card)",
+                border: "1px solid var(--color-border)",
+              }}
             >
-              <TransactionForm onClose={() => setShowNewForm(false)} />
+              <div
+                className="flex items-center justify-between px-6 py-4 sticky top-0 z-10"
+                style={{
+                  background: "var(--surface-card)",
+                  borderBottom: "1px solid var(--color-border)",
+                }}
+              >
+                <h2 className="text-[15px] font-semibold text-[var(--color-text)] m-0">Novo Lançamento</h2>
+                <button
+                  type="button"
+                  onClick={() => setShowNewForm(false)}
+                  className="text-[var(--text-faint)] hover:text-[var(--text-dim)] transition p-1"
+                  aria-label="Fechar"
+                >
+                  <XIcon size={20} />
+                </button>
+              </div>
+              <div className="p-6">
+                <TransactionForm onClose={() => setShowNewForm(false)} />
+              </div>
             </div>
           </div>
         </Portal>
@@ -719,15 +739,35 @@ export function TransactionsClient() {
 
       {editingId && (
         <Portal>
-          <div
-            className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[6px] flex items-center justify-center p-4"
-            onClick={(e) => { if (e.target === e.currentTarget) setEditingId(null); }}
-          >
+          <div className="fixed inset-0 bg-black/55 backdrop-blur-[6px] z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
             <div
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md max-h-[90vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="w-full sm:max-w-md rounded-t-2xl sm:rounded-[16px] overflow-y-auto"
+              style={{
+                maxHeight: "95vh",
+                background: "var(--surface-card)",
+                border: "1px solid var(--color-border)",
+              }}
             >
-              <TransactionEditClient id={editingId} onClose={() => setEditingId(null)} />
+              <div
+                className="flex items-center justify-between px-6 py-4 sticky top-0 z-10"
+                style={{
+                  background: "var(--surface-card)",
+                  borderBottom: "1px solid var(--color-border)",
+                }}
+              >
+                <h2 className="text-[15px] font-semibold text-[var(--color-text)] m-0">Editar Lançamento</h2>
+                <button
+                  type="button"
+                  onClick={() => setEditingId(null)}
+                  className="text-[var(--text-faint)] hover:text-[var(--text-dim)] transition p-1"
+                  aria-label="Fechar"
+                >
+                  <XIcon size={20} />
+                </button>
+              </div>
+              <div className="p-6">
+                <TransactionEditClient id={editingId} onClose={() => setEditingId(null)} />
+              </div>
             </div>
           </div>
         </Portal>

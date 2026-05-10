@@ -10,7 +10,8 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { PAYMENT_METHOD_TYPES } from "@/lib/constants/payment-method-types";
 import { parseCurrency, formatNumber } from "@/lib/utils/currency";
-import { X, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { formInputCls, formLabelCls } from "@/components/ui/FormModal";
 
 interface Props {
   onClose?: () => void;
@@ -228,59 +229,47 @@ export function TransactionForm({ transaction, onClose }: Props) {
   }, [paymentMethodId]);
 
   return (
-    <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-6 space-y-5">
-      {onClose && (
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-app-text">
-            {isEdit ? "Editar Lançamento" : "Novo Lançamento"}
-          </h2>
-          <button type="button" onClick={onClose} className="p-1 text-app-muted hover:text-app-text rounded-lg transition">
-            <X size={18} />
-          </button>
-        </div>
-      )}
+    <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className={onClose ? "space-y-4" : "bg-[var(--surface-card)] rounded-[14px] border border-[var(--color-border)] p-6 space-y-4"}>
       {/* Type toggle */}
-      <div>
-        <Controller
-          control={control}
-          name="type"
-          render={({ field }) => (
-            <div className="flex rounded-xl border border-app-border overflow-hidden h-[42px]">
-              <button
-                type="button"
-                onClick={() => field.onChange("income")}
-                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
-                  field.value === "income" ? "bg-income text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
-                }`}
-              >
-                <TrendingUp size={14} /> Receita
-              </button>
-              <button
-                type="button"
-                onClick={() => field.onChange("expense")}
-                className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-medium transition ${
-                  field.value === "expense" ? "bg-expense text-white" : "text-app-muted hover:bg-[var(--surface-raised)]"
-                }`}
-              >
-                <TrendingDown size={14} /> Despesa
-              </button>
-            </div>
-          )}
-        />
-      </div>
+      <Controller
+        control={control}
+        name="type"
+        render={({ field }) => (
+          <div className="flex rounded-[10px] border border-[var(--color-border)] overflow-hidden h-[42px] bg-[var(--surface-raised)]">
+            <button
+              type="button"
+              onClick={() => field.onChange("income")}
+              className={`flex-1 flex items-center justify-center gap-1.5 text-[13px] font-semibold transition ${
+                field.value === "income" ? "bg-[#3b82f6] text-white" : "text-[var(--text-mute)] hover:text-[var(--color-text)]"
+              }`}
+            >
+              <TrendingUp size={14} /> Receita
+            </button>
+            <button
+              type="button"
+              onClick={() => field.onChange("expense")}
+              className={`flex-1 flex items-center justify-center gap-1.5 text-[13px] font-semibold transition ${
+                field.value === "expense" ? "bg-[var(--text-dim)] text-[var(--surface-card)]" : "text-[var(--text-mute)] hover:text-[var(--color-text)]"
+              }`}
+            >
+              <TrendingDown size={14} /> Despesa
+            </button>
+          </div>
+        )}
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-app-muted mb-1">Data</label>
+          <label className={formLabelCls}>Data</label>
           <input
             {...register("date")}
             type="date"
-            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+            className={formInputCls}
           />
           {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>}
         </div>
         <div>
-          <label className="block text-xs font-medium text-app-muted mb-1">Categoria</label>
+          <label className={formLabelCls}>Categoria</label>
           {/* Controlled so the rendered value always tracks RHF state, even
               when the categories list loads asynchronously after mount. */}
           <Controller
@@ -291,7 +280,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
                 value={field.value ?? ""}
                 onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
                 onBlur={field.onBlur}
-                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                className={formInputCls}
               >
                 <option value="">Sem categoria</option>
                 {categories.map((c: { id: string; name: string; icon: string }) => (
@@ -304,30 +293,30 @@ export function TransactionForm({ transaction, onClose }: Props) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-app-muted mb-1">Descrição</label>
+        <label className={formLabelCls}>Descrição</label>
         <input
           {...register("description")}
           type="text"
           placeholder="Ex: Supermercado Extrabom"
-          className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+          className={formInputCls}
         />
         {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-app-muted mb-1">Valor total (R$)</label>
+          <label className={formLabelCls}>Valor total (R$)</label>
           <input
             {...register("value", { setValueAs: (v) => parseCurrency(String(v ?? "")) })}
             type="text"
             inputMode="decimal"
             placeholder="0,00"
-            className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text tabular-nums"
+            className={`${formInputCls} tabular-nums`}
           />
           {errors.value && <p className="text-red-500 text-xs mt-1">{errors.value.message}</p>}
         </div>
         <div>
-          <label className="block text-xs font-medium text-app-muted mb-1">Forma de Pagamento</label>
+          <label className={formLabelCls}>Forma de Pagamento</label>
           <Controller
             control={control}
             name="paymentMethodId"
@@ -336,7 +325,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
                 value={field.value ?? ""}
                 onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
                 onBlur={field.onBlur}
-                className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+                className={formInputCls}
               >
                 <option value="">Selecionar...</option>
                 {paymentMethods.map((pm: { id: string; name: string; type: string; supportsInstallments: boolean }) => (
@@ -349,7 +338,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-app-muted mb-1">Banco</label>
+        <label className={formLabelCls}>Banco</label>
         <Controller
           control={control}
           name="bankId"
@@ -358,7 +347,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
               value={field.value ?? ""}
               onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)}
               onBlur={field.onBlur}
-              className="w-full h-9 px-3.5 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+              className={formInputCls}
             >
               <option value="">Sem banco</option>
               {banks.map((b: { id: string; name: string }) => (
@@ -375,7 +364,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
         <p className="text-sm font-medium text-app-text">Parcelamento</p>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-app-muted mb-1">Nº de parcelas</label>
+            <label className={formLabelCls}>Nº de parcelas</label>
             <input
               {...register("installmentTotal", {
                 setValueAs: (v) => {
@@ -388,12 +377,12 @@ export function TransactionForm({ transaction, onClose }: Props) {
               max="120"
               placeholder="Ex: 12"
               onWheel={(e) => e.currentTarget.blur()}
-              className="w-full h-9 px-3 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text"
+              className={formInputCls}
             />
             <p className="text-[11px] text-app-muted mt-1">Deixe em branco para à vista</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-app-muted mb-1">Valor da parcela (R$)</label>
+            <label className={formLabelCls}>Valor da parcela (R$)</label>
             <input
               {...register("installmentValue", {
                 setValueAs: (v) => {
@@ -406,7 +395,7 @@ export function TransactionForm({ transaction, onClose }: Props) {
               placeholder="Calculado automaticamente"
               onWheel={(e) => e.currentTarget.blur()}
               readOnly={!!installmentTotal && installmentTotal > 1}
-              className="w-full h-9 px-3 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-hover)] text-app-muted tabular-nums"
+              className={`${formInputCls} bg-[var(--surface-hover)] text-[var(--text-mute)] tabular-nums`}
             />
           </div>
         </div>
@@ -439,12 +428,12 @@ export function TransactionForm({ transaction, onClose }: Props) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-app-muted mb-1">Notas (opcional)</label>
+        <label className={formLabelCls}>Notas (opcional)</label>
         <textarea
           {...register("notes")}
           rows={2}
           placeholder="Alguma observação..."
-          className="w-full px-3.5 py-2 rounded-lg border border-app-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-[var(--surface-card)] text-app-text resize-none"
+          className={`${formInputCls} resize-none`}
         />
       </div>
 
@@ -476,22 +465,13 @@ export function TransactionForm({ transaction, onClose }: Props) {
         </div>
       )}
 
-      <div className="flex gap-3 pt-2">
-        <button
-          type="button"
-          onClick={() => onClose ? onClose() : router.back()}
-          className="flex-1 h-9 px-4 rounded-lg border border-app-border text-sm font-medium text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          disabled={saveMutation.isPending}
-          className="flex-1 h-9 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium px-4 rounded-lg text-sm transition disabled:opacity-50"
-        >
-          {saveMutation.isPending ? "Salvando..." : isEdit ? "Atualizar" : "Salvar"}
-        </button>
-      </div>
+      <button
+        type="submit"
+        disabled={saveMutation.isPending}
+        className="w-full bg-[#3b82f6] hover:bg-[#2563eb] disabled:opacity-60 text-white py-3 rounded-[10px] text-[13px] font-semibold transition-colors duration-150"
+      >
+        {saveMutation.isPending ? "Salvando..." : isEdit ? "Salvar alterações" : "Criar lançamento"}
+      </button>
     </form>
   );
 }
