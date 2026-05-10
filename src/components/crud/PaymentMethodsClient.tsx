@@ -129,7 +129,6 @@ export function PaymentMethodsClient() {
         }
       />
 
-      {showForm && (
       <FormModal
         open={showForm}
         title={editing ? "Editar Forma de Pagamento" : "Nova Forma de Pagamento"}
