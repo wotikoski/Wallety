@@ -72,7 +72,9 @@ export default function Image() {
         {/* ── Header ── */}
         <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 30, height: 30, borderRadius: 8, background: OG.iconGrad, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17 }}>💙</div>
+            <div style={{ width: 30, height: 30, borderRadius: 8, background: OG.iconGrad, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 14, height: 14, borderRadius: "50%", background: "white", opacity: 0.9 }} />
+            </div>
             <div style={{ fontSize: 21, fontWeight: 800, color: "white", letterSpacing: "-0.5px" }}>Wallety</div>
           </div>
           <div style={{ flex: 1 }} />
@@ -89,11 +91,14 @@ export default function Image() {
 
         {/* ── Insight banner ── */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.22)", borderRadius: 10, padding: "7px 14px", marginBottom: 11 }}>
-          <div style={{ width: 20, height: 20, borderRadius: 6, background: OG.accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, flexShrink: 0 }}>✦</div>
-          <div style={{ fontSize: 12, color: "#93c5fd" }}>
+          {/* Simple dot instead of ✦ — avoids dynamic font download failure */}
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: OG.accent, flexShrink: 0 }} />
+          {/* Single <span> wrapper: Satori requires display:flex on <div> with multiple children,
+              but <span> handles mixed inline content (bold span + plain text) correctly. */}
+          <span style={{ fontSize: 12, color: "#93c5fd" }}>
             <span style={{ fontWeight: 700 }}>Insight do mês · </span>
-            Sua taxa de poupança é de 68% — acima da média. Continue assim!
-          </div>
+            <span>Sua taxa de poupança é de 68% — acima da media. Continue assim!</span>
+          </span>
         </div>
 
         {/* ── Row 1: Saldo | Receitas | Despesas ── */}
