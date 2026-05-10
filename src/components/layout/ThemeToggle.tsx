@@ -46,7 +46,7 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       title={dark ? "Mudar para modo claro" : "Mudar para modo escuro"}
-      className="h-9 w-9 flex items-center justify-center rounded-[10px] border border-app-border text-app-muted hover:text-app-text hover:bg-[var(--surface-raised)] transition"
+      className="h-8 w-8 flex items-center justify-center rounded-[8px] border border-app-border text-app-muted hover:text-app-text hover:bg-[var(--surface-raised)] transition"
     >
       {dark ? <Sun size={15} /> : <Moon size={15} />}
     </button>

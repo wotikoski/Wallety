@@ -36,7 +36,7 @@ export function Topbar() {
       <div className="relative">
         <button
           onClick={() => setShowGroupMenu(!showGroupMenu)}
-          className="inline-flex items-center gap-2 h-9 px-3 text-[13px] font-semibold text-app-text bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] rounded-[10px] border border-app-border transition"
+          className="inline-flex items-center gap-2 h-8 px-3 text-[12px] font-semibold text-app-text bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] rounded-[8px] border border-app-border transition"
         >
           <Users size={14} className="text-app-muted" />
           <span>{activeGroup ? activeGroup.name : "Pessoal"}</span>
