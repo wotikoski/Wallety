@@ -99,7 +99,7 @@ export function GroupsClient() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <PageHeader
         title="Grupos"
         subtitle="Compartilhe finanças com família ou parceiros"

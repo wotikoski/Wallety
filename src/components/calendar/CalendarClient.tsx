@@ -93,7 +93,7 @@ export function CalendarClient() {
   const selectedTxns = selectedDay ? getTxnsForDay(selectedDay) : [];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <PageHeader
         title="Calendário"
         subtitle="Visualize seus lançamentos por data"
@@ -101,7 +101,7 @@ export function CalendarClient() {
           <div className="flex items-center gap-1">
             <button
               onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-              className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+              className="h-[38px] w-[38px] flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
             >
               <ChevronLeft size={15} />
             </button>
@@ -110,7 +110,7 @@ export function CalendarClient() {
             </span>
             <button
               onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-              className="h-9 w-9 flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
+              className="h-[38px] w-[38px] flex items-center justify-center rounded-[10px] border-[1.5px] border-app-border text-app-muted hover:bg-[var(--surface-raised)] hover:text-app-text transition"
             >
               <ChevronRight size={15} />
             </button>

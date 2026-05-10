@@ -74,7 +74,7 @@ export function ProfileClient() {
   if (isLoading) return <div className="text-[var(--text-mute)] text-sm">Carregando...</div>;
 
   return (
-    <div className="space-y-6 max-w-lg animate-fade-in">
+    <div className="space-y-5 max-w-lg animate-fade-in">
       <PageHeader
         title="Meu Perfil"
         subtitle="Gerencie suas informações pessoais"

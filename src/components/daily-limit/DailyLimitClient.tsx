@@ -39,14 +39,14 @@ export function DailyLimitClient() {
             <select
               value={month}
               onChange={(e) => setMonth(Number(e.target.value))}
-              className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+              className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-[38px] bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
             >
               {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
             </select>
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-9 bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+              className="text-[13px] font-semibold border-[1.5px] border-[var(--color-border)] rounded-[10px] px-3 h-[38px] bg-[var(--surface-raised)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
             >
               {[2023, 2024, 2025, 2026].map((y) => <option key={y} value={y}>{y}</option>)}
             </select>

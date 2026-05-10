@@ -74,7 +74,7 @@ export function BanksClient() {
   const banks = (data?.banks ?? []).filter((b) => !isPending(b.id));
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <PageHeader
         title="Bancos"
         subtitle="Gerencie seus bancos e instituições financeiras"

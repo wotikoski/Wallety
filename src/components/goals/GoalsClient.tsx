@@ -365,7 +365,7 @@ export function GoalsClient() {
   const goalList = (data?.goals ?? []).filter((g) => !isPending(g.id));
 
   return (
-    <div className="animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <PageHeader
         title="Metas de Poupança"
         subtitle="Planeje e acompanhe suas conquistas financeiras"

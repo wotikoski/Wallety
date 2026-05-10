@@ -122,7 +122,7 @@ export function CategoriesClient() {
   const watchedIcon = watch("icon");
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <PageHeader
         title="Categorias"
         subtitle="Organize seus lançamentos por categoria"

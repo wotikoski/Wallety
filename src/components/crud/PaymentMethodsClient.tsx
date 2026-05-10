@@ -130,7 +130,7 @@ export function PaymentMethodsClient() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <PageHeader
         title="Formas de Pagamento"
         subtitle="Gerencie contas, cartões e formas de pagamento"
